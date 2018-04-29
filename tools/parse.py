@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+
+import os
+import sys
+
+import PyPDF2
+
+SECTIONS = {
+  "CERTSUM" : "CERTIORARI -- SUMMARY DISPOSITION",
+  "PENDING" : "ORDERS IN PENDING CASES",
+  "CERTDENY" : "CERTIORARI DENIED",
+  "HABEASDENY" : "HABEAS CORPUS DENIED",
+  "MANDAMUSDENY" : "MANDAMUS DENIED",
+  "REHEARDENY" : "REHEARINGS DENIED",
+  "DISCIPLINE" : "ATTORNEY DISCIPLINE",
+  "PROHIBDENY" : "PROHIBITION DENIED"
+}
+
+def count_seal(fname):
+  seal_count = 0
+  fo = open(fname, "rb")
+  reader = PyPDF2.PdfFileReader(fo)
+  for page in range(reader.numPages):
+    for line in reader.getPage(page).extractText().split("\n"):
+      if line.count("seal"):
+        seal_count += 1
+  if seal_count:
+    print "%s: %d" % (fname, seal_count)
+
+def count_word(word, fname):
+  word_count = 0
+  fo = open(fname, "rb")
+  reader = PyPDF2.PdfFileReader(fo)
+  for page in range(reader.numPages):
+    for line in reader.getPage(page).extractText().split("\n"):
+      if line.count(word):
+        word_count += 1
+  if word_count:
+    print "%s: %d" % (fname, word_count)
+
+def count_section_word (section, word, name):
+  sec_text = SECTIONS[section]
+  in_section = False
+  word_count = 0
+  fo = open(name, "rb")
+  reader = PyPDF2.PdfFileReader(fo)
+  for page in range(reader.numPages):
+    for line in reader.getPage(page).extractText().split("\n"):
+      if in_section:
+        for possible in SECTIONS.values():
+          if line.startswith(possible):
+            in_section = False
+        if line.count(word):
+          word_count += 1
+      else:
+        if line.startswith(sec_text):
+          in_section = True
+
+  if word_count:
+    print "[%s] %s: %d" % (sec_text, name, word_count)
+
+
+def list_word(word):
+  for name in os.listdir("."):
+    if name.count(".pdf"):
+      count_word(word, name)
+
+def list_section_word (word, section):
+  for name in os.listdir("."):
+    if name.count(".pdf"):
+      count_section_word(section, word, name)
+
+if __name__ == '__main__':
+  os.chdir("OT-%d" % (int(sys.argv[1])))
+  if sys.argv[2] == "ANY":
+    list_word(sys.argv[3])
+  else:
+    list_section_word(sys.argv[3], sys.argv[2])
+  os.chdir("..")
