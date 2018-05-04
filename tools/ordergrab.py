@@ -17,6 +17,13 @@ logging.basicConfig(level=logging.DEBUG)
 HEADERS = {"User-Agent" : "SCOTUS Orders Grabber (https://github.com/fterbo/scotus-tools)"}
 BASE = "https://www.supremecourt.gov"
 
+def parse_args ():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-t", "--term", dest="term", type=int)
+  parser.add_argument("--root", dest="root", type=str, default=".")
+  args = parser.parse_args()
+  return args
+
 def GET (url):
   logging.debug("GET: %s" % (url))
   return requests.get(url, headers=HEADERS)
@@ -47,11 +54,12 @@ def download (term, path):
           f.write(order.content)
 
 if __name__ == '__main__':
-  term = int(sys.argv[1])
-  path = "OT-%d/orders" % (term)
+  opts = parse_args()
+
+  path = "%s/OT-%d/orders" % (opts.root, opts.term)
   try:
     os.makedirs(path)
   except OSError:
     pass
-  download(term, path)
+  download(opts.term, path)
 
