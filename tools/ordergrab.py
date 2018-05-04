@@ -2,17 +2,16 @@
 
 # Copyright (c) 2018  Floyd Terbo
 
+import argparse
 import logging
 import os
 import os.path
-import shutil
 import sys
-import time
 
 import BeautifulSoup as BS
 import requests
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 HEADERS = {"User-Agent" : "SCOTUS Orders Grabber (https://github.com/fterbo/scotus-tools)"}
 BASE = "https://www.supremecourt.gov"
