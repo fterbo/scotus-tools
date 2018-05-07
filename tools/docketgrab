@@ -105,18 +105,18 @@ def scanPetitions (path, opts):
 # TODO: we should optionally allow checking last-modified with HEAD before we grab if the caller
 # is doing a larger scan where many are unlikely to be updated since last scan
 def downloadFull (path, opts):
-  docketstr = "%d-%d" % (opts.term, opts.docketnum)
-  newpath = "%s/%d/" % (path, opts.docketnum)
+  docketstr = "%d-%d" % (opts.term, opts.docket_num)
+  newpath = "%s/%d/" % (path, opts.docket_num)
   try:
     os.makedirs(newpath)
   except OSError:
     pass
 
-  url = "%s/%d-%d.json" % (BASE, opts.term, opts.docketnum)
+  url = "%s/%d-%d.json" % (BASE, opts.term, opts.docket_num)
   r = GET(url)
   if r.status_code != 200:
     logging.error("Could not get docket metadata <%s> with code %d" % (url, r.status_code))
-    break
+    sys.exit(1)
 
   docket_obj = r.json()
   with open("%s/docket.json" % (newpath), "w+") as df:
@@ -129,11 +129,12 @@ def downloadFull (path, opts):
       if "DocumentUrl" not in link:
         logging.warning("Found link without DocumentUrl: %s" % (link["Description"]))
         continue
+      fname = urllib.unquote_plus(link["DocumentUrl"].split("/")[-1])
+      logging.debug("[%s] Downloading %s" % (docketstr, fname))
       dl = GET(link["DocumentUrl"])
       if dl.status_code != 200:
         logging.error("[%s] FAILED: %d" % (docketstr, dl.status_code))
         continue
-      fname = urllib.unquote_plus(link["DocumentUrl"].split("/")[-1])
       outpath = "%s/%s" % (newpath, fname)
       with open(outpath, "w+") as f:
         f.write(dl.content)
