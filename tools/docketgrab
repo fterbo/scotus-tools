@@ -9,6 +9,7 @@ import os
 import os.path
 import sys
 import time
+import urllib
 
 import BeautifulSoup as BS
 import requests
@@ -101,9 +102,41 @@ def scanPetitions (path, opts):
     nextnum += 1
         
 
-
+# TODO: we should optionally allow checking last-modified with HEAD before we grab if the caller
+# is doing a larger scan where many are unlikely to be updated since last scan
 def downloadFull (path, opts):
-  pass
+  docketstr = "%d-%d" % (opts.term, opts.docketnum)
+  newpath = "%s/%d/" % (path, opts.docketnum)
+  try:
+    os.makedirs(newpath)
+  except OSError:
+    pass
+
+  url = "%s/%d-%d.json" % (BASE, opts.term, opts.docketnum)
+  r = GET(url)
+  if r.status_code != 200:
+    logging.error("Could not get docket metadata <%s> with code %d" % (url, r.status_code))
+    break
+
+  docket_obj = r.json()
+  with open("%s/docket.json" % (newpath), "w+") as df:
+    df.write(json.dumps(docket_obj))
+
+  for item in docket_obj["ProceedingsandOrder"]:
+    if "Links" not in item:
+      continue
+    for link in item["Links"]:
+      if "DocumentUrl" not in link:
+        logging.warning("Found link without DocumentUrl: %s" % (link["Description"]))
+        continue
+      dl = GET(link["DocumentUrl"])
+      if dl.status_code != 200:
+        logging.error("[%s] FAILED: %d" % (docketstr, dl.status_code))
+        continue
+      fname = urllib.unquote_plus(link["DocumentUrl"].split("/")[-1])
+      outpath = "%s/%s" % (newpath, fname)
+      with open(outpath, "w+") as f:
+        f.write(dl.content)
 
 
 ACTIONS = {
