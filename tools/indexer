@@ -3,21 +3,30 @@
 # Copyright (c) 2018  Floyd Terbo
 
 import argparse
+import functools
 import json
 import logging
 import multiprocessing
 import os
 import string
 import sys
+import time
 import unicodedata
 
 import PyPDF2
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 # Translation table to strip unicode punctuation, but not things like section symbols
 TTABLE = { i:None for i in xrange(sys.maxunicode)
            if unicodedata.category(unichr(i)).startswith('P') }
+
+# For some reason PyPDF2 resolves some text to the wrong code points
+TTABLE[8482] = None # Single quotes
+TTABLE[64257] = None  # Double quote open
+TTABLE[64258] = None  # Double quote close
+TTABLE[339] = None  # Endash
+TTABLE[352] = None  # Emdash
 
 
 def parse_args ():
@@ -25,6 +34,7 @@ def parse_args ():
   parser.add_argument("-t", "--term", dest="term", type=int)
   parser.add_argument("-n", "--docket-num", dest="docket_num", type=int)
   parser.add_argument("-p", "--parallel", dest="parallel", default=1, type=int)
+  parser.add_argument("--force-pdf", dest="force_pdf", action="store_true")
   parser.add_argument("--reindex", dest="reindex", action="store_true")
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
@@ -40,25 +50,35 @@ def ngrams (wlist, n):
   return output
 
 
-def indexDocket (path):
+def indexDocket (path, force_pdf = False):
+  logging.info("Indexing %s" % (path))
   fnames = [x for x in os.listdir(path) if x[-4:] == ".pdf"]
 
   indexes = {}
   for name in fnames:
     grams = {}
-    with open("%s/%s" % (path, name), "rb") as fo:
-      reader = PyPDF2.PdfFileReader(fo)
-      words = []
-      for page in range(reader.numPages):
-        clean_text = reader.getPage(page).extractText().lower().translate(TTABLE)
-        words.extend(clean_text.split())
+    txtpath = "%s/%s.txt" % (path, name[:-4])
+    if os.path.exists(txtpath) and not force_pdf:
+      with open(txtpath, "r") as word_file:
+        words = word_file.read().split()
+    else:
+      with open("%s/%s" % (path, name), "rb") as fo:
+        t0 = time.time()
+        reader = PyPDF2.PdfFileReader(fo)
+        words = []
+        for page in range(reader.numPages):
+          clean_text = reader.getPage(page).extractText().translate(TTABLE).lower()
+          words.extend(clean_text.split())
+        with open(txtpath, "w+") as dtxt:
+          dtxt.write(u" ".join(words).encode('utf-8'))
+        logging.debug("Parsing (%s) took %0.2f seconds" % (name, time.time() - t0))
 
-      grams["1-gram"] = ngrams(words, 1)
-      grams["2-gram"] = ngrams(words, 2)
-      indexes[name] = grams
+    grams["1-gram"] = ngrams(words, 1)
+    grams["2-gram"] = ngrams(words, 2)
+    indexes[name] = grams
 
   with open("%s/indexes.json" % (path), "w+") as ij:
-    logging.debug("Writing index json")
+    logging.debug("Writing index json (%s)" % (path))
     ij.write(json.dumps(indexes))
     
 
@@ -66,12 +86,22 @@ if __name__ == '__main__':
   opts = parse_args()
 
   rootpath = "%s/OT-%d/dockets" % (opts.root, opts.term)
-  pool = multiprocessing.Pool(processes = opts.parallel)
 
+  # If we only have one, run without the pool in case you're trying to debug something
+  if opts.parallel != 1:
+    pool = multiprocessing.Pool(processes = opts.parallel)
+
+  ddirs = []
   for name in os.listdir(rootpath):
     dpath = "%s/%s" % (rootpath, name)
     if os.path.isdir(dpath):
       if os.path.exists("%s/indexes.json" % (dpath)) and not opts.reindex:
         continue
-      logging.info("Indexing %s" % (dpath))
-      indexDocket(dpath)
+      ddirs.append(dpath)
+
+  if opts.parallel == 1:
+    for path in ddirs:
+      indexDocket(path, opts.force_pdf)
+  else:
+    pool.map(functools.partial(indexDocket, force_pdf=opts.force_pdf), ddirs)
+
