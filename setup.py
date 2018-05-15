@@ -5,7 +5,7 @@ import setuptools
 
 
 setup(name = "scotus-tools",
-      version = "0.9.0",
+      version = "0.9.1",
       author = "Floyd Terbo",
       author_email = "fterbo@protonmail.com",
       packages = setuptools.find_packages(),
@@ -15,5 +15,6 @@ setup(name = "scotus-tools",
         "requests",
       ],
       zip_safe = False,
-      scripts = ['tools/ordergrab', 'tools/docketgrab', 'tools/orderparse']
+      scripts = ['tools/ordergrab', 'tools/docketgrab',
+                 'tools/orderparse', 'tools/indexer']
   )
