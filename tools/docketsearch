@@ -3,8 +3,10 @@
 # Copyright (c) 2018  Floyd Terbo
 
 import argparse
+import functools
 import json
 import logging
+import multiprocessing
 import os
 import sys
 
@@ -44,7 +46,12 @@ if __name__ == '__main__':
     query(path, opts.query)
     sys.exit(0)
 
+  pool = multiprocessing.Pool(processes = opts.parallel)
+
+  ddirs = []
   for name in os.listdir(rootpath):
     dpath = "%s/%s" % (rootpath, name)
     if os.path.isdir(dpath):
-      query(dpath, opts.query)
+      ddirs.append(dpath)
+
+  pool.map(functools.partial(query, term=opts.query), ddirs)
