@@ -18,23 +18,30 @@ def parse_args ():
   parser.add_argument("-t", "--term", dest="term", type=int)
   parser.add_argument("-n", "--docket-num", dest="docket_num", type=int)
   parser.add_argument("-p", "--parallel", dest="parallel", default=1, type=int)
-  parser.add_argument("-q", "--query", dest="query")
+  parser.add_argument("-q", "--query", dest="query", nargs="*")
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
   return args
 
-def query (path, term):
-  glen = len(term.split())
+def query (path, terms):
   with open("%s/indexes.json" % (path), "rb") as idxf:
     obj = json.loads(idxf.read())
     for (fname, grms) in obj.items():
-      try:
-        wd = grms["%d-gram" % (glen)]
-        if term in wd:
-          logging.info("[%d] in %s/%s" % (wd[term], path, fname))
-      except KeyError:
-        continue
-
+      found = {}
+      for term in terms:
+        glen = len(term.split())
+        try:
+          wd = grms["%d-gram" % (glen)]
+          if term in wd:
+            found[term] = wd[term]
+        except KeyError:
+          continue
+      if len(found) == len(terms):
+        tcountlist = []
+        for t,c in found.items():
+          tcountlist.append("[%d] %s" % (c, t))
+        logging.info("Terms found in %s/%s: %s" % (path, fname, ", ".join(tcountlist)))
+        
 
 if __name__ == '__main__':
   opts = parse_args()
@@ -56,9 +63,8 @@ if __name__ == '__main__':
     if os.path.isdir(dpath):
       ddirs.append(dpath)
 
-
   try:
-    res = pool.map_async(functools.partial(query, term=opts.query), ddirs)
+    res = pool.map_async(functools.partial(query, terms=opts.query), ddirs)
     res.get(45)
   except KeyboardInterrupt:
     pool.terminate()
