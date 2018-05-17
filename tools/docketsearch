@@ -8,6 +8,7 @@ import json
 import logging
 import multiprocessing
 import os
+import signal
 import sys
 
 logging.basicConfig(level=logging.INFO)
@@ -21,7 +22,6 @@ def parse_args ():
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
   return args
-
 
 def query (path, term):
   glen = len(term.split())
@@ -46,7 +46,9 @@ if __name__ == '__main__':
     query(path, opts.query)
     sys.exit(0)
 
+  sigint_h = signal.signal(signal.SIGINT, signal.SIG_IGN) # Ignore child sigint
   pool = multiprocessing.Pool(processes = opts.parallel)
+  signal.signal(signal.SIGINT, sigint_h) # But not here
 
   ddirs = []
   for name in os.listdir(rootpath):
@@ -54,4 +56,13 @@ if __name__ == '__main__':
     if os.path.isdir(dpath):
       ddirs.append(dpath)
 
-  pool.map(functools.partial(query, term=opts.query), ddirs)
+
+  try:
+    res = pool.map_async(functools.partial(query, term=opts.query), ddirs)
+    res.get(45)
+  except KeyboardInterrupt:
+    pool.terminate()
+  else:
+    pool.close()
+
+  pool.join()
