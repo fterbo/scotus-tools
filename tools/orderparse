@@ -9,14 +9,15 @@ import PyPDF2
 
 SECTIONS = {
   "CERTSUM" : "CERTIORARI -- SUMMARY DISPOSITION",
-  "PENDING" : "ORDERS IN PENDING CASES",
+  "PENDING" : ["ORDERS IN PENDING CASES", "ORDER IN PENDING CASE"],
   "CERTDENY" : "CERTIORARI DENIED",
   "HABEASDENY" : "HABEAS CORPUS DENIED",
   "MANDAMUSDENY" : "MANDAMUS DENIED",
-  "REHEARDENY" : "REHEARINGS DENIED",
+  "REHEARDENY" : ["REHEARINGS DENIED", "REHEARING DENIED"],
   "DISCIPLINE" : "ATTORNEY DISCIPLINE",
   "PROHIBDENY" : "PROHIBITION DENIED",
   "GRANTS" : "CERTIORARI GRANTED",
+  "DECISION" : "Cite as"
 }
 
 def count_seal(fname):
@@ -37,9 +38,16 @@ def count_word(word, fname):
   cur_section = None
   for page in range(reader.numPages):
     for line in reader.getPage(page).extractText().split("\n"):
-      for secname in SECTIONS.values():
-        if line.startswith(secname):
-          cur_section = secname
+      for shortname,secname in SECTIONS.items():
+        if isinstance(secname, (list, tuple)):
+          for name in secname:
+            if line.count(name):
+              cur_section = shortname
+              break
+        else:
+          if line.count(secname):
+            cur_section = shortname
+            break
       if line.count(word):
         word_count.setdefault(cur_section, [0])[0] += 1
   if word_count:
@@ -56,12 +64,19 @@ def count_section_word (section, word, name):
     for line in reader.getPage(page).extractText().split("\n"):
       if in_section:
         for possible in SECTIONS.values():
-          if line.startswith(possible):
-            in_section = False
+          if isinstance(possible, (list, tuple)):
+            for name in possible:
+              if line.count(name):
+                in_section = False
+                break
+          else:
+            if line.count(possible):
+              in_section = False
+              break
         if line.count(word):
           word_count += 1
       else:
-        if line.startswith(sec_text):
+        if line.count(sec_text):
           in_section = True
 
   if word_count:
