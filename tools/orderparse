@@ -74,7 +74,7 @@ def list_section_word (word, section):
       count_section_word(section, word, name)
 
 if __name__ == '__main__':
-  os.chdir("OT-%d" % (int(sys.argv[1])))
+  os.chdir("OT-%d/orders/" % (int(sys.argv[1])))
   if sys.argv[2] == "ANY":
     list_word(sys.argv[3])
   else:
