@@ -31,15 +31,20 @@ def count_seal(fname):
     print "%s: %d" % (fname, seal_count)
 
 def count_word(word, fname):
-  word_count = 0
+  word_count = {}
   fo = open(fname, "rb")
   reader = PyPDF2.PdfFileReader(fo)
+  cur_section = None
   for page in range(reader.numPages):
     for line in reader.getPage(page).extractText().split("\n"):
+      for secname in SECTIONS.values():
+        if line.startswith(secname):
+          cur_section = secname
       if line.count(word):
-        word_count += 1
+        word_count.setdefault(cur_section, [0])[0] += 1
   if word_count:
-    print "%s: %d" % (fname, word_count)
+    for section,count in word_count.items():
+      print "%s: [%s] %d" % (fname, section, count[0])
 
 def count_section_word (section, word, name):
   sec_text = SECTIONS[section]
