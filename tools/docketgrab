@@ -76,11 +76,19 @@ def scanPetitions (path, opts):
       nextnum += 1
       continue
 
+    casename = ""
+    try:
+      # TODO: This is all horrible, but works for most cases
+      petitioner = docket_obj["PetitionerTitle"][:-12]  # Remove ", Petitioner" from metadata
+      casename = "%s v. %s" % (petitioner, docket_obj["RespondentTitle"])
+    except Exception:
+      logging.exception("Unable to create case name for %s" % (docketstr))
+
     match = list(set(founditem["Text"].split()) & PETITION_TYPES)
     if len(match) == 0:
       logging.warning("[%s] Unknown petition type for: %s" % (docketstr, founditem["Text"]))
     elif len(match) == 1:
-      logging.info("[%s] %s" % (docketstr, match[0]))
+      logging.info("[%s] (%s) %s" % (docketstr, match[0], casename))
     elif len(match) > 1:
       logging.info("[%s] Too many type matches for: %s" % (docketstr, founditem["Text"]))
 
