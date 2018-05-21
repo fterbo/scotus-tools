@@ -44,7 +44,7 @@ def download (term, path):
 
         # Skip orders we already have
         if os.path.exists(outpath):
-          logging.info("Skipping: %s" % (href))
+          logging.debug("Skipping: %s" % (href))
           continue
 
         logging.info("Downloading: %s" % (href))
