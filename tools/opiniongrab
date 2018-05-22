@@ -54,26 +54,33 @@ def scanOpinions (path, opts):
       odata["R"] = int(cells[0].text)
 
       opath = "%s/%d" % (path, odata["R"])
+      if os.path.exists(opath):
+        continue
+      logging.info("Grabbing R-%d" % (odata["R"]))
       os.makedirs(opath)
 
-      odata["date"] = datetime.datetime.strptime(cells[1], "%m/%d/%y")
-      odata["docket"] = int(cells[2].split("-")[1])
+      odata["date"] = time.mktime(datetime.datetime.strptime(cells[1].text, "%m/%d/%y").timetuple())
+      try:
+        odata["docket"] = int(cells[2].text.split("-")[1])
+      except IndexError:
+        odata["docket"] = int(cells[2].text.split(",")[0])
+
       aelem = cells[3].find("a")
-      r = GET(aelem["href"])
+      r = GET("%s/%s" % (BASE, aelem["href"]))
       with open("%s/%s" % (opath, aelem["href"].split("/")[-1]), "w+") as f:
         f.write(r.content)
       odata["blurb"] = aelem.get("title")
 
       revised = cells[4].find("a")
       if revised:
-        r = GET(revised["href"])
+        r = GET("%s/%s" % (BASE, revised["href"]))
         with open("%s/%s" % (opath, revised["href"].split("/")[-1]), "w+") as f:
           f.write(r.content)
 
-      odata["justice"] = cells[5]
-      odata["prelim-part"] = cells[6]
+      odata["justice"] = cells[5].text
+      odata["prelim-part"] = cells[6].text
 
-      with open("%s/info.json" % (opath)) as f:
+      with open("%s/info.json" % (opath), "w+") as f:
         f.write(json.dumps(odata))
 
 
