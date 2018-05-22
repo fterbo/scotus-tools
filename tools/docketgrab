@@ -71,6 +71,10 @@ def scanPetitions (path, opts):
         logging.debug("[%s] No links: %s" % (docketstr, item["Text"]))
         continue
 
+    os.makedirs(newpath)
+    with open("%s/docket.json" % (newpath), "w+") as f:
+      f.write(json.dumps(r.json()))
+
     if not founditem:
       logging.error("Couldn't find a petition for docket %s" % (docketstr))
       nextnum += 1
@@ -94,10 +98,6 @@ def scanPetitions (path, opts):
       logging.info("[%s] (%s) %s" % (docketstr, match[0], casename))
     elif len(match) > 1:
       logging.info("[%s] Too many type matches for: %s" % (docketstr, founditem["Text"]))
-
-    os.makedirs(newpath)
-    with open("%s/docket.json" % (newpath), "w+") as f:
-      f.write(json.dumps(r.json()))
 
     for link in founditem["Links"]:
       if link["Description"] in PETITION_LINKS:

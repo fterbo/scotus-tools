@@ -24,23 +24,26 @@ def parse_args ():
   return args
 
 def query (path, terms):
-  with open("%s/indexes.json" % (path), "rb") as idxf:
-    obj = json.loads(idxf.read())
-    for (fname, grms) in obj.items():
-      found = {}
-      for term in terms:
-        glen = len(term.split())
-        try:
-          wd = grms["%d-gram" % (glen)]
-          if term in wd:
-            found[term] = wd[term]
-        except KeyError:
-          continue
-      if len(found) == len(terms):
-        tcountlist = []
-        for t,c in found.items():
-          tcountlist.append("[%d] %s" % (c, t))
-        logging.info("Terms found in %s/%s: %s" % (path, fname, ", ".join(tcountlist)))
+  try:
+    with open("%s/indexes.json" % (path), "rb") as idxf:
+      obj = json.loads(idxf.read())
+      for (fname, grms) in obj.items():
+        found = {}
+        for term in terms:
+          glen = len(term.split())
+          try:
+            wd = grms["%d-gram" % (glen)]
+            if term in wd:
+              found[term] = wd[term]
+          except KeyError:
+            continue
+        if len(found) == len(terms):
+          tcountlist = []
+          for t,c in found.items():
+            tcountlist.append("[%d] %s" % (c, t))
+          logging.info("Terms found in %s/%s: %s" % (path, fname, ", ".join(tcountlist)))
+  except IOError:
+    return
         
 
 if __name__ == '__main__':
