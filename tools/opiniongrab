@@ -71,14 +71,15 @@ def scanOpinions (path, opts):
         f.write(r.content)
       odata["blurb"] = aelem.get("title")
 
-      revised = cells[4].find("a")
-      if revised:
-        r = GET("%s/%s" % (BASE, revised["href"]))
-        with open("%s/%s" % (opath, revised["href"].split("/")[-1]), "w+") as f:
-          f.write(r.content)
+      if len(cells) == 7:
+        revised = cells[len(cells)-3].find("a")
+        if revised:
+          r = GET("%s/%s" % (BASE, revised["href"]))
+          with open("%s/%s" % (opath, revised["href"].split("/")[-1]), "w+") as f:
+            f.write(r.content)
 
-      odata["justice"] = cells[5].text
-      odata["prelim-part"] = cells[6].text
+      odata["justice"] = cells[len(cells)-2].text
+      odata["prelim-part"] = cells[len(cells)-1].text
 
       with open("%s/info.json" % (opath), "w+") as f:
         f.write(json.dumps(odata))
