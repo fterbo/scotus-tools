@@ -4,6 +4,7 @@
 
 import os
 import sys
+import unicodedata
 
 import PyPDF2
 
@@ -19,6 +20,10 @@ SECTIONS = {
   "GRANTS" : "CERTIORARI GRANTED",
   "DECISION" : "Cite as"
 }
+
+# Translation table to strip unicode punctuation, but not things like section symbols
+TTABLE = { i:None for i in xrange(sys.maxunicode)
+           if unicodedata.category(unichr(i)).startswith('P') }
 
 def count_seal(fname):
   seal_count = 0
@@ -114,21 +119,78 @@ def check_docket_num (line):
   return False
 
 
+def dumplines (path):
+  text = []
+  fo = open(path, "rb")
+  reader = PyPDF2.PdfFileReader(fo)
+  for page in range(reader.numPages):
+    for line in reader.getPage(page).extractText().translate(TTABLE).split("\n"):
+      print line
+
+def isCasename (tline):
+  # The text is likely a case name if it is:
+  # - Not a known section name
+  # - All uppercase
+  # - Mostly uppercase
+
+  if tline == tline.upper():
+    return True
+
+  ucount = 0.0
+  skip = 0
+  for char in tline:
+    if char.isupper():
+      ucount += 1
+    elif char.isspace():
+      skip += 1
+
+  if ucount / (len(tline) - skip) > 0.75:
+    return True
+
+  return False
+
 def catalog (path):
+  text = []
   fo = open(path, "rb")
   reader = PyPDF2.PdfFileReader(fo)
   for page in range(reader.numPages):
     for line in reader.getPage(page).extractText().split("\n"):
       if check_start_section(line):
+        if text:
+          print "".join(text)
+        text = []
         print line
         continue
       docket = check_docket_num(line)
       if docket:
+        if text:
+          print "".join(text)
+        text = []
         print docket
+      else:
+        # If we only have an integer, it's a page number
+        try:
+          pgnum = int(line.strip())
+          continue
+        except ValueError:
+          pass
+
+        tline = line.translate(TTABLE)
+        # Consolidated / vided / etc.
+        if not tline:
+          continue
+
+        if isCasename(tline):
+          continue
+
+        text.append(line)
 
 if __name__ == '__main__':
   if sys.argv[1] == "CATALOG":
     catalog(sys.argv[2])
+    sys.exit()
+  elif sys.argv[1] == "DUMP":
+    dumplines(sys.argv[2])
     sys.exit()
 
   os.chdir("OT-%d/orders/" % (int(sys.argv[1])))
