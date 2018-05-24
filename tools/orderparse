@@ -93,7 +93,44 @@ def list_section_word (word, section):
     if name.count(".pdf"):
       count_section_word(section, word, name)
 
+def check_start_section (line):
+  for possible in SECTIONS.values():
+    if isinstance(possible, (list, tuple)):
+      for name in possible:
+        if line.count(name):
+          return name
+    else:
+      if line.count(possible):
+        return possible
+  return False
+
+def check_docket_num (line):
+  if line[:10].count("-"):
+    try:
+      int(line[:10].split("-")[0])
+    except ValueError:
+      return False
+    return line.split()[0]
+  return False
+
+
+def catalog (path):
+  fo = open(path, "rb")
+  reader = PyPDF2.PdfFileReader(fo)
+  for page in range(reader.numPages):
+    for line in reader.getPage(page).extractText().split("\n"):
+      if check_start_section(line):
+        print line
+        continue
+      docket = check_docket_num(line)
+      if docket:
+        print docket
+
 if __name__ == '__main__':
+  if sys.argv[1] == "CATALOG":
+    catalog(sys.argv[2])
+    sys.exit()
+
   os.chdir("OT-%d/orders/" % (int(sys.argv[1])))
   if sys.argv[2] == "ANY":
     list_word(sys.argv[3])
