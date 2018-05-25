@@ -84,7 +84,7 @@ def scanPetitions (path, opts):
     casename = ""
     try:
       # TODO: This is all horrible, but works for most cases
-      if match[0] == "mandamus":
+      if match[0] in ["mandamus", "habeas"]:
         casename = docket_obj["PetitionerTitle"]
       else:
         petitioner = docket_obj["PetitionerTitle"][:-12]  # Remove ", Petitioner" from metadata
