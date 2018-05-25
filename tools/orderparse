@@ -2,14 +2,16 @@
 
 # Copyright (c) 2018  Floyd Terbo
 
+import json
 import os
+import pprint
 import sys
 import unicodedata
 
 import PyPDF2
 
 SECTIONS = {
-  "CERTSUM" : "CERTIORARI -- SUMMARY DISPOSITION",
+  "CERTSUM" : "SUMMARY DISPOSITION",
   "PENDING" : ["ORDERS IN PENDING CASES", "ORDER IN PENDING CASE"],
   "CERTDENY" : "CERTIORARI DENIED",
   "HABEASDENY" : "HABEAS CORPUS DENIED",
@@ -18,12 +20,14 @@ SECTIONS = {
   "DISCIPLINE" : "ATTORNEY DISCIPLINE",
   "PROHIBDENY" : "PROHIBITION DENIED",
   "GRANTS" : "CERTIORARI GRANTED",
-  "DECISION" : "Cite as"
+  "DECISION" : "Cite as",
+  "POSTPONE" : "JURISDICTION POSTPONED",
 }
 
 # Translation table to strip unicode punctuation, but not things like section symbols
 TTABLE = { i:None for i in xrange(sys.maxunicode)
            if unicodedata.category(unichr(i)).startswith('P') }
+
 
 def count_seal(fname):
   seal_count = 0
@@ -99,14 +103,14 @@ def list_section_word (word, section):
       count_section_word(section, word, name)
 
 def check_start_section (line):
-  for possible in SECTIONS.values():
+  for k,possible in SECTIONS.items():
     if isinstance(possible, (list, tuple)):
       for name in possible:
         if line.count(name):
-          return name
+          return (k,name)
     else:
       if line.count(possible):
-        return possible
+        return (k,possible)
   return False
 
 def check_docket_num (line):
@@ -149,24 +153,24 @@ def isCasename (tline):
 
   return False
 
-def catalog (path):
-  text = []
-  fo = open(path, "rb")
-  reader = PyPDF2.PdfFileReader(fo)
+def parse_statuses (reader):
+  data = {x:[] for x in SECTIONS.keys()}
+  cur_section = ""
+
   for page in range(reader.numPages):
     for line in reader.getPage(page).extractText().split("\n"):
-      if check_start_section(line):
-        if text:
-          print "".join(text)
-        text = []
-        print line
+      sec = check_start_section(line)
+      if sec:
+        cur_section = sec[0]
+        if cur_section == "DECISION" or cur_section == "DISCIPLINE":
+          return data
         continue
       docket = check_docket_num(line)
       if docket:
-        if text:
-          print "".join(text)
-        text = []
-        print docket
+        try:
+          data[cur_section].append(docket)
+        except KeyError:
+          print "Docket %s found without section" % (docket)
       else:
         # If we only have an integer, it's a page number
         try:
@@ -183,7 +187,42 @@ def catalog (path):
         if isCasename(tline):
           continue
 
-        text.append(line)
+  return data
+
+STATUS_MAP = {
+  "CERTSUM" : "SUMMARY",
+  "PENDING" : None,
+  "CERTDENY" : "DENIED",
+  "HABEASDENY" : "DENIED",
+  "MANDAMUSDENY" : "DENIED",
+  "PROHIBDENY" : "DENIED",
+  "REHEARDENY" : "DENIED",
+  "GRANTS" : "GRANTED",
+  "POSTPONE" : "GRANTED"
+}
+
+def catalog (path):
+  fo = open(path, "rb")
+  reader = PyPDF2.PdfFileReader(fo)
+
+  status_data = parse_statuses(reader)
+  for k,v in status_data.items():
+    for docket in v:
+      (term, num) = docket.split("-")
+      docket_dir = "OT-%s/dockets/%s" % (term, num)
+      if not os.path.exists(docket_dir):
+        os.makedirs(docket_dir)
+
+      status_path = "OT-%s/dockets/%s/status.json" % (term, num)
+      data = {"events" : [], "status" : None}
+      if os.path.exists(status_path):
+        data = json.loads(open(status_path, "rb").read())
+      data["events"].append((k, path.split("/")[-1]))
+      if STATUS_MAP[k]:
+        data["status"] = STATUS_MAP[k]
+      with open(status_path, "w+") as f:
+        f.write(json.dumps(data))
+
 
 if __name__ == '__main__':
   if sys.argv[1] == "CATALOG":
