@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+
+# Copyright (c) 2018  Floyd Terbo
+
+from __future__ import print_function
+
+import argparse
+import json
+import logging
+import os
+import os.path
+import pprint
+import sys
+
+from scotus import util
+
+logging.basicConfig(level=logging.INFO)
+
+class NoDocketError(Exception):
+  def __init__ (self, docketstr):
+    self.docket = docketstr
+  def __str__ (self):
+    return "No docket info found for %s" % (self.docket)
+
+
+def parse_args ():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-t", "--term", dest="term", type=int)
+  parser.add_argument("-n", "--num", dest="num", type=int)
+  parser.add_argument("--root", dest="root", type=str, default=".")
+  args = parser.parse_args()
+  return args
+
+
+def summarize(opts):
+  jpath = "OT-%d/dockets/%d/docket.json" % (opts.term, opts.num)
+  docket_str = "%d-%d" % (opts.term, opts.num)
+  if not os.path.exists(jpath):
+    raise NoDocketError(docket_str)
+
+  docket_obj = json.loads(open(jpath, "rb").read())
+  casename = util.buildCasename(docket_obj)
+  last_order = docket_obj["ProceedingsandOrder"][-1]
+
+  print("[%s] %s" % (docket_str, casename))
+  print("\t%s" % (docket_obj["LowerCourt"]))
+  print("\t%s - %s" % (docket_obj["LowerCourtCaseNumbers"], docket_obj["LowerCourtDecision"]))
+  print()
+  print("\t%s - %s" % (last_order["Date"], last_order["Text"]))
+
+if __name__ == '__main__':
+  opts = parse_args()
+  summarize(opts)

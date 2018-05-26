@@ -14,13 +14,12 @@ import urllib
 import BeautifulSoup as BS
 import requests
 
+import scotus.util
+
 logging.basicConfig(level=logging.INFO)
 
 HEADERS = {"User-Agent" : "SCOTUS Docket Grabber (https://github.com/fterbo/scotus-tools)"}
 BASE = "https://www.supremecourt.gov/rss/cases/JSON/"
-
-PETITION_LINKS = set(["Petition", "Appendix", "Jurisdictional Statement"])
-PETITION_TYPES = set(["certiorari", "mandamus", "habeas", "jurisdiction"])
 
 def GET (url):
   logging.debug("GET: %s" % (url))
@@ -90,17 +89,11 @@ def scanPetitions (path, opts):
       nextnum += 1
       continue
 
-    match = list(set(founditem["Text"].split()) & PETITION_TYPES)
-    casename = ""
+    match = list(set(founditem["Text"].split()) & scotus.util.PETITION_TYPES)
     try:
-      # TODO: This is all horrible, but works for most cases
-      if match[0] in ["mandamus", "habeas"]:
-        casename = docket_obj["PetitionerTitle"]
-      else:
-        petitioner = docket_obj["PetitionerTitle"][:-12]  # Remove ", Petitioner" from metadata
-        casename = "%s v. %s" % (petitioner, docket_obj["RespondentTitle"])
-    except Exception:
-      logging.exception("Unable to create case name for %s" % (docketstr))
+      casename = scotus.util.buildCasename(docket_obj)
+    except scotus.util.SCOTUSError as e:
+      logging.exception(str(e))
 
     if len(match) == 0:
       logging.warning("[%s] Unknown petition type for: %s" % (docketstr, founditem["Text"]))
@@ -110,7 +103,7 @@ def scanPetitions (path, opts):
       logging.info("[%s] Too many type matches for: %s" % (docketstr, founditem["Text"]))
 
     for link in founditem["Links"]:
-      if link["Description"] in PETITION_LINKS:
+      if link["Description"] in scotus.util.PETITION_LINKS:
         logging.debug("[%s] Downloading %s" % (docketstr, link["File"]))
         dl = GET(link["DocumentUrl"])
         if dl.status_code != 200:
