@@ -16,6 +16,22 @@ from scotus import util
 
 logging.basicConfig(level=logging.INFO)
 
+LCNAMEMAP = {
+  "CA1" : "United States Court of Appeals for the First Circuit",
+  "CA2" : "United States Court of Appeals for the Second Circuit",
+  "CA3" : "United States Court of Appeals for the Third Circuit",
+  "CA4" : "United States Court of Appeals for the Fourth Circuit",
+  "CA5" : "United States Court of Appeals for the Fifth Circuit",
+  "CA6" : "United States Court of Appeals for the Sixth Circuit",
+  "CA7" : "United States Court of Appeals for the Seventh Circuit",
+  "CA8" : "United States Court of Appeals for the Eighth Circuit",
+  "CA9" : "United States Court of Appeals for the Ninth Circuit",
+  "CA10" : "United States Court of Appeals for the Tenth Circuit",
+  "CA11" : "United States Court of Appeals for the Eleventh Circuit",
+  "CADC" : "United States Court of Appeals for the DC Circuit",
+  "CAFC" : "United States Court of Appeals for the Federal Circuit",
+}
+
 class NoDocketError(Exception):
   def __init__ (self, docketstr):
     self.docket = docketstr
@@ -27,13 +43,39 @@ def parse_args ():
   parser = argparse.ArgumentParser()
   parser.add_argument("-t", "--term", dest="term", type=int)
   parser.add_argument("-n", "--num", dest="num", type=int)
+  parser.add_argument("-s", "--scan", dest="scan", action="store_true")
+  parser.add_argument("-l", "--lower", dest="lower", type=int, default=0)
+  parser.add_argument("--debug", dest="debug", action="store_true")
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
   return args
 
 
+def scan(opts):
+  ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (opts.root, opts.term))]
+  ddirs.sort()
+  for ddir in ddirs:
+    jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, ddir)
+    docket_str = "%d-%d" % (opts.term, ddir)
+    if not os.path.exists(jpath):
+      continue
+#      raise NoDocketError(docket_str)
+
+    docket_obj = json.loads(open(jpath, "rb").read())
+    casename = util.buildCasename(docket_obj)
+    if opts.debug:
+      if docket_obj["LowerCourt"] not in LCNAMEMAP.values():
+        print("Unknown Lower Court: %s" % (docket_obj["LowerCourt"]))
+      
+    if opts.lower:
+      if docket_obj["LowerCourt"].strip() != LCNAMEMAP[opts.lower]:
+        continue
+
+    print("[%s] %s" % (docket_str, casename))
+
+
 def summarize(opts):
-  jpath = "OT-%d/dockets/%d/docket.json" % (opts.term, opts.num)
+  jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, opts.num)
   docket_str = "%d-%d" % (opts.term, opts.num)
   if not os.path.exists(jpath):
     raise NoDocketError(docket_str)
@@ -50,4 +92,7 @@ def summarize(opts):
 
 if __name__ == '__main__':
   opts = parse_args()
-  summarize(opts)
+  if opts.scan:
+    scan(opts)
+  else:
+    summarize(opts)

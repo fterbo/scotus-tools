@@ -25,6 +25,10 @@ def getCaseType (docket_obj):
   founditem = None
   for item in docket_obj["ProceedingsandOrder"]:
     try:
+      if item["Text"].startswith("Petition"):
+        for ptype in PETITION_TYPES:
+          if item["Text"].count(ptype):
+            return ptype
       for link in item["Links"]:
         if link["Description"] == "Petition":
           # TODO: This does not tend to capture original actions or mandatory appeals
