@@ -32,6 +32,7 @@ def parse_args ():
   parser.add_argument("-t", "--term", dest="term", type=int)
   parser.add_argument("-n", "--docket-num", dest="docket_num", type=int)
   parser.add_argument("-a", "--action", dest="action", type=str, default="scan-petition")
+  parser.add_argument("--stop", dest="stop", type=int, default=0)
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
   return args
@@ -44,7 +45,7 @@ def scanPetitions (path, opts):
     newpath = "%s/%d/" % (path, nextnum)
     docketstr = "%d-%d" % (opts.term, nextnum)
 
-    if os.path.exists(newpath):
+    if os.path.exists("%s/docket.json" % (newpath)):
       # We already scanned this docket
       nextnum += 1
       continue
@@ -52,8 +53,13 @@ def scanPetitions (path, opts):
     url = "%s/%d-%d.json" % (BASE, opts.term, nextnum)
     r = GET(url)
     if r.status_code != 200:
-      logging.info("Stopped for URL <%s> with code %d" % (url, r.status_code))
-      break
+      if opts.stop and nextnum < opts.stop:
+        logging.info("Skipping <%s> with no docket" % (url))
+        nextnum += 1
+        continue
+      else:
+        logging.info("Stopped for URL <%s> with code %d" % (url, r.status_code))
+        break
 
     docket_obj = r.json()
     founditem = None
@@ -71,7 +77,11 @@ def scanPetitions (path, opts):
         logging.debug("[%s] No links: %s" % (docketstr, item["Text"]))
         continue
 
-    os.makedirs(newpath)
+    try:
+      os.makedirs(newpath)
+    except OSError:
+      pass # Should check errno, but probably already exists
+
     with open("%s/docket.json" % (newpath), "w+") as f:
       f.write(json.dumps(r.json()))
 

@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+
+# Copyright (c) 2018  Floyd Terbo
+
+
+import argparse
+import json
+import logging
+import os
+import os.path
+import pprint
+import sys
+
+logging.basicConfig(level=logging.INFO)
+
+def parse_args ():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-t", "--term", dest="term", type=int)
+  parser.add_argument("--root", dest="root", type=str, default=".")
+  args = parser.parse_args()
+  return args
+
+
+def build_stats (path):
+  sdata = {"denied" : 0, "granted" : 0, "pending" : 0, "summary" : 0,
+           "grants" : [], "pends" : []}
+  ddirs = os.listdir(path)
+  for ddir in ddirs:
+    spath = "%s/%s/status.json" % (path, ddir)
+    if not os.path.exists(spath):
+      sdata["pending"] += 1
+      sdata["pends"].append(int(ddir))
+      continue
+
+    ddata = json.loads(open(spath, "rb").read())
+    if ddata["status"] == "DENIED":
+      sdata["denied"] += 1
+    elif ddata["status"] == "GRANTED":
+      sdata["granted"] += 1
+      sdata["grants"].append(int(ddir))
+    elif ddata["status"] == "SUMMARY":
+      sdata["summary"] += 1
+
+  sdata["pends"].sort()
+  sdata["grants"].sort()
+    
+  sdata["pends"] = ", ".join([str(x) for x in sdata["pends"]])
+  sdata["grants"] = ", ".join([str(x) for x in sdata["grants"]])
+
+  pprint.pprint(sdata)
+
+
+if __name__ == '__main__':
+  opts = parse_args()
+  path = "%s/OT-%d/dockets" % (opts.root, opts.term)
+
+  build_stats(path)
