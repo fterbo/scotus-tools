@@ -21,11 +21,28 @@ class CaseTypeError(SCOTUSError):
 class CourtMatch(object):
   def __init__ (self, *args):
     self.names = args
+    self.start = None
+    self.partial = None
 
   def __eq__ (self, val):
     if val in self.names:
       return True
+    if self.start and val.startswith(self.start):
+      return True
+    if self.partial and val.count(self.partial):
+      return True
     return False
+
+  def __ne__ (self, val):
+    return not self == val
+
+  def setStart (self, val):
+    self.start = val
+    return self
+
+  def setPartial (self, val):
+    self.partial = val
+    return self
 
 
 def getCaseType (docket_obj):

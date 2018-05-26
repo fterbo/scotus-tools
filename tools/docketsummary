@@ -31,8 +31,92 @@ LCNAMEMAP = {
   "CADC" : util.CourtMatch("United States Court of Appeals for the DC Circuit",
                            "United States Court of Appeals for the District of Columbia Circuit"),
   "CAFC" : "United States Court of Appeals for the Federal Circuit",
-  "SCTX" : "Supreme Court of Texas",
-  "SCWI" : "Supreme Court of Wisconsin",
+  "CAAF" : "United States Court of Appeals for the Armed Forces",
+
+  "caAZ" : util.CourtMatch().setStart("Court of Appeals of Arizona"),
+  "caAL" : util.CourtMatch("Court of Criminal Appeals of Alabama",
+                           "Court of Civil Appeals of Alabama").setStart("Circuit Court of Alabama"),
+  "caCA" : util.CourtMatch().setStart("Court of Appeal of California"),
+  "caCO" : "Court of Appeals of Colorado",
+  "caCT" : "Appellate Court of Connecticut",
+  "caDC" : "District of Columbia Court of Appeals",
+  "caFL" : util.CourtMatch().setStart("District Court of Appeal of Florida"),
+  "caGA" : "Court of Appeals of Georgia",
+  "caIL" : util.CourtMatch().setStart("Appellate Court of Illinois"),
+  "caIN" : util.CourtMatch().setStart("Court of Appeals of Indiana"),
+  "caKY" : "Court of Appeals of Kentucky",
+  "caLA" : util.CourtMatch().setStart("Court of Appeal of Louisiana"),
+  "caMA" : "Appeals Court of Massachusetts",
+  "caMD" : util.CourtMatch("Court of Appeals of Maryland", "Court of Special Appeals of Maryland"),
+  "caMI" : util.CourtMatch().setStart("Court of Appeals of Michigan"),
+  "caMN" : "Court of Appeals of Minnesota",
+  "caMO" : util.CourtMatch().setStart("Court of Appeals of Missouri"),
+  "caNB" : "Court of Appeals of Nebraska",
+  "caNC" : "Court of Appeals of North Carolina",
+  "caNJ" : "Superior Court of New Jersey, Appellate Division",
+  "caNY" : util.CourtMatch().setStart("Appellate Division, Supreme Court of New York"),
+  "caOH" : util.CourtMatch().setStart("Court of Appeals of Ohio"),
+  "caOK" : util.CourtMatch().setStart("Court of Civil Appeals of Oklahoma"),
+  "caOR" : "Court of Appeals of Oregon",
+  "caPA" : util.CourtMatch("Commonwealth Court of Pennsylvania").setStart("Superior Court of Pennsylvania"),
+  "caSC" : "Court of Appeals of South Carolina",
+  "caTN" : util.CourtMatch().setStart("Court of Criminal Appeals of Tennessee"),
+  "caTX" : util.CourtMatch().setStart("Court of Appeals of Texas"),
+  "caWA" : util.CourtMatch().setStart("Court of Appeals of Washington"),
+  "caWY" : util.CourtMatch().setStart("District Court of Wyoming"),
+
+  "dcMD" : "United States District Court for the District of Maryland",
+  "dcMNC" : "United States District Court for the Middle District of North Carolina",
+  "dcEPA" : "United States District Court for the Eastern District of Pennsylvania",
+  "dcWTX" : "United States District Court for the Western District of Texas",
+
+  "minCA" : util.CourtMatch().setStart("Appellate Division, Superior Court of California"),
+  "minCO" : util.CourtMatch().setStart("District Court of Colorado"),
+  "minMD" : util.CourtMatch().setStart("Circuit Court of Maryland"),
+
+  "scAK" : "Supreme Court of Alaska",
+  "scAL" : "Supreme Court of Alabama",
+  "scAR" : "Supreme Court of Arkansas",
+  "scAZ" : "Supreme Court of Arizona",
+  "scCA" : "Supreme Court of California",
+  "scCO" : "Supreme Court of Colorado",
+  "scCT" : "Supreme Court of Connecticut",
+  "scFL" : "Supreme Court of Florida",
+  "scGA" : "Supreme Court of Georgia",
+  "scHI" : "Supreme Court of Hawaii",
+  "scID" : "Supreme Court of Idaho",
+  "scIL" : "Supreme Court of Illinois",
+  "scIN" : "Supreme Court of Indiana",
+  "scKA" : "Supreme Court of Kansas",
+  "scKY" : "Supreme Court of Kentucky",
+  "scLA" : "Supreme Court of Louisiana",
+  "scMA" : "Supreme Judicial Court of Massachusetts",
+  "scME" : "Supreme Judicial Court of Maine",
+  "scMI" : "Supreme Court of Michigan",
+  "scMN" : "Supreme Court of Minnesota",
+  "scMO" : "Supreme Court of Missouri",
+  "scMS" : "Supreme Court of Mississippi",
+  "scMT" : "Supreme Court of Montana",
+  "scNB" : "Supreme Court of Nebraska",
+  "scND" : "Supreme Court of North Dakota",
+  "scNH" : "Supreme Court of New Hampshire",
+  "scNJ" : "Supreme Court of New Jersey",
+  "scNV" : "Supreme Court of Nevada",
+  "scNY" : "Court of Appeals of New York",
+  "scOK" : "Supreme Court of Oklahoma",
+  "scPA" : util.CourtMatch().setStart("Supreme Court of Pennsylvania"),
+  "scRI" : "Supreme Court of Rhode Island",
+  "scSC" : "Supreme Court of South Carolina",
+  "scSD" : "Supreme Court of South Dakota",
+  "scTN" : util.CourtMatch().setStart("Supreme Court of Tennessee"),
+  "scTX" : util.CourtMatch("Supreme Court of Texas", "Court of Criminal Appeals of Texas"),
+  "scUT" : "Supreme Court of Utah",
+  "scVT" : "Supreme Court of Vermont",
+  "scVA" : "Supreme Court of Virginia",
+  "scWA" : "Supreme Court of Washington",
+  "scWI" : "Supreme Court of Wisconsin",
+  "scWV" : "Supreme Court of Appeals of West Virginia",
+  "scWY" : "Supreme Court of Wyoming",
 }
 
 class NoDocketError(Exception):
@@ -47,8 +131,8 @@ def parse_args ():
   parser.add_argument("-t", "--term", dest="term", type=int)
   parser.add_argument("-n", "--num", dest="num", type=int)
   parser.add_argument("-s", "--scan", dest="scan", action="store_true")
-  parser.add_argument("-l", "--lower", dest="lower", type=int, default=0)
-  parser.add_argument("--debug", dest="debug", action="store_true")
+  parser.add_argument("-l", "--lower", dest="lower", type=str, default=None)
+  parser.add_argument("--unknown", dest="unknown", action="store_true")
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
   return args
@@ -67,13 +151,16 @@ def scan(opts):
     docket_obj = json.loads(open(jpath, "rb").read())
     casename = util.buildCasename(docket_obj)
     casetype = util.getCaseType(docket_obj)
-    if opts.debug:
+    if opts.unknown:
       if docket_obj["LowerCourt"]:
         if docket_obj["LowerCourt"] not in LCNAMEMAP.values():
-          print("Unknown Lower Court: %s" % (docket_obj["LowerCourt"]))
+          print("[%s] Unknown Lower Court: %s" % (docket_str, docket_obj["LowerCourt"]))
+      continue
       
     if opts.lower:
-      if docket_obj["LowerCourt"].strip() != LCNAMEMAP[opts.lower]:
+      if not docket_obj["LowerCourt"]:
+        continue
+      if LCNAMEMAP[opts.lower] != docket_obj["LowerCourt"].strip():
         continue
 
     print("[%s][%s] %s" % (docket_str, casetype, casename))
@@ -90,10 +177,13 @@ def summarize(opts):
   last_order = docket_obj["ProceedingsandOrder"][-1]
 
   print("[%s] %s" % (docket_str, casename))
-  print("\t%s" % (docket_obj["LowerCourt"]))
-  print("\t%s - %s" % (docket_obj["LowerCourtCaseNumbers"], docket_obj["LowerCourtDecision"]))
-  print()
-  print("\t%s - %s" % (last_order["Date"], last_order["Text"]))
+  print("  - Docketed %s" % (docket_obj["DocketedDate"]))
+  print("  - Lower Court")
+  print("     %s" % (docket_obj["LowerCourt"]))
+  print("     %s - %s" % (docket_obj["LowerCourtCaseNumbers"], docket_obj["LowerCourtDecision"]))
+  print("  - Last Order")
+  print("     %s - %s" % (last_order["Date"], last_order["Text"]))
+
 
 if __name__ == '__main__':
   opts = parse_args()
