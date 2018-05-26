@@ -28,8 +28,11 @@ LCNAMEMAP = {
   "CA9" : "United States Court of Appeals for the Ninth Circuit",
   "CA10" : "United States Court of Appeals for the Tenth Circuit",
   "CA11" : "United States Court of Appeals for the Eleventh Circuit",
-  "CADC" : "United States Court of Appeals for the DC Circuit",
+  "CADC" : util.CourtMatch("United States Court of Appeals for the DC Circuit",
+                           "United States Court of Appeals for the District of Columbia Circuit"),
   "CAFC" : "United States Court of Appeals for the Federal Circuit",
+  "SCTX" : "Supreme Court of Texas",
+  "SCWI" : "Supreme Court of Wisconsin",
 }
 
 class NoDocketError(Exception):
@@ -63,15 +66,17 @@ def scan(opts):
 
     docket_obj = json.loads(open(jpath, "rb").read())
     casename = util.buildCasename(docket_obj)
+    casetype = util.getCaseType(docket_obj)
     if opts.debug:
-      if docket_obj["LowerCourt"] not in LCNAMEMAP.values():
-        print("Unknown Lower Court: %s" % (docket_obj["LowerCourt"]))
+      if docket_obj["LowerCourt"]:
+        if docket_obj["LowerCourt"] not in LCNAMEMAP.values():
+          print("Unknown Lower Court: %s" % (docket_obj["LowerCourt"]))
       
     if opts.lower:
       if docket_obj["LowerCourt"].strip() != LCNAMEMAP[opts.lower]:
         continue
 
-    print("[%s] %s" % (docket_str, casename))
+    print("[%s][%s] %s" % (docket_str, casetype, casename))
 
 
 def summarize(opts):

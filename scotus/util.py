@@ -1,7 +1,7 @@
 # Copyright (c) 2018  Floyd Terbo
 
 PETITION_LINKS = set(["Petition", "Appendix", "Jurisdictional Statement"])
-PETITION_TYPES = set(["certiorari", "mandamus", "habeas", "jurisdiction"])
+PETITION_TYPES = set(["certiorari", "mandamus", "habeas", "jurisdiction", "prohibition"])
 
 class SCOTUSError(Exception): pass
 
@@ -16,6 +16,17 @@ class CaseTypeError(SCOTUSError):
     self.docket = docket
   def __str__ (self):
     return "Unable to determine case type for %s" % (self.docket)
+
+
+class CourtMatch(object):
+  def __init__ (self, *args):
+    self.names = args
+
+  def __eq__ (self, val):
+    if val in self.names:
+      return True
+    return False
+
 
 def getCaseType (docket_obj):
   if ("PetitionerTitle" in docket_obj) and ("RespondentTitle" in docket_obj):
@@ -53,10 +64,23 @@ def buildCasename (docket_obj):
   try:
     # TODO: This is all horrible, but works for most cases
     if casetype in ["mandamus", "habeas"]:
-      casename = docket_obj["PetitionerTitle"]
+      pt = docket_obj["PetitionerTitle"]
+      parts = pt.split(",")
+      if parts[-1].count("Petitioner"):
+        casename = ",".join(parts[:-1])
+      else:
+        casename = pt
     else:
-      petitioner = docket_obj["PetitionerTitle"][:-12]  # Remove ", Petitioner" from metadata
-      casename = "%s v. %s" % (petitioner, docket_obj["RespondentTitle"])
+      pt = docket_obj["PetitionerTitle"]
+      if pt[:5] == "In Re":
+        parts = pt.split(",")
+        if parts[-1].count("Petitioner"):
+          casename = ",".join(parts[:-1])
+        else:
+          casename = pt
+      else:
+        petitioner = docket_obj["PetitionerTitle"][:-12]  # Remove ", Petitioner" from metadata
+        casename = "%s v. %s" % (petitioner, docket_obj["RespondentTitle"])
   except Exception:
     raise CasenameError(docket_obj["CaseNumber"].strip())
 
