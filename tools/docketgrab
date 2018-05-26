@@ -144,12 +144,14 @@ def downloadFull (path, opts):
         logging.warning("Found link without DocumentUrl: %s" % (link["Description"]))
         continue
       fname = urllib.unquote_plus(link["DocumentUrl"].split("/")[-1])
-      logging.debug("[%s] Downloading %s" % (docketstr, fname))
+      outpath = "%s/%s" % (newpath, fname)
+      if os.path.exists(outpath):
+        continue
+      logging.info("[%s] Downloading %s" % (docketstr, fname))
       dl = GET(link["DocumentUrl"])
       if dl.status_code != 200:
         logging.error("[%s] FAILED: %d" % (docketstr, dl.status_code))
         continue
-      outpath = "%s/%s" % (newpath, fname)
       with open(outpath, "w+") as f:
         f.write(dl.content)
 
