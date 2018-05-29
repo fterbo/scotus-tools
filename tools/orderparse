@@ -214,12 +214,18 @@ def catalog (path):
         os.makedirs(docket_dir)
 
       status_path = "OT-%s/dockets/%s/status.json" % (term, num)
-      data = {"events" : [], "status" : None}
+      data = {"events" : [], "status" : None, "files" : []}
+      fname = path.split("/")[-1]
       if os.path.exists(status_path):
-        data = json.loads(open(status_path, "rb").read())
-      data["events"].append((k, path.split("/")[-1]))
+        ndata = json.loads(open(status_path, "rb").read())
+        if "files" in ndata: # Start over if we don't have a file roster
+          if fname in ndata["files"]: # We've already added events from this order list
+            continue
+          data = ndata
+      data["events"].append((k, fname))
       if STATUS_MAP[k]:
         data["status"] = STATUS_MAP[k]
+      data["files"].append(fname)
       with open(status_path, "w+") as f:
         f.write(json.dumps(data))
 

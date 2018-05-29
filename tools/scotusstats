@@ -10,23 +10,44 @@ import os.path
 import pprint
 import sys
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 def parse_args ():
   parser = argparse.ArgumentParser()
   parser.add_argument("-t", "--term", dest="term", type=int)
+  parser.add_argument("--ifp", dest="ifp", action="store_true")
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
   return args
 
 
-def build_stats (path):
-  sdata = {"denied" : 0, "granted" : 0, "pending" : 0, "summary" : 0,
-           "grants" : [], "pends" : []}
+def build_stats (opts, path):
+  sdata = {"denied" : 0, "granted" : 0, "pending" : 0, "summary" : 0, "decided" : 0, "dismissed" : 0,
+           "grants" : [], "pends" : [], "decides" : [], "dismissals" : [] }
   ddirs = os.listdir(path)
   for ddir in ddirs:
+    dpath = "%s/%s/docket.json" % (path, ddir)
+    if not os.path.exists(dpath):
+      continue
+    docket_obj = json.loads(open(dpath, "rb").read())
+    try:
+      last_order = docket_obj["ProceedingsandOrder"][-1]["Text"]
+      if last_order.count("JUDGMENT ISSUED"):
+        sdata["decided"] += 1
+        sdata["decides"].append(int(ddir))
+        continue
+      elif last_order.count("Petition Dismissed"):
+        sdata["dismissed"] += 1
+        sdata["dismissals"].append(int(ddir))
+        continue
+        
+    except IndexError:
+      logging.debug("No proceedings for %s" % (ddir))
+
     spath = "%s/%s/status.json" % (path, ddir)
     if not os.path.exists(spath):
+      if not opts.ifp and int(ddir) > 4999:
+        continue
       sdata["pending"] += 1
       sdata["pends"].append(int(ddir))
       continue
@@ -42,9 +63,13 @@ def build_stats (path):
 
   sdata["pends"].sort()
   sdata["grants"].sort()
+  sdata["decides"].sort()
+  sdata["dismissals"].sort()
     
   sdata["pends"] = ", ".join([str(x) for x in sdata["pends"]])
   sdata["grants"] = ", ".join([str(x) for x in sdata["grants"]])
+  sdata["decides"] = ", ".join([str(x) for x in sdata["decides"]])
+  sdata["dismissals"] = ", ".join([str(x) for x in sdata["dismissals"]])
 
   pprint.pprint(sdata)
 
@@ -53,4 +78,4 @@ if __name__ == '__main__':
   opts = parse_args()
   path = "%s/OT-%d/dockets" % (opts.root, opts.term)
 
-  build_stats(path)
+  build_stats(opts, path)
