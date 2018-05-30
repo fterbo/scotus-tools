@@ -131,6 +131,7 @@ def parse_args ():
   parser.add_argument("-t", "--term", dest="term", type=int)
   parser.add_argument("-n", "--num", dest="num", type=int)
   parser.add_argument("-s", "--scan", dest="scan", action="store_true")
+  parser.add_argument("--ifp", dest="ifp", action="store_true")
   parser.add_argument("-l", "--lower", dest="lower", type=str, default=None)
   parser.add_argument("--unknown", dest="unknown", action="store_true")
   parser.add_argument("--root", dest="root", type=str, default=".")
@@ -142,6 +143,9 @@ def scan(opts):
   ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (opts.root, opts.term))]
   ddirs.sort()
   for ddir in ddirs:
+    if int(ddir) > 4999 and not opts.ifp:
+      return
+
     jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, ddir)
     docket_str = "%d-%d" % (opts.term, ddir)
     if not os.path.exists(jpath):
