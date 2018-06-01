@@ -13,38 +13,66 @@ import sys
 
 logging.basicConfig(level=logging.INFO)
 
+class InsufficientCountError(Exception): pass
+
 def parse_args ():
   parser = argparse.ArgumentParser()
   parser.add_argument("-t", "--term", dest="term", type=int)
   parser.add_argument("-n", "--docket-num", dest="docket_num", type=int)
   parser.add_argument("-p", "--parallel", dest="parallel", default=1, type=int)
   parser.add_argument("-q", "--query", dest="query", nargs="*")
+  parser.add_argument("--count", dest="count", type=int, default=0)
+  parser.add_argument("--timeout", dest="timeout", type=int, default=180)
   parser.add_argument("--root", dest="root", type=str, default=".")
+  parser.add_argument("--order-text", dest="order_text", action="store_true")
   args = parser.parse_args()
   return args
 
-def query (path, terms):
+def query (path, opts, terms):
+  rlist = []
   try:
     with open("%s/indexes.json" % (path), "rb") as idxf:
       obj = json.loads(idxf.read())
       for (fname, grms) in obj.items():
-        found = {}
-        for term in terms:
-          glen = len(term.split())
-          try:
-            wd = grms["%d-gram" % (glen)]
-            if term in wd:
-              found[term] = wd[term]
-          except KeyError:
-            continue
-        if len(found) == len(terms):
-          tcountlist = []
-          for t,c in found.items():
-            tcountlist.append("[%d] %s" % (c, t))
-          logging.info("Terms found in %s/%s: %s" % (path, fname, ", ".join(tcountlist)))
+        try:
+          found = {}
+          for term in terms:
+            glen = len(term.split())
+            try:
+              wd = grms["%d-gram" % (glen)]
+              if term in wd:
+                found[term] = wd[term]
+            except KeyError:
+              continue
+          if len(found) == len(terms):
+            tcountlist = []
+            for t,c in found.items():
+              if c < opts.count:
+                raise InsufficientCountError()
+              tcountlist.append("[%d] %s" % (c, t))
+            rlist.append((path, fname, ", ".join(tcountlist)))
+#            logging.info("Terms found in %s/%s: %s" % (path, fname, ", ".join(tcountlist)))
+        except InsufficientCountError:
+          continue
   except IOError:
-    return
-        
+    return rlist
+  return rlist
+
+
+def metadata_query (path, opts, terms):
+  docketnum = int(path.split("/")[3])
+  term = terms[0]  # No multipart right now
+  rlist = []
+  try:
+    with open("%s/docket.json" % (path), "rb") as docketf:
+      obj = json.loads(docketf.read())
+      for entry in obj["ProceedingsandOrder"]:
+        if entry["Text"].count(term):
+          rlist.append((docketnum, entry["Text"]))
+  except IOError:
+    return rlist
+  return rlist
+
 
 if __name__ == '__main__':
   opts = parse_args()
@@ -67,11 +95,31 @@ if __name__ == '__main__':
       ddirs.append(dpath)
 
   try:
-    res = pool.map_async(functools.partial(query, terms=opts.query), ddirs)
-    res.get(45)
+    if opts.order_text:
+      res = pool.map_async(functools.partial(metadata_query, opts=opts, terms=opts.query), ddirs)
+      res_data = res.get(opts.timeout)
+    else:
+      res = pool.map_async(functools.partial(query, opts=opts, terms=opts.query), ddirs)
+      res_data = res.get(opts.timeout)
   except KeyboardInterrupt:
     pool.terminate()
   else:
     pool.close()
 
   pool.join()
+
+  combined_list = []
+  for res_list in res_data:
+    combined_list.extend(res_list)
+  if opts.order_text:
+    combined_list.sort(key=lambda x: x[0])
+  else:
+    combined_list.sort(key=lambda x: int(x[0].split("/")[3]))
+
+  if opts.order_text:
+    for docket,text in combined_list:
+      logging.info("[%d] %s" % (docket, text))
+  else:
+    for path,fname,ctext in combined_list:
+      logging.info("Terms found in %s/%s: %s" % (path, fname, ctext))
+

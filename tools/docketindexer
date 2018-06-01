@@ -56,26 +56,32 @@ def indexDocket (path, force_pdf = False):
 
   indexes = {}
   for name in fnames:
-    grams = {}
-    txtpath = "%s/%s.txt" % (path, name[:-4])
-    if os.path.exists(txtpath) and not force_pdf:
-      with open(txtpath, "r") as word_file:
-        words = word_file.read().split()
-    else:
-      with open("%s/%s" % (path, name), "rb") as fo:
-        t0 = time.time()
-        reader = PyPDF2.PdfFileReader(fo)
-        words = []
-        for page in range(reader.numPages):
-          clean_text = reader.getPage(page).extractText().translate(TTABLE).lower()
-          words.extend(clean_text.split())
-        with open(txtpath, "w+") as dtxt:
-          dtxt.write(u" ".join(words).encode('utf-8'))
-        logging.debug("Parsing (%s) took %0.2f seconds" % (name, time.time() - t0))
+    try:
+      grams = {}
+      txtpath = "%s/%s.txt" % (path, name[:-4])
+      if os.path.exists(txtpath) and not force_pdf:
+        with open(txtpath, "r") as word_file:
+          words = word_file.read().split()
+      else:
+        with open("%s/%s" % (path, name), "rb") as fo:
+          t0 = time.time()
+          reader = PyPDF2.PdfFileReader(fo)
+          words = []
+          for page in range(reader.numPages):
+            try:
+              clean_text = reader.getPage(page).extractText().translate(TTABLE).lower()
+              words.extend(clean_text.split())
+            except KeyError:  # Some PDF pages don't have /Contents
+              continue
+          with open(txtpath, "w+") as dtxt:
+            dtxt.write(u" ".join(words).encode('utf-8'))
+          logging.debug("Parsing (%s) took %0.2f seconds" % (name, time.time() - t0))
 
-    grams["1-gram"] = ngrams(words, 1)
-    grams["2-gram"] = ngrams(words, 2)
-    indexes[name] = grams
+      grams["1-gram"] = ngrams(words, 1)
+      grams["2-gram"] = ngrams(words, 2)
+      indexes[name] = grams
+    except PyPDF2.utils.PdfReadError:
+      continue
 
   with open("%s/indexes.json" % (path), "w+") as ij:
     logging.debug("Writing index json (%s)" % (path))
