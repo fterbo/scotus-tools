@@ -1,5 +1,7 @@
 # Copyright (c) 2018  Floyd Terbo
 
+import dateutil
+
 PETITION_LINKS = set(["Petition", "Appendix", "Jurisdictional Statement"])
 PETITION_TYPES = set(["certiorari", "mandamus", "habeas", "jurisdiction", "prohibition"])
 
@@ -67,8 +69,8 @@ class DocketStatusInfo(object):
   def _build (self, docket_obj):
     self.docket_date = dateutil.parser.parse(docket_obj["DocketedDate"])
     self.capital = docket_obj["bCapitalCase"]
-    self.casename = util.buildCasename(docket_obj)
-    self.casetype = util.getCaseType(docket_obj)
+    self.casename = buildCasename(docket_obj)
+    self.casetype = getCaseType(docket_obj)
 
     for event in docket_obj["ProceedingsandOrder"]:
       etxt = event["Text"]
