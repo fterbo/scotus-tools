@@ -5,6 +5,7 @@
 from __future__ import print_function
 
 import argparse
+import dateutil.parser
 import json
 import logging
 import os
@@ -139,6 +140,7 @@ def parse_args ():
   return args
 
 
+
 def scan(opts):
   ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (opts.root, opts.term))]
   ddirs.sort()
@@ -177,11 +179,14 @@ def summarize(opts):
     raise NoDocketError(docket_str)
 
   docket_obj = json.loads(open(jpath, "rb").read())
-  casename = util.buildCasename(docket_obj)
+  info = DocketStatusInfo(docket_obj)
+
   last_order = docket_obj["ProceedingsandOrder"][-1]
 
-  print("[%s] %s" % (docket_str, casename))
-  print("  - Docketed %s" % (docket_obj["DocketedDate"]))
+  print("[%s] %s %s" % (docket_str, info.casename, info.getFlagString()))
+  print("  - Docketed %s" % (info.docket_date.strftime("%Y-%m-%d")))
+  if info.distributed:
+    print("  - Distributed: %s" % (", ".join([x[1].strftime("%Y-%m-%d") for x in info.distributed])))
   print("  - Lower Court")
   print("     %s" % (docket_obj["LowerCourt"]))
   print("     %s - %s" % (docket_obj["LowerCourtCaseNumbers"], docket_obj["LowerCourtDecision"]))

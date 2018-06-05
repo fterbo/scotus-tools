@@ -31,6 +31,7 @@ def parse_args ():
   parser.add_argument("-t", "--term", dest="term", type=int)
   parser.add_argument("-n", "--docket-num", dest="docket_num", type=int)
   parser.add_argument("-a", "--action", dest="action", type=str, default="scan-petition")
+  parser.add_argument("--refresh", dest="refresh", action="store_true")
   parser.add_argument("--stop", dest="stop", type=int, default=0)
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
@@ -44,7 +45,7 @@ def scanPetitions (path, opts):
     newpath = "%s/%d/" % (path, nextnum)
     docketstr = "%d-%d" % (opts.term, nextnum)
 
-    if os.path.exists("%s/docket.json" % (newpath)):
+    if os.path.exists("%s/docket.json" % (newpath)) and not opts.refresh:
       # We already scanned this docket
       nextnum += 1
       continue
@@ -53,7 +54,7 @@ def scanPetitions (path, opts):
     r = GET(url)
     if r.status_code != 200:
       if opts.stop and nextnum < opts.stop:
-        logging.info("Skipping <%s> with no docket" % (url))
+        logging.info("Skipping <%s> with no docket [STATUS: %d]" % (url, r.status_code))
         nextnum += 1
         continue
       else:
@@ -104,12 +105,14 @@ def scanPetitions (path, opts):
 
     for link in founditem["Links"]:
       if link["Description"] in scotus.util.PETITION_LINKS:
+        outpath = "%s/%s" % (newpath, link["File"])
+        if os.path.exists(outpath):
+          continue
         logging.debug("[%s] Downloading %s" % (docketstr, link["File"]))
         dl = GET(link["DocumentUrl"])
         if dl.status_code != 200:
           logging.error("[%s] FAILED: %d" % (docketstr, dl.status_code))
           continue
-        outpath = "%s/%s" % (newpath, link["File"])
         with open(outpath, "w+") as f:
           f.write(dl.content)
 
