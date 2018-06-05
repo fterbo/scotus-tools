@@ -45,6 +45,63 @@ class CourtMatch(object):
     return self
 
 
+class DocketStatusInfo(object):
+  def __init__ (self, docket_obj):
+    self.docket_date = None
+    self.capital = False
+    self.casename = None
+    self.casetype = None
+
+    self.granted = False
+    self.grant_date = None
+    self.argued = False
+    self.argued_date = None
+    self.distributed = []
+    self.dismissed = False
+    self.dismiss_date = None
+    self.denied = False
+    self.deny_date = None
+
+    self._build(docket_obj)
+
+  def _build (self, docket_obj):
+    self.docket_date = dateutil.parser.parse(docket_obj["DocketedDate"])
+    self.capital = docket_obj["bCapitalCase"]
+    self.casename = util.buildCasename(docket_obj)
+    self.casetype = util.getCaseType(docket_obj)
+
+    for event in docket_obj["ProceedingsandOrder"]:
+      etxt = event["Text"]
+      if etxt.startswith("DISTRIBUTED"):
+        confdate = dateutil.parser.parse(etxt.split()[-1])
+        edate = dateutil.parser.parse(event["Date"])
+        self.distributed.append((edate, confdate))
+      elif etxt == "Petition GRANTED.":
+        self.granted = True
+        self.grant_date = dateutil.parser.parse(event["Date"])
+      elif etxt.startswith("Argued."):
+        self.argued = True
+        self.argued_date = dateutil.parser.parse(event["Date"])
+      elif etxt.startswith("Petition Dismissed"):
+        self.dismissed = True
+        self.dismiss_date = dateutil.parser.parse(event["Date"])
+      elif etxt.startswith("Petition DENIED"):
+        self.denied = True
+        self.deny_date = dateutil.parser.parse(event["Date"])
+
+  def getFlagString (self):
+    flags = []
+    if self.capital: flags.append("CAPITAL")
+    if self.granted: flags.append("GRANTED")
+    if self.argued: flags.append("ARGUED")
+    if self.dismissed: flags.append("DISMISSED")
+    if self.denied: flags.append("DENIED")
+    if flags:
+      return "[%s]" % (", ".join(flags))
+    else:
+      return ""
+  
+
 def getCaseType (docket_obj):
   if ("PetitionerTitle" in docket_obj) and ("RespondentTitle" in docket_obj):
     # TODO: Yes yes, we'll fix it later

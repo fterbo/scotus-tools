@@ -179,7 +179,7 @@ def summarize(opts):
     raise NoDocketError(docket_str)
 
   docket_obj = json.loads(open(jpath, "rb").read())
-  info = DocketStatusInfo(docket_obj)
+  info = util.DocketStatusInfo(docket_obj)
 
   last_order = docket_obj["ProceedingsandOrder"][-1]
 
