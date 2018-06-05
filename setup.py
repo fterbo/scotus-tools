@@ -12,6 +12,7 @@ setup(name = "scotus-tools",
       install_requires = [
         "BeautifulSoup",
         "PyPDF2",
+        "python-dateutil",
         "requests",
       ],
       zip_safe = False,
