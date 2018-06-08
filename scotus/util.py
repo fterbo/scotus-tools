@@ -1,6 +1,6 @@
 # Copyright (c) 2018  Floyd Terbo
 
-import dateutil
+import dateutil.parser
 
 PETITION_LINKS = set(["Petition", "Appendix", "Jurisdictional Statement"])
 PETITION_TYPES = set(["certiorari", "mandamus", "habeas", "jurisdiction", "prohibition"])
@@ -63,6 +63,10 @@ class DocketStatusInfo(object):
     self.dismiss_date = None
     self.denied = False
     self.deny_date = None
+    self.judgment_issued = False
+    self.judgment_date = None
+    self.gvr = False
+    self.gvr_date = None
 
     self._build(docket_obj)
 
@@ -81,6 +85,12 @@ class DocketStatusInfo(object):
       elif etxt == "Petition GRANTED.":
         self.granted = True
         self.grant_date = dateutil.parser.parse(event["Date"])
+      elif etxt.count("GRANTED"):
+        self.granted = True
+        self.grant_date = dateutil.parser.parse(event["Date"])
+        if etxt.count("VACATED") and etxt.count("REMANDED"):
+          self.gvr = True
+          self.gvr_date = self.grant_date
       elif etxt.startswith("Argued."):
         self.argued = True
         self.argued_date = dateutil.parser.parse(event["Date"])
@@ -90,14 +100,27 @@ class DocketStatusInfo(object):
       elif etxt.startswith("Petition DENIED"):
         self.denied = True
         self.deny_date = dateutil.parser.parse(event["Date"])
+      elif etxt == "JUDGMENT ISSUED.":
+        self.judgment_issued = True
+        self.judgment_date = dateutil.parser.parse(event["Date"])
+
+  @property
+  def pending (self):
+    if self.dismissed or self.denied or self.judgment_issued:
+      return False
+    return True
 
   def getFlagString (self):
     flags = []
     if self.capital: flags.append("CAPITAL")
-    if self.granted: flags.append("GRANTED")
     if self.argued: flags.append("ARGUED")
-    if self.dismissed: flags.append("DISMISSED")
-    if self.denied: flags.append("DENIED")
+    if self.gvr:
+      flags.append("GVR")
+    else:
+      if self.granted: flags.append("GRANTED")
+      if self.dismissed: flags.append("DISMISSED")
+      if self.denied: flags.append("DENIED")
+      if self.judgment_issued: flags.append("ISSUED")
     if flags:
       return "[%s]" % (", ".join(flags))
     else:

@@ -10,6 +10,8 @@ import os.path
 import pprint
 import sys
 
+import scotus.util
+
 logging.basicConfig(level=logging.DEBUG)
 
 def parse_args ():
@@ -26,40 +28,73 @@ def build_stats (opts, path):
            "grants" : [], "pends" : [], "decides" : [], "dismissals" : [] }
   ddirs = os.listdir(path)
   for ddir in ddirs:
+    try:
+      if int(ddir) > 4999 and not opts.ifp:
+        continue
+    except ValueError: # Not an integer
+      continue
+
     dpath = "%s/%s/docket.json" % (path, ddir)
     if not os.path.exists(dpath):
       continue
     docket_obj = json.loads(open(dpath, "rb").read())
-    try:
-      last_order = docket_obj["ProceedingsandOrder"][-1]["Text"]
-      if last_order.count("JUDGMENT ISSUED"):
-        sdata["decided"] += 1
-        sdata["decides"].append(int(ddir))
-        continue
-      elif last_order.count("Petition Dismissed"):
-        sdata["dismissed"] += 1
-        sdata["dismissals"].append(int(ddir))
-        continue
-        
-    except IndexError:
-      logging.debug("No proceedings for %s" % (ddir))
 
-    spath = "%s/%s/status.json" % (path, ddir)
-    if not os.path.exists(spath):
-      if not opts.ifp and int(ddir) > 4999:
+    docket = scotus.util.DocketStatusInfo(docket_obj)
+    if docket.pending:
+      if docket.granted:
+        if docket.argued:
+          continue
+
+        sdata["granted"] += 1
+        sdata["grants"].append(int(ddir))
         continue
+
       sdata["pending"] += 1
       sdata["pends"].append(int(ddir))
+
       continue
 
-    ddata = json.loads(open(spath, "rb").read())
-    if ddata["status"] == "DENIED":
+    if docket.judgment_issued:
+      sdata["decided"] += 1
+      sdata["decides"].append(int(ddir))
+
+    if docket.dismissed:
+      sdata["dismissed"] += 1
+      sdata["dismissals"].append(int(ddir))
+
+    if docket.denied:
       sdata["denied"] += 1
-    elif ddata["status"] == "GRANTED":
-      sdata["granted"] += 1
-      sdata["grants"].append(int(ddir))
-    elif ddata["status"] == "SUMMARY":
-      sdata["summary"] += 1
+
+#    try:
+#      last_order = docket_obj["ProceedingsandOrder"][-1]["Text"]
+#      if last_order.count("JUDGMENT ISSUED"):
+#        sdata["decided"] += 1
+#        sdata["decides"].append(int(ddir))
+#        continue
+#      elif last_order.count("Petition Dismissed"):
+#        sdata["dismissed"] += 1
+#        sdata["dismissals"].append(int(ddir))
+#        continue
+#        
+#    except IndexError:
+#      logging.debug("No proceedings for %s" % (ddir))
+#
+#    spath = "%s/%s/status.json" % (path, ddir)
+#    if not os.path.exists(spath):
+#      if not opts.ifp and int(ddir) > 4999:
+#        continue
+#      sdata["pending"] += 1
+#      sdata["pends"].append(int(ddir))
+#      continue
+#
+#    ddata = json.loads(open(spath, "rb").read())
+#    if ddata["status"] == "DENIED":
+#      sdata["denied"] += 1
+#    elif ddata["status"] == "GRANTED":
+#      sdata["granted"] += 1
+#      sdata["grants"].append(int(ddir))
+#    elif ddata["status"] == "SUMMARY":
+#      sdata["summary"] += 1
 
   sdata["pends"].sort()
   sdata["grants"].sort()

@@ -3,6 +3,7 @@
 # Copyright (c) 2018  Floyd Terbo
 
 import argparse
+import datetime
 import json
 import logging
 import os
@@ -25,17 +26,65 @@ def GET (url):
   logging.debug("GET: %s" % (url))
   return requests.get(url, headers=HEADERS)
 
+class SkipDocket(Exception): pass
 
 def parse_args ():
   parser = argparse.ArgumentParser()
   parser.add_argument("-t", "--term", dest="term", type=int)
   parser.add_argument("-n", "--docket-num", dest="docket_num", type=int)
   parser.add_argument("-a", "--action", dest="action", type=str, default="scan-petition")
-  parser.add_argument("--refresh", dest="refresh", action="store_true")
+  parser.add_argument("--dry-run", dest="dry_run", action="store_true")
   parser.add_argument("--stop", dest="stop", type=int, default=0)
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
   return args
+
+def updateDockets (path, opts):
+  nextnum = opts.docket_num
+  while True:
+    try:
+      newpath = "%s/%d/" % (path, nextnum)
+      docketstr = "%d-%d" % (opts.term, nextnum)
+
+      if not os.path.exists(newpath):
+        return
+
+      dinfopath = "%s/docket.json" % (newpath)
+      if not os.path.exists(dinfopath):
+        raise SkipDocket()
+
+      docket_obj = json.loads(open(dinfopath, "rb").read())
+      docket = scotus.util.DocketStatusInfo(docket_obj)
+
+      # If the docket has been dismissed, denied, or has an issued judgment, you'll have to update it
+      # by hand if you know it has new data
+      if not docket.pending:
+        raise SkipDocket()
+
+      # Don't update the docket if it's scheduled for a conference in the future
+      if docket.distributed:
+        if datetime.datetime.now() < docket.distributed[-1][1]:
+          raise SkipDocket()
+
+      logging.info("Updating pending docket (%s)" % (docketstr))
+      if opts.dry_run:
+        raise SkipDocket()
+
+      url = "%s%s.json" % (BASE, docketstr)
+      r = GET(url)
+      if r.status_code != 200:
+        logging.info("Skipping <%s> with bad status [%d]" % (url, r.status_code))
+        raise SkipDocket()
+
+      with open(dinfopath, "w+") as f:
+        f.write(json.dumps(r.json()))
+
+      nextnum += 1
+
+    except SkipDocket:
+      nextnum += 1
+
+    
 
 
 # TODO: We really should use some exceptions to better handle control flow
@@ -45,7 +94,7 @@ def scanPetitions (path, opts):
     newpath = "%s/%d/" % (path, nextnum)
     docketstr = "%d-%d" % (opts.term, nextnum)
 
-    if os.path.exists("%s/docket.json" % (newpath)) and not opts.refresh:
+    if os.path.exists("%s/docket.json" % (newpath)):
       # We already scanned this docket
       nextnum += 1
       continue
@@ -163,7 +212,8 @@ ACTIONS = {
   "scan-petition" : scanPetitions,
   "petitions" : scanPetitions,
   "download-full" : downloadFull,
-  "download" : downloadFull
+  "download" : downloadFull,
+  "update" : updateDockets,
 }
 
 if __name__ == '__main__':
