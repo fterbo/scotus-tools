@@ -54,6 +54,8 @@ class DocketStatusInfo(object):
     self.casename = None
     self.casetype = None
 
+    self.related = []
+
     self.granted = False
     self.grant_date = None
     self.argued = False
@@ -75,6 +77,11 @@ class DocketStatusInfo(object):
     self.capital = docket_obj["bCapitalCase"]
     self.casename = buildCasename(docket_obj)
     self.casetype = getCaseType(docket_obj)
+
+    if "RelatedCaseNumber" in docket_obj:
+      for rc in docket_obj["RelatedCaseNumber"]:
+        (tstr, dstr) = rc["DisplayCaseNumber"].split("-")
+        self.related.append((int(tstr), int(dstr), rc["RelatedType"]))
 
     for event in docket_obj["ProceedingsandOrder"]:
       etxt = event["Text"]
@@ -113,6 +120,7 @@ class DocketStatusInfo(object):
   def getFlagString (self):
     flags = []
     if self.capital: flags.append("CAPITAL")
+    if self.related: flags.append("RELATED")
     if self.argued: flags.append("ARGUED")
     if self.gvr:
       flags.append("GVR")

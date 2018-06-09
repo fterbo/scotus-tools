@@ -185,6 +185,10 @@ def summarize(opts):
 
   print("[%s] %s %s" % (docket_str, info.casename, info.getFlagString()))
   print("  - Docketed %s" % (info.docket_date.strftime("%Y-%m-%d")))
+  if info.related:
+    print ("  - RELATED")
+    for ri in info.related:
+      print ("      (%d-%d, %s)" % (ri[0], ri[1], ri[2]))
   if info.distributed:
     print("  - Distributed: %s" % (", ".join([x[1].strftime("%Y-%m-%d") for x in info.distributed])))
   print("  - Lower Court")
