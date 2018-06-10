@@ -1,9 +1,25 @@
 # Copyright (c) 2018  Floyd Terbo
 
 import dateutil.parser
+import sys
+import unicodedata
 
 PETITION_LINKS = set(["Petition", "Appendix", "Jurisdictional Statement"])
 PETITION_TYPES = set(["certiorari", "mandamus", "habeas", "jurisdiction", "prohibition"])
+
+def getTranslation(tt = {}):
+  if not tt:
+    # Translation table to strip unicode punctuation, but not things like section symbols
+    tt = { i:None for i in xrange(sys.maxunicode)
+               if unicodedata.category(unichr(i)).startswith('P') }
+
+    # For some reason PyPDF2 resolves some text to the wrong code points
+    tt[8482] = None # Single quotes
+    tt[64257] = None  # Double quote open
+    tt[64258] = None  # Double quote close
+    tt[339] = None  # Endash
+    tt[352] = None  # Emdash
+  return tt
 
 class SCOTUSError(Exception): pass
 
@@ -134,6 +150,21 @@ class DocketStatusInfo(object):
     else:
       return ""
   
+def getPdfWords (path):
+  import PyPDF2
+
+  tt = getTranslation()
+  wd = {}
+  with open(path, "rb") as fo:
+    reader = PyPDF2.PdfFileReader(fo)
+    for pno,page in enumerate(range(reader.numPages)):
+      try:
+        clean_text = reader.getPage(page).extractText().translate(tt).lower()
+        wd[pno] = clean_text.split()
+      except KeyError: # Some PDF pages don't have /Contents
+        continue
+  return wd
+
 
 def getCaseType (docket_obj):
   if ("PetitionerTitle" in docket_obj) and ("RespondentTitle" in docket_obj):
