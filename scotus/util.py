@@ -159,7 +159,7 @@ def getPdfWords (path):
     reader = PyPDF2.PdfFileReader(fo)
     for pno,page in enumerate(range(reader.numPages)):
       try:
-        clean_text = reader.getPage(page).extractText().translate(tt).lower()
+        clean_text = reader.getPage(page).extractText().translate(tt)
         wd[pno] = clean_text.split()
       except KeyError: # Some PDF pages don't have /Contents
         continue
