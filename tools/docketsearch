@@ -23,7 +23,7 @@ def parse_args ():
   parser.add_argument("-n", "--docket-num", dest="docket_num", type=int)
   parser.add_argument("-p", "--parallel", dest="parallel", default=1, type=int)
   parser.add_argument("-q", "--query", dest="query", nargs="*")
-  parser.add_arumgent("--ifp", dest="ifp", action="store_true")
+  parser.add_argument("--ifp", dest="ifp", action="store_true")
   parser.add_argument("--pending", dest="pending", action="store_true")
   parser.add_argument("--count", dest="count", type=int, default=0)
   parser.add_argument("--timeout", dest="timeout", type=int, default=180)
