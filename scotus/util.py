@@ -86,46 +86,63 @@ class DocketStatusInfo(object):
     self.gvr = False
     self.gvr_date = None
 
+    self.attys_petitioner = []
+    self.attys_respondent = []
+
     self._build(docket_obj)
 
   def _build (self, docket_obj):
-    self.docket_date = dateutil.parser.parse(docket_obj["DocketedDate"])
-    self.capital = docket_obj["bCapitalCase"]
-    self.casename = buildCasename(docket_obj)
-    self.casetype = getCaseType(docket_obj)
+    try:
+      self.docket_date = dateutil.parser.parse(docket_obj["DocketedDate"])
+      self.capital = docket_obj["bCapitalCase"]
+      self.casename = buildCasename(docket_obj)
+      self.casetype = getCaseType(docket_obj)
 
-    if "RelatedCaseNumber" in docket_obj:
-      for rc in docket_obj["RelatedCaseNumber"]:
-        (tstr, dstr) = rc["DisplayCaseNumber"].split("-")
-        self.related.append((int(tstr), int(dstr), rc["RelatedType"]))
+      if "Petitioner" in docket_obj:
+        for info in docket_obj["Petitioner"]:
+          self.attys_petitioner.append(info["Attorney"])
 
-    for event in docket_obj["ProceedingsandOrder"]:
-      etxt = event["Text"]
-      if etxt.startswith("DISTRIBUTED"):
-        confdate = dateutil.parser.parse(etxt.split()[-1])
-        edate = dateutil.parser.parse(event["Date"])
-        self.distributed.append((edate, confdate))
-      elif etxt == "Petition GRANTED.":
-        self.granted = True
-        self.grant_date = dateutil.parser.parse(event["Date"])
-      elif etxt.count("GRANTED"):
-        self.granted = True
-        self.grant_date = dateutil.parser.parse(event["Date"])
-        if etxt.count("VACATED") and etxt.count("REMANDED"):
-          self.gvr = True
-          self.gvr_date = self.grant_date
-      elif etxt.startswith("Argued."):
-        self.argued = True
-        self.argued_date = dateutil.parser.parse(event["Date"])
-      elif etxt.startswith("Petition Dismissed"):
-        self.dismissed = True
-        self.dismiss_date = dateutil.parser.parse(event["Date"])
-      elif etxt.startswith("Petition DENIED"):
-        self.denied = True
-        self.deny_date = dateutil.parser.parse(event["Date"])
-      elif etxt == "JUDGMENT ISSUED.":
-        self.judgment_issued = True
-        self.judgment_date = dateutil.parser.parse(event["Date"])
+      if "Respondent" in docket_obj:
+        for info in docket_obj["Respondent"]:
+          self.attys_respondent.append(info["Attorney"])
+
+      if "RelatedCaseNumber" in docket_obj:
+        for rc in docket_obj["RelatedCaseNumber"]:
+          rcnl = rc["DisplayCaseNumber"].split(",")
+          for rcn in rcnl:
+            (tstr, dstr) = rcn.split("-")
+            self.related.append((int(tstr), int(dstr), rc["RelatedType"]))
+
+      for event in docket_obj["ProceedingsandOrder"]:
+        etxt = event["Text"]
+        if etxt.startswith("DISTRIBUTED"):
+          confdate = dateutil.parser.parse(etxt.split()[-1])
+          edate = dateutil.parser.parse(event["Date"])
+          self.distributed.append((edate, confdate))
+        elif etxt == "Petition GRANTED.":
+          self.granted = True
+          self.grant_date = dateutil.parser.parse(event["Date"])
+        elif etxt.count("GRANTED"):
+          self.granted = True
+          self.grant_date = dateutil.parser.parse(event["Date"])
+          if etxt.count("VACATED") and etxt.count("REMANDED"):
+            self.gvr = True
+            self.gvr_date = self.grant_date
+        elif etxt.startswith("Argued."):
+          self.argued = True
+          self.argued_date = dateutil.parser.parse(event["Date"])
+        elif etxt.startswith("Petition Dismissed"):
+          self.dismissed = True
+          self.dismiss_date = dateutil.parser.parse(event["Date"])
+        elif etxt.startswith("Petition DENIED"):
+          self.denied = True
+          self.deny_date = dateutil.parser.parse(event["Date"])
+        elif etxt == "JUDGMENT ISSUED.":
+          self.judgment_issued = True
+          self.judgment_date = dateutil.parser.parse(event["Date"])
+    except Exception:
+      print "Exception in case: %s" % (docket_obj["CaseNumber"])
+      raise
 
   @property
   def pending (self):

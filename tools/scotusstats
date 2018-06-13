@@ -19,6 +19,7 @@ def parse_args ():
   parser.add_argument("-t", "--term", dest="term", type=int)
   parser.add_argument("--ifp", dest="ifp", action="store_true")
   parser.add_argument("--root", dest="root", type=str, default=".")
+  parser.add_argument("--write", dest="write", action="store_true")
   args = parser.parse_args()
   return args
 
@@ -26,6 +27,9 @@ def parse_args ():
 def build_stats (opts, path):
   sdata = {"denied" : 0, "granted" : 0, "pending" : 0, "summary" : 0, "decided" : 0, "dismissed" : 0,
            "grants" : [], "pends" : [], "decides" : [], "dismissals" : [] }
+
+  attys = {}
+
   ddirs = os.listdir(path)
   for ddir in ddirs:
     try:
@@ -65,46 +69,33 @@ def build_stats (opts, path):
     if docket.denied:
       sdata["denied"] += 1
 
-#    try:
-#      last_order = docket_obj["ProceedingsandOrder"][-1]["Text"]
-#      if last_order.count("JUDGMENT ISSUED"):
-#        sdata["decided"] += 1
-#        sdata["decides"].append(int(ddir))
-#        continue
-#      elif last_order.count("Petition Dismissed"):
-#        sdata["dismissed"] += 1
-#        sdata["dismissals"].append(int(ddir))
-#        continue
-#        
-#    except IndexError:
-#      logging.debug("No proceedings for %s" % (ddir))
-#
-#    spath = "%s/%s/status.json" % (path, ddir)
-#    if not os.path.exists(spath):
-#      if not opts.ifp and int(ddir) > 4999:
-#        continue
-#      sdata["pending"] += 1
-#      sdata["pends"].append(int(ddir))
-#      continue
-#
-#    ddata = json.loads(open(spath, "rb").read())
-#    if ddata["status"] == "DENIED":
-#      sdata["denied"] += 1
-#    elif ddata["status"] == "GRANTED":
-#      sdata["granted"] += 1
-#      sdata["grants"].append(int(ddir))
-#    elif ddata["status"] == "SUMMARY":
-#      sdata["summary"] += 1
+    for pa in docket.attys_petitioner:
+      attys.setdefault(pa, [0])[0] += 1
+
+    for ra in docket.attys_respondent:
+      attys.setdefault(ra, [0])[0] += 1
+
 
   sdata["pends"].sort()
   sdata["grants"].sort()
   sdata["decides"].sort()
   sdata["dismissals"].sort()
+  atty_counts = [(k,v[0]) for k,v in attys.items()]
+  atty_counts.sort(key = lambda x: x[1], reverse=True)
+
+  if opts.write:
+    sdata["_atty_counts"] = atty_counts
+    with open("summary.json", "w+") as f:
+      f.write(json.dumps(sdata))
+    del sdata["_atty_counts"]
+
     
   sdata["pends"] = ", ".join([str(x) for x in sdata["pends"]])
   sdata["grants"] = ", ".join([str(x) for x in sdata["grants"]])
   sdata["decides"] = ", ".join([str(x) for x in sdata["decides"]])
   sdata["dismissals"] = ", ".join([str(x) for x in sdata["dismissals"]])
+
+  sdata["attorneys"] = atty_counts[:10]
 
   pprint.pprint(sdata)
 
