@@ -11,6 +11,8 @@ import os
 import signal
 import sys
 
+import scotus.util
+
 logging.basicConfig(level=logging.INFO)
 
 class InsufficientCountError(Exception): pass
@@ -21,6 +23,7 @@ def parse_args ():
   parser.add_argument("-n", "--docket-num", dest="docket_num", type=int)
   parser.add_argument("-p", "--parallel", dest="parallel", default=1, type=int)
   parser.add_argument("-q", "--query", dest="query", nargs="*")
+  parser.add_argument("--pending", dest="pending", action="store_true")
   parser.add_argument("--count", dest="count", type=int, default=0)
   parser.add_argument("--timeout", dest="timeout", type=int, default=180)
   parser.add_argument("--root", dest="root", type=str, default=".")
@@ -31,6 +34,12 @@ def parse_args ():
 def query (path, opts, terms):
   rlist = []
   try:
+    if opts.pending:
+      with open("%s/docket.json" % (path), "rb") as docketf:
+        docket = scotus.util.DocketStatusInfo(json.loads(docketf))
+        if not docket.pending:
+          return rlist
+
     with open("%s/indexes.json" % (path), "rb") as idxf:
       obj = json.loads(idxf.read())
       for (fname, grms) in obj.items():
