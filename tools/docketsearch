@@ -42,7 +42,7 @@ def query (path, opts, terms):
           return rlist
 
     if not opts.ifp and int(path.split("/")[-1]) >= 5000:
-      continue
+      return rlist
 
     with open("%s/indexes.json" % (path), "rb") as idxf:
       obj = json.loads(idxf.read())
