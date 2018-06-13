@@ -17,8 +17,6 @@ import requests
 
 import scotus.util
 
-logging.basicConfig(level=logging.INFO)
-
 HEADERS = {"User-Agent" : "SCOTUS Docket Grabber (https://github.com/fterbo/scotus-tools)"}
 BASE = "https://www.supremecourt.gov/rss/cases/JSON/"
 
@@ -34,6 +32,7 @@ def parse_args ():
   parser.add_argument("-n", "--docket-num", dest="docket_num", type=int)
   parser.add_argument("-a", "--action", dest="action", type=str, default="scan-petition")
   parser.add_argument("--dry-run", dest="dry_run", action="store_true")
+  parser.add_argument("--debug", dest="debug", action="store_true")
   parser.add_argument("--stop", dest="stop", type=int, default=0)
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
@@ -218,6 +217,12 @@ ACTIONS = {
 
 if __name__ == '__main__':
   opts = parse_args()
+
+  if opts.debug:
+    logging.basicConfig(level=logging.DEBUG)
+  else:
+    logging.basicConfig(level=logging.INFO)
+
   path = "%s/OT-%d/dockets" % (opts.root, opts.term)
   try:
     os.makedirs(path)
