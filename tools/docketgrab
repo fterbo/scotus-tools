@@ -46,6 +46,8 @@ def updateDockets (path, opts):
       docketstr = "%d-%d" % (opts.term, nextnum)
 
       if not os.path.exists(newpath):
+        if nextnum < opts.stop:
+          raise SkipDocket()
         return
 
       dinfopath = "%s/docket.json" % (newpath)
