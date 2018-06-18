@@ -25,7 +25,7 @@ def parse_args ():
 
 
 def build_stats (opts, path):
-  sdata = {"denied" : 0, "granted" : 0, "pending" : 0, "summary" : 0, "decided" : 0, "dismissed" : 0,
+  sdata = {"denied" : 0, "granted" : 0, "pending" : 0, "summary" : 0, "decided" : 0, "dismissed" : 0, "gvr" : 0,
            "grants" : [], "pends" : [], "decides" : [], "dismissals" : [] }
 
   attys = {}
@@ -44,6 +44,11 @@ def build_stats (opts, path):
     docket_obj = json.loads(open(dpath, "rb").read())
 
     docket = scotus.util.DocketStatusInfo(docket_obj)
+
+    if docket.gvr:
+      sdata["gvr"] += 1
+      continue
+
     if docket.pending:
       if docket.granted:
         if docket.argued:

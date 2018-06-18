@@ -42,6 +42,9 @@ def updateDockets (path, opts):
   nextnum = opts.docket_num
   while True:
     try:
+      if nextnum > opts.stop:
+        return
+
       newpath = "%s/%d/" % (path, nextnum)
       docketstr = "%d-%d" % (opts.term, nextnum)
 
