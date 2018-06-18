@@ -123,6 +123,10 @@ class DocketStatusInfo(object):
           self.granted = True
           self.grant_date = dateutil.parser.parse(event["Date"])
         elif etxt.count("GRANTED"):
+          statements = etxt.split(".")
+          gs = [x for x in statements if x.count("GRANTED")][0]
+          if gs.count("expedite consideration"):
+            continue
           self.granted = True
           self.grant_date = dateutil.parser.parse(event["Date"])
           if etxt.count("VACATED") and etxt.count("REMANDED"):
