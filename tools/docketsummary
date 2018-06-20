@@ -191,9 +191,10 @@ def summarize(opts):
       print ("      (%d-%d, %s)" % (ri[0], ri[1], ri[2]))
   if info.distributed:
     print("  - Distributed: %s" % (", ".join([x[1].strftime("%Y-%m-%d") for x in info.distributed])))
-  print("  - Lower Court")
-  print("     %s" % (docket_obj["LowerCourt"]))
-  print("     %s - %s" % (docket_obj["LowerCourtCaseNumbers"], docket_obj["LowerCourtDecision"]))
+  if docket_obj["LowerCourt"]:
+    print("  - Lower Court")
+    print("     %s" % (docket_obj["LowerCourt"]))
+    print("     %s - %s" % (docket_obj["LowerCourtCaseNumbers"], docket_obj["LowerCourtDecision"]))
   print("  - Last Order")
   print("     %s - %s" % (last_order["Date"], last_order["Text"]))
 
