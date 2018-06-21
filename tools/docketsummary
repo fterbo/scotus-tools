@@ -64,7 +64,8 @@ LCNAMEMAP = {
   "caOR" : "Court of Appeals of Oregon",
   "caPA" : util.CourtMatch("Commonwealth Court of Pennsylvania").setStart("Superior Court of Pennsylvania"),
   "caSC" : "Court of Appeals of South Carolina",
-  "caTN" : util.CourtMatch().setStart("Court of Criminal Appeals of Tennessee"),
+  "caTN" : util.CourtMatch().setStart("Court of Criminal Appeals of Tennessee")
+                            .setStart("Court of Appeals of Tennessee"),
   "caTX" : util.CourtMatch().setStart("Court of Appeals of Texas"),
   "caWA" : util.CourtMatch().setStart("Court of Appeals of Washington"),
   "caWY" : util.CourtMatch().setStart("District Court of Wyoming"),
@@ -88,6 +89,7 @@ LCNAMEMAP = {
   "scFL" : "Supreme Court of Florida",
   "scGA" : "Supreme Court of Georgia",
   "scHI" : "Supreme Court of Hawaii",
+  "scIA" : "Supreme Court of Iowa",
   "scID" : "Supreme Court of Idaho",
   "scIL" : "Supreme Court of Illinois",
   "scIN" : "Supreme Court of Indiana",

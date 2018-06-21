@@ -39,7 +39,7 @@ class CaseTypeError(SCOTUSError):
 class CourtMatch(object):
   def __init__ (self, *args):
     self.names = args
-    self.start = None
+    self.start = []
     self.partial = None
 
   def __eq__ (self, val):
@@ -47,8 +47,10 @@ class CourtMatch(object):
       return False
     if val in self.names:
       return True
-    if self.start and val.startswith(self.start):
-      return True
+    if self.start:
+      for frag in self.start:
+        if val.startswith(frag):
+          return True
     if self.partial and val.count(self.partial):
       return True
     return False
@@ -57,7 +59,7 @@ class CourtMatch(object):
     return not self == val
 
   def setStart (self, val):
-    self.start = val
+    self.start.append(val)
     return self
 
   def setPartial (self, val):
