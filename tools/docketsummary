@@ -195,7 +195,11 @@ def scan (opts):
     if opts.lower:
       if not docket_obj["LowerCourt"]:
         continue
-      if LCNAMEMAP[opts.lower] != docket_obj["LowerCourt"].strip():
+      found = False
+      for lcabbr in opts.lower:
+        if LCNAMEMAP[lcabbr] == docket_obj["LowerCourt"].strip():
+          found = True
+      if not found:
         continue
 
     print("[%s][%s] %s" % (docket_str, casetype, casename))
@@ -210,8 +214,12 @@ def conference (opts):
     else:
       conf_date = d + datetime.timedelta(((3 - d.weekday()) + 7) % 7)
   conf_date = conf_date.date()
-  print("Petitions Considered for Conference on %s" % (conf_date.strftime("%Y-%m-%d")))
-  print("-------------------------------------------------")
+  if opts.relists:
+    print("Relisted Petitions Considered at Conference on %s" % (conf_date.strftime("%Y-%m-%d")))
+    print("---------------------------------------------------------")
+  else:
+    print("Petitions Considered at Conference on %s" % (conf_date.strftime("%Y-%m-%d")))
+    print("------------------------------------------------")
 
   lower_set = set()
   lower_map = {}
