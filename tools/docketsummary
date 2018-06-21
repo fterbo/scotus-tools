@@ -215,7 +215,11 @@ def conference (opts):
     if lower_set:
       if not docket_obj["LowerCourt"]:
         continue
-      if info.lowercourt not in lower_set:
+      found = False
+      for lc in lower_set:
+        if lc == info.lowercourt:
+          found = True
+      if not found:
         continue
 
     for (edate, cdate) in info.distributed:
