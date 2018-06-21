@@ -5,6 +5,7 @@
 from __future__ import print_function
 
 import argparse
+import datetime
 import dateutil.parser
 import json
 import logging
@@ -134,6 +135,8 @@ def parse_args ():
   parser.add_argument("-s", "--scan", dest="scan", action="store_true")
   parser.add_argument("--ifp", dest="ifp", action="store_true")
   parser.add_argument("-l", "--lower", dest="lower", type=str, default=None)
+  parser.add_argument("--conference", dest="conference", action="store_true")
+  parser.add_argument("--conf-date", dest="conf_date", type=str, default=None)
   parser.add_argument("--unknown", dest="unknown", action="store_true")
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
@@ -141,7 +144,7 @@ def parse_args ():
 
 
 
-def scan(opts):
+def scan (opts):
   ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (opts.root, opts.term))]
   ddirs.sort()
   for ddir in ddirs:
@@ -172,7 +175,37 @@ def scan(opts):
     print("[%s][%s] %s" % (docket_str, casetype, casename))
 
 
-def summarize(opts):
+def conference (opts):
+  conf_date = opts.conf_date
+  if not conf_date:
+    d = datetime.date.today()
+    if d.weekday() == 3:
+      conf_date = d
+    else:
+      conf_date = d + datetime.timedelta(((3 - d.weekday()) + 7) % 7)
+  print("Petitions Considered for Conference on %s" % (d.strftime("%Y-%m-%d")))
+  print("-------------------------------------------------")
+
+  ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (opts.root, opts.term)) if not x.startswith(".")]
+  ddirs.sort()
+  for ddir in ddirs:
+#    if int(ddir) > 4999 and not opts.ifp:
+#      return
+
+    jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, ddir)
+    docket_str = "%d-%d" % (opts.term, ddir)
+    if not os.path.exists(jpath):
+      continue
+
+    docket_obj = json.loads(open(jpath, "rb").read())
+    info = util.DocketStatusInfo(docket_obj)
+
+    if info.distributed:
+      if info.distributed[-1][1] == conf_date:
+        print ("[%s][%s] %s" % (docket_str, info.casetype, info.casename))
+
+
+def summarize (opts):
   jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, opts.num)
   docket_str = "%d-%d" % (opts.term, opts.num)
   if not os.path.exists(jpath):
@@ -201,7 +234,12 @@ def summarize(opts):
 
 if __name__ == '__main__':
   opts = parse_args()
+  if opts.conf_date:
+    opts.conf_date = dateutil.parser.parse(opts.conf_date)
+
   if opts.scan:
     scan(opts)
+  elif opts.conference:
+    conference(opts)
   else:
     summarize(opts)
