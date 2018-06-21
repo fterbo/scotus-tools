@@ -43,6 +43,8 @@ class CourtMatch(object):
     self.partial = None
 
   def __eq__ (self, val):
+    if not val:
+      return False
     if val in self.names:
       return True
     if self.start and val.startswith(self.start):
@@ -69,6 +71,9 @@ class DocketStatusInfo(object):
     self.capital = False
     self.casename = None
     self.casetype = None
+    self.lowercourt = None
+    self.lowercourt_docket = None
+    self.lowercourt_decision_date = None
 
     self.related = []
 
@@ -112,6 +117,14 @@ class DocketStatusInfo(object):
           for rcn in rcnl:
             (tstr, dstr) = rcn.split("-")
             self.related.append((int(tstr), int(dstr), rc["RelatedType"]))
+
+      if "LowerCourt" in docket_obj and docket_obj["LowerCourt"]:
+        self.lowercourt = docket_obj["LowerCourt"].strip()
+        try:
+          self.lowercourt_docket = docket_obj["LowerCourtCaseNumbers"]
+          self.lowercourt_decision_date = dateutil.parser.parse(docket_obj["LowerCourtDecision"]).date()
+        except KeyError:
+          pass
 
       for event in docket_obj["ProceedingsandOrder"]:
         etxt = event["Text"]

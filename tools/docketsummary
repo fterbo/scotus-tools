@@ -19,6 +19,8 @@ from scotus import util
 logging.basicConfig(level=logging.INFO)
 
 LCNAMEMAP = {
+  "None" : None,
+
   "CA1" : "United States Court of Appeals for the First Circuit",
   "CA2" : "United States Court of Appeals for the Second Circuit",
   "CA3" : "United States Court of Appeals for the Third Circuit",
@@ -134,7 +136,7 @@ def parse_args ():
   parser.add_argument("-n", "--num", dest="num", type=int)
   parser.add_argument("-s", "--scan", dest="scan", action="store_true")
   parser.add_argument("--ifp", dest="ifp", action="store_true")
-  parser.add_argument("-l", "--lower", dest="lower", type=str, default=None)
+  parser.add_argument("-l", "--lower", dest="lower", type=str, nargs="*", default=None)
   parser.add_argument("--conference", dest="conference", action="store_true")
   parser.add_argument("--conf-date", dest="conf_date", type=str, default=None)
   parser.add_argument("--unknown", dest="unknown", action="store_true")
@@ -187,6 +189,15 @@ def conference (opts):
   print("Petitions Considered for Conference on %s" % (conf_date.strftime("%Y-%m-%d")))
   print("-------------------------------------------------")
 
+  lower_set = set()
+  lower_map = {}
+  if opts.lower:
+    for cabbr in opts.lower:
+      lower_set.add(LCNAMEMAP[cabbr])
+      lower_map[cabbr] = LCNAMEMAP[cabbr]
+  else:
+    lower_map = LCNAMEMAP
+
   ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (opts.root, opts.term)) if not x.startswith(".")]
   ddirs.sort()
   for ddir in ddirs:
@@ -201,15 +212,19 @@ def conference (opts):
     docket_obj = json.loads(open(jpath, "rb").read())
     info = util.DocketStatusInfo(docket_obj)
 
-    if opts.lower:
+    if lower_set:
       if not docket_obj["LowerCourt"]:
         continue
-      if LCNAMEMAP[opts.lower] != docket_obj["LowerCourt"].strip():
+      if info.lowercourt not in lower_set:
         continue
 
     for (edate, cdate) in info.distributed:
       if cdate == conf_date:
-        print ("[%s][%s] %s %s" % (docket_str, info.casetype, info.casename, info.getFlagString()))
+        cabbr = None
+        for k,v in lower_map.items():
+          if v == info.lowercourt:
+            cabbr = k
+        print ("[%s][%s][%s] %s %s" % (docket_str, info.casetype, cabbr, info.casename, info.getFlagString()))
         break
 
 
