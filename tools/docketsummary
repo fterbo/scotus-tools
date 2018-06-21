@@ -201,6 +201,12 @@ def conference (opts):
     docket_obj = json.loads(open(jpath, "rb").read())
     info = util.DocketStatusInfo(docket_obj)
 
+    if opts.lower:
+      if not docket_obj["LowerCourt"]:
+        continue
+      if LCNAMEMAP[opts.lower] != docket_obj["LowerCourt"].strip():
+        continue
+
     for (edate, cdate) in info.distributed:
       if cdate == conf_date:
         print ("[%s][%s] %s %s" % (docket_str, info.casetype, info.casename, info.getFlagString()))
