@@ -183,7 +183,7 @@ def conference (opts):
       conf_date = d
     else:
       conf_date = d + datetime.timedelta(((3 - d.weekday()) + 7) % 7)
-  print("Petitions Considered for Conference on %s" % (d.strftime("%Y-%m-%d")))
+  print("Petitions Considered for Conference on %s" % (conf_date.strftime("%Y-%m-%d")))
   print("-------------------------------------------------")
 
   ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (opts.root, opts.term)) if not x.startswith(".")]
