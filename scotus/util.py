@@ -116,8 +116,8 @@ class DocketStatusInfo(object):
       for event in docket_obj["ProceedingsandOrder"]:
         etxt = event["Text"]
         if etxt.startswith("DISTRIBUTED"):
-          confdate = dateutil.parser.parse(etxt.split()[-1])
-          edate = dateutil.parser.parse(event["Date"])
+          confdate = dateutil.parser.parse(etxt.split()[-1]).date()
+          edate = dateutil.parser.parse(event["Date"]).date()
           self.distributed.append((edate, confdate))
         elif etxt == "Petition GRANTED.":
           self.granted = True
