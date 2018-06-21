@@ -141,6 +141,7 @@ def parse_args ():
   parser.add_argument("-l", "--lower", dest="lower", type=str, nargs="*", default=None)
   parser.add_argument("--conference", dest="conference", action="store_true")
   parser.add_argument("--conf-date", dest="conf_date", type=str, default=None)
+  parser.add_argument("--relists", dest="relists", action="store_true")
   parser.add_argument("--unknown", dest="unknown", action="store_true")
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
@@ -213,6 +214,10 @@ def conference (opts):
 
     docket_obj = json.loads(open(jpath, "rb").read())
     info = util.DocketStatusInfo(docket_obj)
+
+    if opts.relists:
+      if len(info.distributed) < 2:
+        continue
 
     if lower_set:
       if not docket_obj["LowerCourt"]:
