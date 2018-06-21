@@ -183,6 +183,7 @@ def conference (opts):
       conf_date = d
     else:
       conf_date = d + datetime.timedelta(((3 - d.weekday()) + 7) % 7)
+  conf_date = conf_date.date()
   print("Petitions Considered for Conference on %s" % (conf_date.strftime("%Y-%m-%d")))
   print("-------------------------------------------------")
 
@@ -200,9 +201,10 @@ def conference (opts):
     docket_obj = json.loads(open(jpath, "rb").read())
     info = util.DocketStatusInfo(docket_obj)
 
-    if info.distributed:
-      if info.distributed[-1][1] == conf_date:
-        print ("[%s][%s] %s" % (docket_str, info.casetype, info.casename))
+    for (edate, cdate) in info.distributed:
+      if cdate == conf_date:
+        print ("[%s][%s] %s %s" % (docket_str, info.casetype, info.casename, info.getFlagString()))
+        break
 
 
 def summarize (opts):
