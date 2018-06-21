@@ -150,7 +150,7 @@ class DocketStatusInfo(object):
 
   @property
   def pending (self):
-    if self.dismissed or self.denied or self.judgment_issued:
+    if self.dismissed or self.denied or self.judgment_issued or self.gvr:
       return False
     return True
 
