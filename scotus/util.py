@@ -259,3 +259,13 @@ def buildCasename (docket_obj):
     raise CasenameError(docket_obj["CaseNumber"].strip())
 
   return casename
+
+
+def ngrams (wlist, n):
+  output = {}
+  for i in range(len(wlist)-n+1):
+    gram = ' '.join(wlist[i:i+n])
+    output.setdefault(gram, 0)
+    output[gram] += 1
+  return output
+

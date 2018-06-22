@@ -1,0 +1,92 @@
+#!/usr/bin/env python
+
+# Copyright (c) 2018  Floyd Terbo
+
+import argparse
+import functools
+import json
+import logging
+import multiprocessing
+import os
+import signal
+import sys
+
+import scotus.util
+
+logging.basicConfig(level=logging.INFO)
+
+class InsufficientCountError(Exception): pass
+
+def parse_args ():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-t", "--term", dest="term", type=int)
+  parser.add_argument("-p", "--parallel", dest="parallel", default=1, type=int)
+  parser.add_argument("-q", "--query", dest="query", nargs="*")
+  parser.add_argument("--count", dest="count", type=int, default=0)
+  parser.add_argument("--timeout", dest="timeout", type=int, default=180)
+  parser.add_argument("--root", dest="root", type=str, default=".")
+  args = parser.parse_args()
+  return args
+
+def query (path, opts, terms):
+  rlist = []
+  try:
+    with open("%s/indexes.json" % (path), "rb") as idxf:
+      obj = json.loads(idxf.read())
+      for (fname, grms) in obj.items():
+        try:
+          found = {}
+          for term in terms:
+            glen = len(term.split())
+            try:
+              wd = grms["%d-gram" % (glen)]
+              if term in wd:
+                found[term] = wd[term]
+            except KeyError:
+              continue
+          if len(found) == len(terms):
+            tcountlist = []
+            for t,c in found.items():
+              if c < opts.count:
+                raise InsufficientCountError()
+              tcountlist.append("[%d] %s" % (c, t))
+            rlist.append((path, fname, ", ".join(tcountlist)))
+#            logging.info("Terms found in %s/%s: %s" % (path, fname, ", ".join(tcountlist)))
+        except InsufficientCountError:
+          continue
+  except IOError:
+    return rlist
+  return rlist
+
+if __name__ == '__main__':
+  opts = parse_args()
+
+  rootpath = "%s/OT-%d/opinions" % (opts.root, opts.term)
+
+  sigint_h = signal.signal(signal.SIGINT, signal.SIG_IGN) # Ignore child sigint
+  pool = multiprocessing.Pool(processes = opts.parallel)
+  signal.signal(signal.SIGINT, sigint_h) # But not here
+
+  ddirs = []
+  for name in os.listdir(rootpath):
+    dpath = "%s/%s" % (rootpath, name)
+    if os.path.isdir(dpath):
+      ddirs.append(dpath)
+
+  try:
+    res = pool.map_async(functools.partial(query, opts=opts, terms=opts.query), ddirs)
+    res_data = res.get(opts.timeout)
+  except KeyboardInterrupt:
+    pool.terminate()
+  else:
+    pool.close()
+
+  pool.join()
+
+  combined_list = []
+  for res_list in res_data:
+    combined_list.extend(res_list)
+  combined_list.sort(key=lambda x: int(x[0].split("/")[3]))
+
+  for path,fname,ctext in combined_list:
+    logging.info("Terms found in %s/%s: %s" % (path, fname, ctext))
