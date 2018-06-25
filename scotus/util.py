@@ -162,6 +162,9 @@ class DocketStatusInfo(object):
         elif etxt.startswith("Adjudged to be AFFIRMED."):
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(event["Date"]).date()
+        elif etxt.startswith("Judgment REVERSED"):
+          self.judgment_issued = True
+          self.judgment_date = dateutil.parser.parse(event["Date"]).date()
     except Exception:
       print "Exception in case: %s" % (docket_obj["CaseNumber"])
       raise
