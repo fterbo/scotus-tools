@@ -67,7 +67,7 @@ def updateDockets (path, opts):
 
       # Don't update the docket if it's scheduled for a conference in the future
       if docket.distributed:
-        if datetime.datetime.now() < docket.distributed[-1][1]:
+        if datetime.date.today() < docket.distributed[-1][1]:
           raise SkipDocket()
 
       logging.info("Updating pending docket (%s)" % (docketstr))
