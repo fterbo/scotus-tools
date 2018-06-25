@@ -136,29 +136,32 @@ class DocketStatusInfo(object):
           self.distributed.append((edate, confdate))
         elif etxt == "Petition GRANTED.":
           self.granted = True
-          self.grant_date = dateutil.parser.parse(event["Date"])
+          self.grant_date = dateutil.parser.parse(event["Date"]).date()
         elif etxt.count("GRANTED"):
           statements = etxt.split(".")
           gs = [x for x in statements if x.count("GRANTED")][0]
           if gs.count("expedite consideration"):
             continue
           self.granted = True
-          self.grant_date = dateutil.parser.parse(event["Date"])
+          self.grant_date = dateutil.parser.parse(event["Date"]).date()
           if etxt.count("VACATED") and etxt.count("REMANDED"):
             self.gvr = True
             self.gvr_date = self.grant_date
         elif etxt.startswith("Argued."):
           self.argued = True
-          self.argued_date = dateutil.parser.parse(event["Date"])
+          self.argued_date = dateutil.parser.parse(event["Date"]).date()
         elif etxt.startswith("Petition Dismissed"):
           self.dismissed = True
-          self.dismiss_date = dateutil.parser.parse(event["Date"])
+          self.dismiss_date = dateutil.parser.parse(event["Date"]).date()
         elif etxt.startswith("Petition DENIED"):
           self.denied = True
-          self.deny_date = dateutil.parser.parse(event["Date"])
+          self.deny_date = dateutil.parser.parse(event["Date"]).date()
         elif etxt == "JUDGMENT ISSUED.":
           self.judgment_issued = True
-          self.judgment_date = dateutil.parser.parse(event["Date"])
+          self.judgment_date = dateutil.parser.parse(event["Date"]).date()
+        elif etxt.startswith("Adjudged to be AFFIRMED."):
+          self.judgment_issued = True
+          self.judgment_date = dateutil.parser.parse(event["Date"]).date()
     except Exception:
       print "Exception in case: %s" % (docket_obj["CaseNumber"])
       raise
