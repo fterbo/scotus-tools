@@ -10,20 +10,59 @@ import unicodedata
 
 import PyPDF2
 
-# Translation table to strip unicode punctuation, but not things like section symbols
-TTABLE = { i:None for i in xrange(sys.maxunicode)
-           if unicodedata.category(unichr(i)).startswith('P') }
+def getPuncFilter (tt = {}):
+  if not tt:
+    # Translation table to strip unicode punctuation, but not things like section symbols
+    tt = { i:None for i in xrange(sys.maxunicode)
+               if unicodedata.category(unichr(i)).startswith('P') }
 
-# For some reason PyPDF2 resolves some text to the wrong code points
-TTABLE[8482] = None # Single quotes
-TTABLE[64257] = None  # Double quote open
-TTABLE[64258] = None  # Double quote close
-TTABLE[339] = None  # Endash
-TTABLE[352] = None  # Emdash
+    # For some reason PyPDF2 resolves some text to the wrong code points
+    tt[8482] = None # Single quotes
+    tt[64257] = None  # Double quote open
+    tt[64258] = None  # Double quote close
+    tt[339] = None  # Endash
+    tt[352] = None  # Emdash
+  return tt
+
+def getFixTable (tt = {}):
+  if not tt:
+    tt = { i:None for i in xrange(sys.maxunicode)
+               if unicodedata.category(unichr(i)).startswith('P') }
+    del tt[0x2E]
+    del tt[0x2C]
+    del tt[0x3B]
+    del tt[0x2024]
+    del tt[0x2027]
+    tt[338] = ord("-")
+    tt[339] = ord('-')
+    tt[352] = ord('-')
+    tt[8482] = ord("'")
+    tt[64257] = ord('"')
+    tt[64258] = ord('"')
+  return tt
+
+
+
+def getPdfWords (path):
+  import PyPDF2
+
+  tt = getPuncFilter()
+  wd = {}
+  with open(path, "rb") as fo:
+    reader = PyPDF2.PdfFileReader(fo)
+    for pno,page in enumerate(range(reader.numPages)):
+      try:
+        clean_text = reader.getPage(page).extractText().translate(tt)
+        wd[pno] = clean_text.split()
+      except KeyError: # Some PDF pages don't have /Contents
+        continue
+  return wd
+
 
 def indexDir (path, force_pdf = False):
   logging.info("Indexing %s" % (path))
   fnames = [x for x in os.listdir(path) if x[-4:] == ".pdf"]
+  tt = getPuncFilter()
 
   indexes = {}
   for name in fnames:
@@ -40,7 +79,7 @@ def indexDir (path, force_pdf = False):
           words = []
           for page in range(reader.numPages):
             try:
-              clean_text = reader.getPage(page).extractText().translate(TTABLE).lower()
+              clean_text = reader.getPage(page).extractText().translate(tt).lower()
               words.extend(clean_text.split())
             except KeyError:  # Some PDF pages don't have /Contents
               continue

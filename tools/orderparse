@@ -6,9 +6,10 @@ import json
 import os
 import pprint
 import sys
-import unicodedata
 
 import PyPDF2
+
+import scotus.parse
 
 SECTIONS = {
   "CERTSUM" : "SUMMARY DISPOSITION",
@@ -23,10 +24,6 @@ SECTIONS = {
   "DECISION" : "Cite as",
   "POSTPONE" : "JURISDICTION POSTPONED",
 }
-
-# Translation table to strip unicode punctuation, but not things like section symbols
-TTABLE = { i:None for i in xrange(sys.maxunicode)
-           if unicodedata.category(unichr(i)).startswith('P') }
 
 
 def count_seal(fname):
@@ -124,11 +121,12 @@ def check_docket_num (line):
 
 
 def dumplines (path):
+  tt = scotus.parse.getTranslation()
   text = []
   fo = open(path, "rb")
   reader = PyPDF2.PdfFileReader(fo)
   for page in range(reader.numPages):
-    for line in reader.getPage(page).extractText().translate(TTABLE).split("\n"):
+    for line in reader.getPage(page).extractText().translate(tt).split("\n"):
       print line
 
 def isCasename (tline):
@@ -154,6 +152,7 @@ def isCasename (tline):
   return False
 
 def parse_statuses (reader):
+  tt = scotus.parse.getTranslation()
   data = {x:[] for x in SECTIONS.keys()}
   cur_section = ""
 
@@ -179,7 +178,7 @@ def parse_statuses (reader):
         except ValueError:
           pass
 
-        tline = line.translate(TTABLE)
+        tline = line.translate(tt)
         # Consolidated / vided / etc.
         if not tline:
           continue

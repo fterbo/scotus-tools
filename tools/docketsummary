@@ -85,6 +85,7 @@ LCNAMEMAP = {
   "dcEPA" : "United States District Court for the Eastern District of Pennsylvania",
   "dcWTX" : "United States District Court for the Western District of Texas",
 
+  "minAZ" : util.CourtMatch().setStart("Superior Court of Arizona"),
   "minCA" : util.CourtMatch().setStart("Appellate Division, Superior Court of California"),
   "minCO" : util.CourtMatch().setStart("District Court of Colorado"),
   "minGA" : util.CourtMatch().setStart("Superior Court of Georgia"),
