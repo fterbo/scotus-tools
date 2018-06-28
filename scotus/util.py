@@ -82,6 +82,8 @@ class DocketStatusInfo(object):
     self.attys_petitioner = []
     self.attys_respondent = []
 
+    self._errors = []
+
     self._build(docket_obj)
 
   def _build (self, docket_obj):
@@ -113,9 +115,12 @@ class DocketStatusInfo(object):
           self.lowercourt_decision_date = dateutil.parser.parse(docket_obj["LowerCourtDecision"]).date()
         except KeyError:
           pass
+        except ValueError as e:
+          self._errors.append(str(e))
 
       for event in docket_obj["ProceedingsandOrder"]:
         etxt = event["Text"]
+        try:
         if etxt.startswith("DISTRIBUTED"):
           confdate = dateutil.parser.parse(etxt.split()[-1]).date()
           edate = dateutil.parser.parse(event["Date"]).date()
