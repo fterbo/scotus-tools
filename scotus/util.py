@@ -120,7 +120,6 @@ class DocketStatusInfo(object):
 
       for event in docket_obj["ProceedingsandOrder"]:
         etxt = event["Text"]
-        try:
         if etxt.startswith("DISTRIBUTED"):
           confdate = dateutil.parser.parse(etxt.split()[-1]).date()
           edate = dateutil.parser.parse(event["Date"]).date()
