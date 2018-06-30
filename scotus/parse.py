@@ -113,7 +113,7 @@ def ngrams (wlist, n):
 def getDisposition(path):
   f = open(path, "rb")
   reader = PyPDF2.PdfFileReader(f)
-  tt = scotus.parse.getFixTable()
+  tt = getFixTable()
   for idx in range(reader.numPages):
     text = reader.getPage(idx).extractText().translate(tt)
     if text.count("Opinion of"):
