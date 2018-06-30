@@ -11,7 +11,7 @@ import unicodedata
 import PyPDF2
 
 JUSTICES = { 17 : set([u"ROBERTS,", u"GINSBURG,", u"KENNEDY,", u"THOMAS,", u"ALITO,",
-                       u"GORSUCH,", u"SOTOMAYOR,", u"KAGAN,", u"BREYER,", u"O'CONNOR"])}
+                       u"GORSUCH,", u"SOTOMAYOR,", u"KAGAN,", u"BREYER,"])}
 
 def getPuncFilter (tt = {}):
   if not tt:
