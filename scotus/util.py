@@ -105,7 +105,7 @@ class DocketStatusInfo(object):
 
 
   def _build (self, docket_obj):
-    (tstr,dstr) = docket_obj["CaseNumber"].strip().split("-")
+    (tstr,dstr) = docket_obj["CaseNumber"].split()[0].split("-")
     self.term = int(tstr)
     self.docket = int(dstr)
 
