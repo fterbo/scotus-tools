@@ -36,20 +36,22 @@ def getFixTable (tt = {}):
     del tt[0x3B]
     del tt[0x2024]
     del tt[0x2027]
-    tt[338] = ord("-")
-    tt[339] = ord('-')
-    tt[352] = ord('-')
-    tt[8482] = ord("'")
-    tt[64257] = ord('"')
-    tt[64258] = ord('"')
+    tt[0x152] = ord("-")
+    tt[0x153] = ord('-')
+    tt[0x160] = ord('-')
+    tt[0x201D] = ord('"')
+    tt[0x201C] = ord('"')
+    tt[0x2122] = ord("'")
+    tt[0xFB01] = ord('"')
+    tt[0xFB02] = ord('"')
   return tt
 
 
 
-def getPdfWords (path):
+def getPdfWords (path, translate = getPuncFilter):
   import PyPDF2
 
-  tt = getPuncFilter()
+  tt = translate()
   wd = {}
   with open(path, "rb") as fo:
     reader = PyPDF2.PdfFileReader(fo)
@@ -132,3 +134,33 @@ def getDisposition(path):
       dpt.append(word)
 
   return " ".join(dpt)
+
+
+def getQP (path):
+  starts = ["QUESTION", "QUESTIONS"]
+  ends = {"TABLE" : ["OF", "CONTENTS"],
+          "PARTIES" : ["TO", "THE", "PROCEEDINGS"]}
+  qptext = []
+
+  wps = getPdfWords(path, getFixTable)
+  inq = False
+  inqp = False
+  for pno,pagewords in wps.items():
+    for idx,word in enumerate(pagewords):
+      if inqp:
+        if word in ends.keys():
+          nxt = ends[word]
+          match = True
+          for nidx,term in enumerate(nxt, 1):
+            if pagewords[idx+nidx] != term:
+              match = False
+          if match:
+            return qptext
+        qptext.append(word)
+      elif inq:
+        if word == "PRESENTED":
+          inqp = True
+        else:
+          inq = False
+      elif word in starts:
+        inq = True

@@ -1,5 +1,9 @@
 # Copyright (c) 2018  Floyd Terbo
 
+from __future__ import absolute_import
+
+import os
+import os.path
 import sys
 
 import dateutil.parser
@@ -56,12 +60,15 @@ class CourtMatch(object):
 class DocketStatusInfo(object):
   def __init__ (self, docket_obj):
     self.docket_date = None
+    self.term = None
+    self.docket = None
     self.capital = False
     self.casename = None
     self.casetype = None
     self.lowercourt = None
     self.lowercourt_docket = None
     self.lowercourt_decision_date = None
+    self.petition_path = None
 
     self.related = []
 
@@ -86,7 +93,22 @@ class DocketStatusInfo(object):
 
     self._build(docket_obj)
 
+  def _getLocalPath (self, link):
+    path1 = "OT-%d/dockets/%d/%s" % (self.term, self.docket, link["File"])
+    if os.path.exists(path1):
+      return path1
+
+    fname = urllib.unquote_plus(link["DocumentUrl"].split("/")[-1])
+    path2 = "OT-%d/dockets/%d/%s" % (self.term, self.docket, fname)
+    if os.path.exists(path2):
+      return path2
+
+
   def _build (self, docket_obj):
+    (tstr,dstr) = docket_obj["CaseNumber"].strip().split("-")
+    self.term = int(tstr)
+    self.docket = int(dstr)
+
     try:
       self.docket_date = dateutil.parser.parse(docket_obj["DocketedDate"])
       self.capital = docket_obj["bCapitalCase"]
@@ -119,6 +141,12 @@ class DocketStatusInfo(object):
           self._errors.append(str(e))
 
       for event in docket_obj["ProceedingsandOrder"]:
+        try:
+          for link in event["Links"]:
+            if link["Description"] == "Petition":
+              self.petition_path = self._getLocalPath(link)
+        except KeyError:
+          pass
         etxt = event["Text"]
         if etxt.startswith("DISTRIBUTED"):
           confdate = dateutil.parser.parse(etxt.split()[-1]).date()

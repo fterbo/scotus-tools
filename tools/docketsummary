@@ -15,6 +15,7 @@ import pprint
 import sys
 
 from scotus import util
+import scotus.parse
 
 logging.basicConfig(level=logging.INFO)
 
@@ -294,6 +295,11 @@ def summarize (opts):
     print("     %s - %s" % (docket_obj["LowerCourtCaseNumbers"], docket_obj["LowerCourtDecision"]))
   print("  - Last Order")
   print("     %s - %s" % (last_order["Date"], last_order["Text"]))
+  if info.petition_path:
+    qp = scotus.parse.getQP("%s/%s" % (opts.root, info.petition_path))
+    if qp:
+      print("  - QP")
+      print("      %s" % (" ".join(qp)))
 
 
 if __name__ == '__main__':
