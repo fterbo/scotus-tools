@@ -89,6 +89,7 @@ class DocketStatusInfo(object):
 
     self.attys_petitioner = []
     self.attys_respondent = []
+    self.cert_amici = []
 
     self._errors = []
 
@@ -148,11 +149,15 @@ class DocketStatusInfo(object):
               self.petition_path = self._getLocalPath(link)
         except KeyError:
           pass
+
         etxt = event["Text"]
         if etxt.startswith("DISTRIBUTED"):
           confdate = dateutil.parser.parse(etxt.split()[-1]).date()
           edate = dateutil.parser.parse(event["Date"]).date()
           self.distributed.append((edate, confdate))
+        elif etxt.startswith("Brief amici curiae of"):
+          if not self.granted:
+            self.cert_amici.append(" ".join(etxt.split()[4:-1]))
         elif etxt == "Petition GRANTED.":
           self.granted = True
           self.grant_date = dateutil.parser.parse(event["Date"]).date()

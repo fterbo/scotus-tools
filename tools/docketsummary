@@ -293,6 +293,10 @@ def summarize (opts):
     print("  - Lower Court")
     print("     %s" % (docket_obj["LowerCourt"]))
     print("     %s - %s" % (docket_obj["LowerCourtCaseNumbers"], docket_obj["LowerCourtDecision"]))
+  if info.cert_amici:
+    print("  - Cert Amici")
+    for amicus in info.cert_amici:
+      print("      %s" % (amicus))
   print("  - Last Order")
   print("     %s - %s" % (last_order["Date"], last_order["Text"]))
   if info.petition_path:
