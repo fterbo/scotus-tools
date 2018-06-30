@@ -163,7 +163,11 @@ class DocketStatusInfo(object):
             continue
           self.granted = True
           self.grant_date = dateutil.parser.parse(event["Date"]).date()
-          if etxt.count("VACATED") and etxt.count("REMANDED"):
+          if etxt.count("REVERSED") and etxt.count("REMANDED"):
+            # This is not really a GVR, but we'll throw it in the bucket for now
+            self.gvr = True
+            self.gvr_date = self.grant_date
+          elif etxt.count("VACATED") and etxt.count("REMANDED"):
             self.gvr = True
             self.gvr_date = self.grant_date
         elif etxt.startswith("Argued."):
