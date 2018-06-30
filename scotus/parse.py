@@ -54,7 +54,7 @@ def getPdfWords (path, translate = getPuncFilter):
   tt = translate()
   wd = {}
   with open(path, "rb") as fo:
-    reader = PyPDF2.PdfFileReader(fo)
+    reader = PyPDF2.PdfFileReader(fo, strict=False)
     for pno,page in enumerate(range(reader.numPages)):
       try:
         clean_text = reader.getPage(page).extractText().translate(tt)
