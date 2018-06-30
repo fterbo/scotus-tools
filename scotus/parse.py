@@ -139,7 +139,8 @@ def getDisposition(path):
 def getQP (path):
   starts = ["QUESTION", "QUESTIONS"]
   ends = {"TABLE" : ["OF", "CONTENTS"],
-          "PARTIES" : ["TO", "THE"]}
+          "PARTIES" : ["TO", "THE"],
+          "CORPORATE" : ["DISCLOSURE", "STATEMENT"]}
   qptext = []
 
   wps = getPdfWords(path, getFixTable)
