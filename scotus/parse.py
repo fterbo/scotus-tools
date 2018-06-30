@@ -10,6 +10,9 @@ import unicodedata
 
 import PyPDF2
 
+JUSTICES = { 17 : set([u"ROBERTS,", u"GINSBURG,", u"KENNEDY,", u"THOMAS,", u"ALITO,",
+                       u"GORSUCH,", u"SOTOMAYOR,", u"KAGAN,", u"BREYER,", u"O'CONNOR"])}
+
 def getPuncFilter (tt = {}):
   if not tt:
     # Translation table to strip unicode punctuation, but not things like section symbols
@@ -107,3 +110,25 @@ def ngrams (wlist, n):
     output[gram] += 1
   return output
 
+def getDisposition(path):
+  f = open(path, "rb")
+  reader = PyPDF2.PdfFileReader(f)
+  tt = scotus.parse.getFixTable()
+  for idx in range(reader.numPages):
+    text = reader.getPage(idx).extractText().translate(tt)
+    if text.count("Opinion of"):
+      disp_pno = idx - 1
+      break
+
+  text = reader.getPage(disp_pno).extractText().translate(tt)
+  start = False
+  dpt = []
+  tlist = "".join(text.split("\n")).split()
+  tabr = set([u"C. J.,", u"J.,", u"C."])
+  for idx,word in enumerate(tlist):
+    if word in JUSTICES[17] and tlist[idx+1] in tabr:
+      start = True
+    if start:
+      dpt.append(word)
+
+  return " ".join(dpt)
