@@ -207,7 +207,7 @@ def scan (opts):
     for k,v in LCNAMEMAP.items():
       if v == info.lowercourt:
         cabbr = k
-    print ("[%s][%s][%s] %s %s" % (docket_str, info.casetype, cabbr, info.casename, info.getFlagString()))
+    print ("[%7s][%s][%5s] %s %s" % (docket_str, info.casetype, cabbr, info.casename, info.getFlagString()))
 
 
 def conference (opts):
