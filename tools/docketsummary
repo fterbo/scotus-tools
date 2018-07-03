@@ -186,8 +186,6 @@ def scan (opts):
 #      raise NoDocketError(docket_str)
 
     docket_obj = json.loads(open(jpath, "rb").read())
-    casename = util.buildCasename(docket_obj)
-    casetype = util.getCaseType(docket_obj)
     if opts.unknown:
       if docket_obj["LowerCourt"]:
         if docket_obj["LowerCourt"] not in LCNAMEMAP.values():
@@ -204,7 +202,11 @@ def scan (opts):
       if not found:
         continue
 
-    print("[%s][%s] %s" % (docket_str, casetype, casename))
+    cabbr = None
+    for k,v in LCNAMEMAP.items():
+      if v == info.lowercourt:
+        cabbr = k
+    print ("[%s][%s][%s] %s %s" % (docket_str, info.casetype, cabbr, info.casename, info.getFlagString()))
 
 
 def conference (opts):
