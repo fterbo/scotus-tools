@@ -186,6 +186,7 @@ def scan (opts):
 #      raise NoDocketError(docket_str)
 
     docket_obj = json.loads(open(jpath, "rb").read())
+    info = util.DocketStatusInfo(docket_obj)
     if opts.unknown:
       if docket_obj["LowerCourt"]:
         if docket_obj["LowerCourt"] not in LCNAMEMAP.values():
