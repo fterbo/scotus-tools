@@ -45,6 +45,13 @@ def build_stats (opts, path):
 
     docket = scotus.util.DocketStatusInfo(docket_obj)
 
+    for pa in docket.attys_petitioner:
+      attys.setdefault(pa, [0])[0] += 1
+
+    for ra in docket.attys_respondent:
+      attys.setdefault(ra, [0])[0] += 1
+
+
     if docket.gvr:
       sdata["gvr"] += 1
       continue
@@ -73,12 +80,6 @@ def build_stats (opts, path):
 
     if docket.denied:
       sdata["denied"] += 1
-
-    for pa in docket.attys_petitioner:
-      attys.setdefault(pa, [0])[0] += 1
-
-    for ra in docket.attys_respondent:
-      attys.setdefault(ra, [0])[0] += 1
 
 
   sdata["pends"].sort()
