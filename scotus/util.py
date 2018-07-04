@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import
 
+import codecs
 import os
 import os.path
 import sys
@@ -279,3 +280,10 @@ def buildCasename (docket_obj):
 
   return casename
 
+
+def setOutputEncoding (encoding='utf-8'):
+  if not sys.stdout.encoding:
+    sys.stdout = codecs.getwriter(encoding)(sys.stdout)
+  if not sys.stderr.encoding:
+    sys.stderr = codecs.getwriter(encoding)(sys.stderr)
+    

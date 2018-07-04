@@ -310,6 +310,8 @@ def summarize (opts):
 
 
 if __name__ == '__main__':
+  util.setOutputEncoding()
+
   opts = parse_args()
   if opts.conf_date:
     opts.conf_date = dateutil.parser.parse(opts.conf_date)
