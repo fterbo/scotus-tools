@@ -57,6 +57,20 @@ def getPdfPage (path, page, translate = dict):
     return text
 
 
+def findPdfPage (path, terms):
+  tt = {10 : None}
+  with open(path, "rb") as fo:
+    reader = PyPDF2.PdfFileReader(fo, strict=False)
+    for pno,page in enumerate(range(reader.numPages)):
+      try:
+        clean_text = reader.getPage(page).extractText().translate(tt)
+        for term in terms:
+          if clean_text.count(term):
+            return pno
+      except KeyError: # Some PDF pages don't have /Contents
+        continue
+
+
 def getPdfWords (path, translate = getPuncFilter):
   import PyPDF2
 
@@ -144,6 +158,32 @@ def getDisposition(path):
       dpt.append(word)
 
   return " ".join(dpt)
+
+START_TERMS = ["QUESTION PRESENTED", "QUESTIONS PRESENTED"]
+END_TERMS = ["TABLE OF CONTENTS", "PARTIES TO", "CORPORATE DISCLOSURE", "LIST OF PARTIES", "RULE 29.6"]
+
+def getQP2 (path):
+  spno = findPdfPage(path, START_TERMS)
+  epno = findPdfPage(path, END_TERMS)
+
+  qptext = []
+  wps = getPdfWords(path, getFixTable)
+  for pno in range(spno, epno):
+    in_start = False
+    post_start = False
+    for word in wps[pno]:
+      if post_start:
+        qptext.append(word)
+      elif in_start and not post_start:
+        if word.isupper():
+          continue
+        else:
+          qptext.append(word)
+          post_start = True
+      elif not in_start:
+        if word.isupper():
+          in_start = True
+  return qptext
 
 
 def getQP (path):

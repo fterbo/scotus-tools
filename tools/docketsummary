@@ -178,8 +178,13 @@ def summarize (opts):
   if info.petition_path:
     qp = scotus.parse.getQP("%s/%s" % (opts.root, info.petition_path))
     if qp:
-      print("  - QP")
+      print("  - QP(1)")
       print("      %s" % (" ".join(qp)))
+    qp2 = scotus.parse.getQP2("%s/%s" % (opts.root, info.petition_path))
+    if qp2:
+      print("  - QP(2)")
+      print("      %s" % (" ".join(qp2)))
+
 
 
 if __name__ == '__main__':
