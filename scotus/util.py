@@ -28,37 +28,6 @@ class CaseTypeError(SCOTUSError):
     return "Unable to determine case type for %s" % (self.docket)
 
 
-class CourtMatch(object):
-  def __init__ (self, *args):
-    self.names = args
-    self.start = []
-    self.partial = None
-
-  def __eq__ (self, val):
-    if not val:
-      return False
-    if val in self.names:
-      return True
-    if self.start:
-      for frag in self.start:
-        if val.startswith(frag):
-          return True
-    if self.partial and val.count(self.partial):
-      return True
-    return False
-
-  def __ne__ (self, val):
-    return not self == val
-
-  def setStart (self, val):
-    self.start.append(val)
-    return self
-
-  def setPartial (self, val):
-    self.partial = val
-    return self
-
-
 class DocketStatusInfo(object):
   def __init__ (self, docket_obj):
     self.docket_date = None

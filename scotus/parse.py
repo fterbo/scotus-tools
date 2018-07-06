@@ -47,6 +47,15 @@ def getFixTable (tt = {}):
   return tt
 
 
+def getPdfPage (path, page, translate = dict):
+  import PyPDF2
+
+  tt = translate()
+  with open(path, "rb") as fo:
+    reader = PyPDF2.PdfFileReader(fo, strict=False)
+    text = reader.getPage(page).extractText().translate(tt)
+    return text
+
 
 def getPdfWords (path, translate = getPuncFilter):
   import PyPDF2
@@ -111,6 +120,7 @@ def ngrams (wlist, n):
     output.setdefault(gram, 0)
     output[gram] += 1
   return output
+
 
 def getDisposition(path):
   f = open(path, "rb")
