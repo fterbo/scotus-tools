@@ -139,7 +139,7 @@ def getDisposition(path):
 def getQP (path):
   starts = ["QUESTION", "QUESTIONS"]
   ends = {"TABLE" : ["OF", "CONTENTS"],
-          "PARTIES" : ["TO", "THE"],
+          "PARTIES" : ["TO"],
           "CORPORATE" : ["DISCLOSURE", "STATEMENT"],
           "LIST" : ["OF", "PARTIES"]}
   qptext = []
