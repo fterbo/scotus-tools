@@ -140,7 +140,8 @@ def getQP (path):
   starts = ["QUESTION", "QUESTIONS"]
   ends = {"TABLE" : ["OF", "CONTENTS"],
           "PARTIES" : ["TO", "THE"],
-          "CORPORATE" : ["DISCLOSURE", "STATEMENT"]}
+          "CORPORATE" : ["DISCLOSURE", "STATEMENT"],
+          "LIST" : ["OF", "PARTIES"]}
   qptext = []
 
   wps = getPdfWords(path, getFixTable)
