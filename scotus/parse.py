@@ -159,12 +159,16 @@ def getDisposition(path):
 
   return " ".join(dpt)
 
+
 START_TERMS = ["QUESTION PRESENTED", "QUESTIONS PRESENTED"]
 END_TERMS = ["TABLE OF CONTENTS", "PARTIES TO", "CORPORATE DISCLOSURE", "LIST OF PARTIES", "RULE 29.6"]
 
 def getQP2 (path):
   spno = findPdfPage(path, START_TERMS)
   epno = findPdfPage(path, END_TERMS)
+
+  if not spno or not epno:
+    return []
 
   qptext = []
   wps = getPdfWords(path, getFixTable)
