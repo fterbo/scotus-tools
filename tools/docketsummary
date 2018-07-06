@@ -176,13 +176,13 @@ def summarize (opts):
   print("  - Last Order")
   print("     %s - %s" % (last_order["Date"], last_order["Text"]))
   if info.petition_path:
-    qp = scotus.parse.getQP("%s/%s" % (opts.root, info.petition_path))
-    if qp:
-      print("  - QP(1)")
-      print("      %s" % (" ".join(qp)))
+#    qp = scotus.parse.getQP("%s/%s" % (opts.root, info.petition_path))
+#    if qp:
+#      print("  - QP(1)")
+#      print("      %s" % (" ".join(qp)))
     qp2 = scotus.parse.getQP2("%s/%s" % (opts.root, info.petition_path))
     if qp2:
-      print("  - QP(2)")
+      print("  - QP")
       print("      %s" % (" ".join(qp2)))
 
 
