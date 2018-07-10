@@ -13,6 +13,31 @@ import PyPDF2
 JUSTICES = { 17 : set([u"ROBERTS,", u"GINSBURG,", u"KENNEDY,", u"THOMAS,", u"ALITO,",
                        u"GORSUCH,", u"SOTOMAYOR,", u"KAGAN,", u"BREYER,"])}
 
+class DirIndex(object):
+  def __init__ (self, path):
+    self._rawpath = path
+    self._index = {}
+
+    with open("%s/indexes.json" % (self._rawpath), "rb") as idxf:
+      index_obj = json.loads(idxf.read())
+
+    self._index = index_obj
+
+  def gramsearch (self, fname, ngram, term):
+    if fname not in self._index:
+      return False
+
+    gstr = "%d-gram" % (ngram)
+    if gstr not in self._index[fname]:
+      return False
+
+    if term in self._index[fname][gstr]:
+      return self._index[fname][gstr]
+
+    return 0
+
+
+
 def getPuncFilter (tt = {}):
   if not tt:
     # Translation table to strip unicode punctuation, but not things like section symbols

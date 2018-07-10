@@ -5,8 +5,9 @@ from __future__ import absolute_import
 import json
 import os
 
-from . import util
 from . import decorators as SD
+from . import parse
+from . import util
 
 SOURCETYPES = {}
 
@@ -57,9 +58,6 @@ class DocketReference(object):
   @property
   def index (self):
     if not self._index:
-      with open("%s/indexes.json" % (self.path), "rb") as idxf:
-        index_obj = json.loads(idxf.read())
-
-      self._index = index_obj
+      self._index = parse.DirIndex(self.path)
     return self._index
 

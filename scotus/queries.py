@@ -37,14 +37,7 @@ class PetitionQuery(object):
     if not pfname:
       return None
 
-    try:
-      count = 0
-      grms = self.docket_ref.index[pfname]["%d-gram" % (qgram)]
-      if query_term in grms:
-        count = grms[query_term]
-      if count < min_count:
-        return False
-      return self.docket_ref
-    except Exception as e:
-      print("[%d-%d] %s" % (self.docket_ref.info.term, self.docket_ref.info.docket, e))
-
+    count = self.docket_ref.index.gramsearch(pfname, qgram, query_term)
+    if count < min_count:
+      return False
+    return self.docket_ref
