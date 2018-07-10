@@ -29,5 +29,5 @@ class OneLineDocketSummary(object):
       if v == di.lowercourt:
         cabbr = k
 
-    return ("[%s][%s][%s] %s %s" % (dstr, di.casetype, cabbr, di.casename, di.getFlagString()))
+    return ("[%7s][%11s][%5s] %s %s" % (dstr, di.casetype, cabbr, di.casename, di.getFlagString()))
 
