@@ -120,7 +120,8 @@ def indexDir (path, force_pdf = False):
       grams["3-gram"] = ngrams(words, 3)
       indexes[name] = grams
     except PyPDF2.utils.PdfReadError:
-      continue
+      grams = {"1-gram" : [], "2-gram" : [], "3-gram" : []}
+      indexes[name] = grams
 
   with open("%s/indexes.json" % (path), "w+") as ij:
     logging.debug("Writing index json (%s)" % (path))
