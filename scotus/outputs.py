@@ -14,7 +14,7 @@ def output (typ):
   return decorator
 
 
-@output("oneline-summary")
+@output("docket-oneline")
 @SD.inputs("docket-reference")
 class OneLineDocketSummary(object):
   def __init__ (self, docket_ref):

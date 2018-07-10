@@ -20,5 +20,6 @@ setup(name = "scotus-tools",
                  'tools/orderparse', 'tools/docketindexer',
                  'tools/docketsearch', 'tools/opiniongrab',
                  'tools/opinionindexer', 'tools/opinionsearch',
-                 'tools/scotusstats', 'tools/docketsummary']
+                 'tools/scotusstats', 'tools/docketsummary',
+                 'tools/analysis-engine']
   )

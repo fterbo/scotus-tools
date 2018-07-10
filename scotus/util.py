@@ -163,6 +163,9 @@ class DocketStatusInfo(object):
         elif etxt.startswith("Judgment REVERSED"):
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(event["Date"]).date()
+        elif etxt.count("petition for a writ of certiorari is dismissed"):
+          self.dismissed = True
+          self.dismiss_date = dateutil.parser.parse(event["Date"]).date()
     except Exception:
       print "Exception in case: %s" % (docket_obj["CaseNumber"])
       raise
