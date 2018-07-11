@@ -135,11 +135,11 @@ class DocketStatusInfo(object):
           self.granted = True
           self.grant_date = dateutil.parser.parse(event["Date"]).date()
         elif etxt.count("GRANTED"):
+          if etxt.count("Motion for leave"):
+            continue
           statements = etxt.split(".")
           gs = [x for x in statements if x.count("GRANTED")][0]
           if gs.count("expedite consideration"):
-            continue
-          elif gs.count("Motion for leave"):
             continue
           self.granted = True
           self.grant_date = dateutil.parser.parse(event["Date"]).date()
