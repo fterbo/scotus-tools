@@ -3,7 +3,6 @@
 # Copyright (c) 2018  Floyd Terbo
 
 import json
-import pprint
 import sys
 
 import scotus.filters
@@ -74,7 +73,8 @@ def engine (sources, filters, queries, output):
     
 
 if __name__ == '__main__':
-  print sys.argv
   kwargs = json.loads(sys.argv[1])
   out = engine(**kwargs)
-  pprint.pprint(out)
+  d = {"v" : 1, "arguments" : sys.argv[1], "output" : out}
+  s = json.dumps(out)
+  print s
