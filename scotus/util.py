@@ -139,6 +139,8 @@ class DocketStatusInfo(object):
           gs = [x for x in statements if x.count("GRANTED")][0]
           if gs.count("expedite consideration"):
             continue
+          elif gs.count("Motion for leave"):
+            continue
           self.granted = True
           self.grant_date = dateutil.parser.parse(event["Date"]).date()
           if etxt.count("REVERSED") and etxt.count("REMANDED"):
