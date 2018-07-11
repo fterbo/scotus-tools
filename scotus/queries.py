@@ -38,7 +38,7 @@ class PetitionQuery(object):
     if not pfname:
       return None
 
-    count = docket_ref.index.gramsearch(pfname, qgram, query_term)
+    count = docket_ref.index.gramsearch(pfname, qgram, self.query_term)
     if count < self.min_count:
       return False
     return (docket_ref, {"query_term" : self.query_term, "count" : count})
