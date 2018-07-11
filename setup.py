@@ -5,7 +5,7 @@ import setuptools
 
 
 setup(name = "scotus-tools",
-      version = "0.9.29",
+      version = "0.9.30",
       author = "Floyd Terbo",
       author_email = "fterbo@protonmail.com",
       packages = setuptools.find_packages(),

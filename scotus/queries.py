@@ -19,14 +19,15 @@ def query (typ):
 @SD.inputs("docket-reference")
 @SD.returns("docket-reference")
 class PetitionQuery(object):
-  def __init__ (self, docket_ref):
-    self.docket_ref = docket_ref
+  def __init__ (self, query_term, min_count = 1):
+    self.query_term = query_term
+    self.min_count = min_count
 
-  def query (self, query_term, min_count = 1):
-    qgram = len(query_term.split())
+  def query (self, docket_ref):
+    qgram = len(self.query_term.split())
 
     try:
-      ppath = self.docket_ref.info.petition_path
+      ppath = docket_ref.info.petition_path
       if not ppath:
 #        print("No petition for %d" % (self.docket_ref.info.docket))
         return None
@@ -37,7 +38,7 @@ class PetitionQuery(object):
     if not pfname:
       return None
 
-    count = self.docket_ref.index.gramsearch(pfname, qgram, query_term)
-    if count < min_count:
+    count = docket_ref.index.gramsearch(pfname, qgram, query_term)
+    if count < self.min_count:
       return False
-    return self.docket_ref
+    return (docket_ref, {"query_term" : self.query_term, "count" : count})

@@ -65,6 +65,9 @@ class DocketStatusInfo(object):
 
     self._build(docket_obj)
 
+  def __hash__ (self):
+    return hash("%d-%d" % (self.term, self.docket))
+
   def _getLocalPath (self, link):
     path1 = "OT-%d/dockets/%d/%s" % (self.term, self.docket, link["File"])
     if os.path.exists(path1):

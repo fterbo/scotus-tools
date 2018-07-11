@@ -3,6 +3,7 @@
 # Copyright (c) 2018  Floyd Terbo
 
 import json
+import pprint
 import sys
 
 import scotus.filters
@@ -11,16 +12,69 @@ import scotus.queries
 import scotus.sources
 
 # analysis-engine '{"sources" : [("docket", {"term" : 17, "paid" : true, "ifp" : true})],
-#                   "filters" : [],
+#                   "filters" : [("lowercourt", {"court_abbrev" : "scFL"})],
 #                   "queries" : [("petition-ngram", {"query_term" : "qualified immunity", "min_count" : 2})],
-#                   "output" : "docket-oneline"}'
+#                   "output" : ["docket-oneline", {}]}'
+
+def apply_filters (filter_list, sinfo):
+  for srcf in filter_list:
+    if srcf.include(sinfo):
+      return sinfo
+
+
+def apply_query (query_list, sinfo):
+  qout_data = []
+  for qc in query_list:
+    qout = qo.query(sinfo)
+    if qout:
+      qout_data.append(qout)
+  if len(qout_data) == len(query_list):
+    outd = {}
+    for (ref, extra) in qout_data:
+      outd.setdefault(ref, []).append(extra)
+    return outd
+  return {}
+
 
 
 def engine (sources, filters, queries, output):
-  print sources
-  pass
+  source_list = []
+  for (sname, sargs) in sources:
+    source_list.append(scotus.sources.SOURCETYPES[sname](root_path = ".", **sargs))
+
+  filter_list = []
+  for (fname, fargs) in filters:
+    filter_list.append(scotus.filters.FILTERTYPES[fname](**fargs))
+
+  query_list = []
+  for (qname, qargs) in queries:
+    query_list.append(scotus.queries.QUERYTYPES[qname](**qargs))
+
+  outklass = scotus.outputs.OUTPUTTYPES[output[0]](**output[1])
+
+
+  filtered_source_list = []
+  for source in source_list:
+    for item in source:
+      sinfo = apply_filters(filter_list, item)
+      if sinfo:
+        filtered_source_list.append(sinfo)
+    
+  query_out = []
+  for sdata in filtered_source_list:
+    qdata = apply_query(query_list, sdata)
+    for k,v in qdata.items():
+      query_out.append((k,v))
+
+  out = []
+  for k,v in query_out:
+    out.append(outklass.output(k, v))
+
+  return out
+    
 
 if __name__ == '__main__':
   print sys.argv
   kwargs = json.loads(sys.argv[1])
-  engine(**kwargs)
+  out = engine(**kwargs)
+  pprint.pprint(out)

@@ -17,11 +17,8 @@ def output (typ):
 @output("docket-oneline")
 @SD.inputs("docket-reference")
 class OneLineDocketSummary(object):
-  def __init__ (self, docket_ref):
-    self.docket_ref = docket_ref
-
-  def output (self):
-    di = self.docket_ref.info
+  def output (self, docket_ref, extra_list):
+    di = docket_ref.info
     dstr = "%d-%d" % (di.term, di.docket)
 
     cabbr = None
@@ -29,5 +26,5 @@ class OneLineDocketSummary(object):
       if v == di.lowercourt:
         cabbr = k
 
-    return ("[%7s][%11s][%5s] %s %s" % (dstr, di.casetype, cabbr, di.casename, di.getFlagString()))
+    return (di.term, di.docket, "[%7s][%11s][%5s] %s %s" % (dstr, di.casetype, cabbr, di.casename, di.getFlagString()))
 

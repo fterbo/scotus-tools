@@ -48,11 +48,14 @@ class DocketReference(object):
 
   @property
   def info (self):
-    if not self._info:
-      with open("%s/docket.json" % (self.path), "rb") as df:
-        docket_obj = json.loads(df.read())
+    if self._info is None:
+      try:
+        with open("%s/docket.json" % (self.path), "rb") as df:
+          docket_obj = json.loads(df.read())
 
-      self._info = util.DocketStatusInfo(docket_obj)
+        self._info = util.DocketStatusInfo(docket_obj)
+      except IOError:
+        self._info = False
     return self._info
 
   @property
