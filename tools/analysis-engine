@@ -10,9 +10,9 @@ import scotus.outputs
 import scotus.queries
 import scotus.sources
 
-# analysis-engine '{"sources" : [("docket", {"term" : 17, "paid" : true, "ifp" : true})],
-#                   "filters" : [("lowercourt", {"court_abbrev" : "scFL"})],
-#                   "queries" : [("petition-ngram", {"query_term" : "qualified immunity", "min_count" : 2})],
+# analysis-engine '{"sources" : [["docket", {"term" : 17, "paid" : true, "ifp" : true}]],
+#                   "filters" : [["lowercourt", {"court_abbrev" : "scFL"}]],
+#                   "queries" : [["petition-ngram", {"query_term" : "qualified immunity", "min_count" : 2}]],
 #                   "output" : ["docket-oneline", {}]}'
 
 def apply_filters (filter_list, sinfo):

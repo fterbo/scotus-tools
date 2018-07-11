@@ -64,3 +64,13 @@ class DocketReference(object):
       self._index = parse.DirIndex(self.path)
     return self._index
 
+
+@source("opinion")
+@SD.returns("opinion-reference")
+class OpinionSource(object):
+  def __init__ (self, root_path, term):
+    self.term = term
+    self.root_path = root_path
+
+  def __iter__ (self):
+    pass
