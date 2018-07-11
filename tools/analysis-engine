@@ -75,6 +75,6 @@ def engine (sources, filters, queries, output):
 if __name__ == '__main__':
   kwargs = json.loads(sys.argv[1])
   out = engine(**kwargs)
-  d = {"v" : 1, "arguments" : sys.argv[1], "output" : out}
+  d = {"v" : 1, "arguments" : kwargs, "output" : out}
   s = json.dumps(d)
   print s
