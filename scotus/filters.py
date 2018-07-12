@@ -41,7 +41,7 @@ ATTY_ROLES = {
 
 @srcfilter("attorney")
 @SD.inputs("docket-reference")
-class PartyAttorney(object)
+class PartyAttorney(object):
   def __init__ (self, atty_name, role = None):
     self.atty = ATTYMAP[atty_name]
     self.role = getattr(Attorney, ATTY_ROLES[role])
@@ -49,6 +49,8 @@ class PartyAttorney(object)
   def include (self, docket_ref):
     if not docket_ref.info:
       return False
+
+    docket = docket_ref.info
 
     for atty in docket.attys_petitioner:
       try:
