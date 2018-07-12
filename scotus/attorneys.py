@@ -72,6 +72,9 @@ class Attorney(object):
       return True
     return False
 
+  def isPrivate (self, qdate):
+    return not self.isGov(qdate)
+
 
 # Many of these are conservative date ranges based on filings, they are definitely NOT accurate
 

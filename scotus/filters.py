@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 from . import decorators as SD
 from .courts import NAMEMAP as LCNAMEMAP
-from .attorneys import ATTYMAP
+from .attorneys import Attorney, ATTYMAP
 
 FILTERTYPES = {}
 
@@ -32,11 +32,19 @@ class LowerCourtFilter(object):
       return True
 
 
+ATTY_ROLES = {
+  "gov" : "isGov",
+  "sg" : "isSG",
+  "ag" : "isAG",
+  "priv" : "isPrivate",
+}
+
 @srcfilter("attorney")
 @SD.inputs("docket-reference")
 class PartyAttorney(object)
-  def __init__ (self, atty_name):
+  def __init__ (self, atty_name, role = None):
     self.atty = ATTYMAP[atty_name]
+    self.role = getattr(Attorney, ATTY_ROLES[role])
 
   def include (self, docket_ref):
     if not docket_ref.info:
@@ -46,7 +54,11 @@ class PartyAttorney(object)
       try:
         aobj = ATTYMAP[atty]
         if self.atty == aobj:
-          return True
+          if self.role:
+            if self.role(aobj, docket.docket_date):
+              return True
+          else:
+            return True
       except KeyError:
         continue
 
@@ -54,6 +66,11 @@ class PartyAttorney(object)
       try:
         aobj = ATTYMAP[atty]
         if self.atty == aobj:
-          return True
+          if self.role:
+            if self.role(aobj, docket.docket_date):
+              return True
+          else:
+            return True
       except KeyError:
         continue
+

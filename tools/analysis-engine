@@ -59,11 +59,14 @@ def engine (sources, filters, queries, output):
       if sinfo:
         filtered_source_list.append(sinfo)
     
-  query_out = []
-  for sdata in filtered_source_list:
-    qdata = apply_query(query_list, sdata)
-    for k,v in qdata.items():
-      query_out.append((k,v))
+  if query_list:
+    query_out = []
+    for sdata in filtered_source_list:
+      qdata = apply_query(query_list, sdata)
+      for k,v in qdata.items():
+        query_out.append((k,v))
+  else:
+    query_out = [(x, []) for x in filtered_source_list]
 
   out = []
   for k,v in query_out:
