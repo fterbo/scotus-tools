@@ -28,6 +28,18 @@ class CaseTypeError(SCOTUSError):
     return "Unable to determine case type for %s" % (self.docket)
 
 
+class MultiMatch(object):
+  def __init__ (self, *args):
+    self.matches = args
+
+  def __eq__ (self, val):
+    if not val:
+      return False
+    if val in self.matches:
+      return True
+    return False
+
+
 class DocketStatusInfo(object):
   def __init__ (self, docket_obj):
     self.docket_date = None
@@ -85,7 +97,7 @@ class DocketStatusInfo(object):
     self.docket = int(dstr)
 
     try:
-      self.docket_date = dateutil.parser.parse(docket_obj["DocketedDate"])
+      self.docket_date = dateutil.parser.parse(docket_obj["DocketedDate"]).date()
       self.capital = docket_obj["bCapitalCase"]
       self.casename = buildCasename(docket_obj)
       self.casetype = getCaseType(docket_obj)
