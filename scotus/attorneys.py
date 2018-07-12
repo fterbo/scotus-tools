@@ -47,6 +47,10 @@ class Attorney(object):
     self.positions.append(("fpd.%s" % (entity), start, end))
     return self
 
+  def setSPD (self, entity, start, end = None):
+    self.positions.append(("spd.%s" % (entity), start, end))
+    return self
+
   def isSG (self, qdate):
     for (position, start, end) in self.positions:
       if end is None and qdate > start:
@@ -94,11 +98,15 @@ _attys = [
     .setAG("va.unknown", date(2017, 2, 21), None),
   Attorney("Stephen R. Creason", "Stephen Richard Creason")
     .setAG("in.unknown", date(2006, 12, 13), None),
+  Attorney("Tracy Dreispul", "Tracy M. Dreispul")
+    .setFPD("sdfl", date(2006, 11, 20), None)
   Attorney("Noel J. Francisco", "Noel Francisco")
     .setSG("us.acting", date(2017, 1, 23), date(2017, 3, 10))
     .setSG("us", date(2017, 9, 19), None),
   Attorney("Michael Marc Glick")
     .setAG("illinois.ccad", date(2006, 7, 1), None),
+  Attorney("Paul Edward Kalil")
+    .setSPD("fl.ccrc", date(2009, 5, 1), None)
   Attorney("John M. Klawikofsky")
     .setAG("fl.unknown", date(2005, 3, 14), None),
   Attorney("Aaron David Lindstrom", "Aaron D. Lindstrom Jr.")
