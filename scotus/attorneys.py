@@ -106,7 +106,7 @@ _attys = [
   Attorney("Michael Marc Glick")
     .setAG("illinois.ccad", date(2006, 7, 1), None),
   Attorney("Paul Edward Kalil")
-    .setSPD("fl.ccrc", date(2009, 5, 1), None)
+    .setSPD("fl.ccrc", date(2009, 5, 1), None),
   Attorney("John M. Klawikofsky")
     .setAG("fl.unknown", date(2005, 3, 14), None),
   Attorney("Aaron David Lindstrom", "Aaron D. Lindstrom Jr.")
