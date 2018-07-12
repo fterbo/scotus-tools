@@ -44,7 +44,9 @@ ATTY_ROLES = {
 class PartyAttorney(object):
   def __init__ (self, atty_name, role = None):
     self.atty = ATTYMAP[atty_name]
-    self.role = getattr(Attorney, ATTY_ROLES[role])
+    self.role = None
+    if role:
+      self.role = getattr(Attorney, ATTY_ROLES[role])
 
   def include (self, docket_ref):
     if not docket_ref.info:
