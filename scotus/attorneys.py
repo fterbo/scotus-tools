@@ -99,7 +99,7 @@ _attys = [
   Attorney("Stephen R. Creason", "Stephen Richard Creason")
     .setAG("in.unknown", date(2006, 12, 13), None),
   Attorney("Tracy Dreispul", "Tracy M. Dreispul")
-    .setFPD("sdfl", date(2006, 11, 20), None)
+    .setFPD("sdfl", date(2006, 11, 20), None),
   Attorney("Noel J. Francisco", "Noel Francisco")
     .setSG("us.acting", date(2017, 1, 23), date(2017, 3, 10))
     .setSG("us", date(2017, 9, 19), None),
@@ -122,7 +122,7 @@ _attys = [
     .setFPD("tx", date(2016, 5, 1), None),
   Attorney("Kannon K. Shanmugam")
     .setSG("us.assistant", date(2003, 6, 23), date(2008, 3, 24))
-    .setFirm("williams-connolly", date(2008, 5, 2), None)
+    .setFirm("williams-connolly", date(2008, 5, 2), None),
 ]
 
 
