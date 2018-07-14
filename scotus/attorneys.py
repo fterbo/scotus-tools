@@ -107,6 +107,8 @@ _attys = [
     .setSG("us", date(2017, 9, 19), None),
   Attorney("Michael Marc Glick")
     .setAG("illinois.ccad", date(2006, 7, 1), None),
+  Attorney("Raed Gonzalez")
+    .setFirm("gonzalez-olivieri", date(2015, 11, 20), None),
   Attorney("Paul Edward Kalil")
     .setSPD("fl.ccrc", date(2009, 5, 1), None),
   Attorney("John M. Klawikofsky")

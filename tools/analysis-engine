@@ -2,8 +2,11 @@
 
 # Copyright (c) 2018  Floyd Terbo
 
+import functools
 import json
+from pathos import multiprocessing
 import sys
+import time
 
 import scotus.filters
 import scotus.outputs
@@ -14,6 +17,8 @@ import scotus.sources
 #                   "filters" : [["lowercourt", {"court_abbrev" : "scFL"}]],
 #                   "queries" : [["petition-ngram", {"query_term" : "qualified immunity", "min_count" : 2}]],
 #                   "output" : ["docket-oneline", {}]}'
+
+PROCESSES = 8
 
 def apply_filters (filter_list, sinfo):
   for srcf in filter_list:
@@ -52,10 +57,14 @@ def engine (sources, filters, queries, output):
   outklass = scotus.outputs.OUTPUTTYPES[output[0]](**output[1])
 
 
+  pool = multiprocessing.ProcessingPool(nodes = PROCESSES)
+
   filtered_source_list = []
   for source in source_list:
-    for item in source:
-      sinfo = apply_filters(filter_list, item)
+    res = pool.amap(functools.partial(apply_filters, filter_list), [item for item in source])
+    while not res.ready():
+      time.sleep(0.5)
+    for sinfo in res.get():
       if sinfo:
         filtered_source_list.append(sinfo)
     

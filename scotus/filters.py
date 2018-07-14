@@ -43,12 +43,13 @@ ATTY_ROLES = {
 @SD.inputs("docket-reference")
 class PartyAttorney(object):
   def __init__ (self, atty_name, role = None):
-    self.atty = ATTYMAP[atty_name]
+    self.atty_name = atty_name
     self.role = None
     if role:
       self.role = getattr(Attorney, ATTY_ROLES[role])
 
   def include (self, docket_ref):
+    fobj = ATTYMAP[self.atty_name]
     if not docket_ref.info:
       return False
 
@@ -57,7 +58,7 @@ class PartyAttorney(object):
     for atty in docket.attys_petitioner:
       try:
         aobj = ATTYMAP[atty]
-        if self.atty == aobj:
+        if fobj == aobj:
           if self.role:
             if self.role(aobj, docket.docket_date):
               return True
@@ -69,7 +70,7 @@ class PartyAttorney(object):
     for atty in docket.attys_respondent:
       try:
         aobj = ATTYMAP[atty]
-        if self.atty == aobj:
+        if fobj == aobj:
           if self.role:
             if self.role(aobj, docket.docket_date):
               return True

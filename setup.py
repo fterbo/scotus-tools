@@ -5,12 +5,13 @@ import setuptools
 
 
 setup(name = "scotus-tools",
-      version = "0.9.31",
+      version = "0.9.32",
       author = "Floyd Terbo",
       author_email = "fterbo@protonmail.com",
       packages = setuptools.find_packages(),
       install_requires = [
         "BeautifulSoup",
+        "pathos",
         "PyPDF2",
         "python-dateutil",
         "requests",
