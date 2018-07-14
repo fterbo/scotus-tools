@@ -19,7 +19,7 @@ def srcfilter (typ):
 @SD.inputs("docket-reference")
 class LowerCourtFilter(object):
   def __init__ (self, court_abbrev):
-    self.court = LCNAMEMAP[court_abbrev]
+    self.cabbr = court_abbrev
 
   def include (self, docket_ref):
     if not docket_ref.info:
@@ -28,7 +28,7 @@ class LowerCourtFilter(object):
     if not docket_ref.info.lowercourt:
       return False
 
-    if self.court == docket_ref.info.lowercourt:
+    if LCNAMEMAP[self.cabbr] == docket_ref.info.lowercourt:
       return True
 
 
@@ -49,10 +49,10 @@ class PartyAttorney(object):
       self.role = getattr(Attorney, ATTY_ROLES[role])
 
   def include (self, docket_ref):
-    fobj = ATTYMAP[self.atty_name]
     if not docket_ref.info:
       return False
 
+    fobj = ATTYMAP[self.atty_name]
     docket = docket_ref.info
 
     for atty in docket.attys_petitioner:
