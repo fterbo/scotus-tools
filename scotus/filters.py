@@ -61,7 +61,7 @@ class PartyAttorney(object):
 
     docket = docket_ref.info
 
-    if petitioner or petitioner is None:
+    if self.petitioner or self.petitioner is None:
       for atty in docket.attys_petitioner:
         try:
           aobj = ATTYMAP[atty]
@@ -74,7 +74,7 @@ class PartyAttorney(object):
         except KeyError:
           continue
 
-    if respondent or respondent is None:
+    if self.respondent or self.respondent is None:
       for atty in docket.attys_respondent:
         try:
           aobj = ATTYMAP[atty]
