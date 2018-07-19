@@ -89,6 +89,9 @@ class Attorney(object):
 _attys = [
   Attorney("Jerry V. Beard")
     .setFPD("tx.nd", date(2017, 2, 1), None),
+  Attorney("Julie Marie Blake")
+    .setAG("wv.assistant", date(2014, 1, 1), date(2017, 1, 27))  # Can't find a good start date
+    .setAG("mo.unknown", date(2017, 1, 28), None),
   Attorney("Paul D. Clement")
     .setFirm("kirkland-ellis", date(2016, 9, 12), None)
     .setFirm("bancroft", date(2011, 3, 25), date(2016, 9, 12))
