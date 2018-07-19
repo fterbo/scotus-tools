@@ -55,7 +55,7 @@ class PartyAttorney(object):
     try:
       fobj = ATTYMAP[self.atty_name]
     except KeyError:
-      fobj = Attorney(atty_name)
+      fobj = Attorney(self.atty_name)
 
     docket = docket_ref.info
 
