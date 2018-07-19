@@ -52,7 +52,11 @@ class PartyAttorney(object):
     if not docket_ref.info:
       return False
 
-    fobj = ATTYMAP[self.atty_name]
+    try:
+      fobj = ATTYMAP[self.atty_name]
+    except KeyError:
+      fobj = Attorney(atty_name)
+
     docket = docket_ref.info
 
     for atty in docket.attys_petitioner:
