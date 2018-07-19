@@ -42,9 +42,11 @@ ATTY_ROLES = {
 @srcfilter("attorney")
 @SD.inputs("docket-reference")
 class PartyAttorney(object):
-  def __init__ (self, atty_name, role = None):
+  def __init__ (self, atty_name, role = None, petitioner = None, respondent = None):
     self.atty_name = atty_name
     self.role = None
+    self.petitioner = petitioner
+    self.respondent = respondent
     if role:
       self.role = getattr(Attorney, ATTY_ROLES[role])
 
@@ -59,27 +61,29 @@ class PartyAttorney(object):
 
     docket = docket_ref.info
 
-    for atty in docket.attys_petitioner:
-      try:
-        aobj = ATTYMAP[atty]
-        if fobj == aobj:
-          if self.role:
-            if self.role(aobj, docket.docket_date):
+    if petitioner or petitioner is None:
+      for atty in docket.attys_petitioner:
+        try:
+          aobj = ATTYMAP[atty]
+          if fobj == aobj:
+            if self.role:
+              if self.role(aobj, docket.docket_date):
+                return True
+            else:
               return True
-          else:
-            return True
-      except KeyError:
-        continue
+        except KeyError:
+          continue
 
-    for atty in docket.attys_respondent:
-      try:
-        aobj = ATTYMAP[atty]
-        if fobj == aobj:
-          if self.role:
-            if self.role(aobj, docket.docket_date):
+    if respondent or respondent is None:
+      for atty in docket.attys_respondent:
+        try:
+          aobj = ATTYMAP[atty]
+          if fobj == aobj:
+            if self.role:
+              if self.role(aobj, docket.docket_date):
+                return True
+            else:
               return True
-          else:
-            return True
-      except KeyError:
-        continue
+        except KeyError:
+          continue
 
