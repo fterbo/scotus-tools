@@ -104,6 +104,7 @@ _attys = [
     .setFPD("sdfl", date(2006, 11, 20), None),
   Attorney("Noel J. Francisco", "Noel Francisco")
     .setSG("us.acting", date(2017, 1, 23), date(2017, 3, 10))
+    .setSG("us.stub", date(2017, 3, 11), date(2017, 9, 18))  # Stub for bad docket metadata
     .setSG("us", date(2017, 9, 19), None),
   Attorney("Michael Marc Glick")
     .setAG("illinois.ccad", date(2006, 7, 1), None),
