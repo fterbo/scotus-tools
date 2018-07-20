@@ -114,6 +114,8 @@ _attys = [
     .setAG("va.unknown", date(2017, 2, 21), None),
   Attorney("Stephen R. Creason", "Stephen Richard Creason")
     .setAG("in.unknown", date(2006, 12, 13), None),
+  Attorney("Christopher A. Curtis")
+    .setFPD("tx.nd", date(2016, 12, 15), None),
   Attorney("Tracy Dreispul", "Tracy M. Dreispul")
     .setFPD("sdfl", date(2006, 11, 20), None),
   Attorney("Noel J. Francisco", "Noel Francisco")
@@ -141,6 +143,8 @@ _attys = [
     .setFPD("fl.chu", date(2017, 6, 1), None),
   Attorney("Kevin Joel Page")
     .setFPD("tx", date(2016, 5, 1), None),
+  Attorney("Trisha Meggs Pate")
+    .setAG("fl.unknown", date(2011, 3, 3), None),
   Attorney("Kannon K. Shanmugam")
     .setSG("us.assistant", date(2003, 6, 23), date(2008, 3, 24))
     .setFirm("williams-connolly", date(2008, 5, 2), None),
@@ -149,6 +153,8 @@ _attys = [
   Attorney("Jeffrey B. Wall")
     .setSG("us.acting", date(2017, 3, 10), date(2017, 9, 19))
     .setSG("us.deputy", date(2017, 9, 20), None),
+  Attorney("Sarah Hawkins Warren")
+    .setSG("ga", date(2016, 12, 8), None),
 ]
 
 
