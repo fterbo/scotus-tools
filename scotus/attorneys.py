@@ -51,6 +51,17 @@ class Attorney(object):
     self.positions.append(("spd.%s" % (entity), start, end))
     return self
 
+  def isPD (self, qdate):
+    for (position, start, end) in self.positions:
+      if end is None and qdate > start:
+        if position.startswith("fpd.") or position.startswith("spd."):
+          return True
+      elif qdate > start and qdate <= end:
+        if position.startswith("fpd.") or position.startswith("spd."):
+          return True
+    return False
+      
+
   def isSG (self, qdate):
     for (position, start, end) in self.positions:
       if end is None and qdate > start:

@@ -31,6 +31,7 @@ def build_stats (opts, path):
 
   attys = {}
   gattys = {}
+  pdattys = {}
 
   ddirs = os.listdir(path)
   for ddir in ddirs:
@@ -52,6 +53,8 @@ def build_stats (opts, path):
         aobj = ATTYMAP[pa]
         if aobj.isGov(docket.docket_date):
           gattys.setdefault(aobj, [0])[0] += 1
+        elif aobj.isPD(docket.docket_date):
+          pdattys.setdefault(aobj, [0])[0] += 1
         else:
           attys.setdefault(aobj, [0])[0] += 1
         continue
@@ -64,6 +67,8 @@ def build_stats (opts, path):
         aobj = ATTYMAP[ra]
         if aobj.isGov(docket.docket_date):
           gattys.setdefault(aobj, [0])[0] += 1
+        elif aobj.isPD(docket.docket_date):
+          pdattys.setdefault(aobj, [0])[0] += 1
         else:
           attys.setdefault(aobj, [0])[0] += 1
         continue
@@ -110,6 +115,8 @@ def build_stats (opts, path):
   atty_counts.sort(key = lambda x: x[1], reverse=True)
   gatty_counts = [(k.name,v[0]) for k,v in gattys.items()]
   gatty_counts.sort(key = lambda x: x[1], reverse=True)
+  pdatty_counts = [(k.name,v[0]) for k,v in pdattys.items()]
+  pdatty_counts.sort(key = lambda x: x[1], reverse=True)
 
   if opts.write:
     sdata["_atty_counts"] = atty_counts
@@ -125,6 +132,7 @@ def build_stats (opts, path):
 
   sdata["attorneys"] = atty_counts[:10]
   sdata["gov-attorneys"] = gatty_counts[:10]
+  sdata["pd-attorneys"] = pdatty_counts[:10]
 
   pprint.pprint(sdata)
 
