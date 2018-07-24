@@ -105,6 +105,8 @@ def scanOpinions (path, opts):
         odata["docket"] = "A%d" % (int(dtext.split("A")[1]))
       elif dtext.count("-"):
         odata["docket"] = int(dtext.split("-")[1])
+      elif dtext.count(","):
+        odata["docket"] = "O%d" % (int(dtext.split(",")[0]))
       else:
         print "Unknown order opinion docket string: %s" % (dtext)
         continue
