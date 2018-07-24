@@ -86,6 +86,61 @@ def scanOpinions (path, opts):
       with open("%s/info.json" % (opath), "w+") as f:
         f.write(json.dumps(odata))
 
+  # Opinions related to orders
+  r = GET("%s/opinions/relatingtoorders/%d" % (BASE, opts.term))
+  if r.status_code != 200:
+    print r.status_code
+    sys.exit(1)
+
+  oroot = BS.BeautifulSoup(r.content)
+  panels = oroot.findAll("div", {"class" : "panel-body"})
+  for panel in panels:
+    rows = panel.findAll("tr")
+    for row in rows[1:]:
+      odata = {}
+      cells = row.findAll("td")
+
+      try:
+        odata["docket"] = int(cells[1].text.split("-")[1])
+      except IndexError:
+        odata["docket"] = int(cells[1].text.split(",")[0])
+
+      opath = "%s/orders/%d" % (path, odata["docket"])
+      if not os.path.exists(opath):
+        os.makedirs(opath)
+
+      odata["date"] = time.mktime(datetime.datetime.strptime(cells[0].text, "%m/%d/%y").timetuple())
+
+      aelem = cells[2].find("a")
+      fname = aelem["href"].split("/")[-1]
+      lpath = "%s/%s" % (opath, fname)
+      if not os.path.exists(lpath):
+        logging.info("Grabbing Order Opinion for %d" % (odata["docket"]))
+        r = GET("%s/%s" % (BASE, aelem["href"]))
+        with open(lpath, "w+") as f:
+          f.write(r.content)
+
+      if len(cells) == 6:
+        revised = cells[len(cells)-3].find("a")
+        if revised:
+          r = GET("%s/%s" % (BASE, revised["href"]))
+          with open("%s/%s" % (opath, revised["href"].split("/")[-1]), "w+") as f:
+            f.write(r.content)
+
+      odata["justice"] = cells[len(cells)-2].text
+      odata["prelim-part"] = cells[len(cells)-1].text
+
+      infopath = "%s/info.json" % (opath)
+      if os.path.exists(infopath):
+        exdata = json.loads(open(infopath, "rb").read())
+      else:
+        exdata = {"oinfo" : []}
+
+      exdata["oinfo"].append(odata)
+
+      with open(infopath, "w+") as f:
+        f.write(json.dumps(exdata))
+
 
 if __name__ == '__main__':
   opts = parse_args()
