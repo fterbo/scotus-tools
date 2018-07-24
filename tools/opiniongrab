@@ -100,10 +100,14 @@ def scanOpinions (path, opts):
       odata = {}
       cells = row.findAll("td")
 
-      try:
-        odata["docket"] = int(cells[1].text.split("-")[1])
-      except IndexError:
-        odata["docket"] = int(cells[1].text.split(",")[0])
+      dtext = cells[1].text
+      if dtext.count("A"):
+        odata["docket"] = "A%d" % (int(dtext.split("A")[1]))
+      elif dtext.count("-"):
+        odata["docket"] = int(dtext.split("-")[1])
+      else:
+        print "Unknown order opinion docket string: %s" % (dtext)
+        continue
 
       opath = "%s/orders/%d" % (path, odata["docket"])
       if not os.path.exists(opath):
