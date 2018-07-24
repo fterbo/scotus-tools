@@ -18,8 +18,8 @@ def srcfilter (typ):
 @srcfilter("lowercourt")
 @SD.inputs("docket-reference")
 class LowerCourtFilter(object):
-  def __init__ (self, court_abbrev):
-    self.cabbr = court_abbrev
+  def __init__ (self, court_abbrevs):
+    self.cabbrs = court_abbrevs
 
   def include (self, docket_ref):
     if not docket_ref.info:
@@ -28,14 +28,16 @@ class LowerCourtFilter(object):
     if not docket_ref.info.lowercourt:
       return False
 
-    if LCNAMEMAP[self.cabbr] == docket_ref.info.lowercourt:
-      return True
+    for abbr in self.cabbrs:
+      if LCNAMEMAP[abbr] == docket_ref.info.lowercourt:
+        return True
 
 
 ATTY_ROLES = {
   "gov" : "isGov",
   "sg" : "isSG",
   "ag" : "isAG",
+  "pd" : "isPD",
   "priv" : "isPrivate",
 }
 
