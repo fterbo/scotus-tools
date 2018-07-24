@@ -30,6 +30,7 @@ if __name__ == '__main__':
   opts = parse_args()
 
   rootpath = "%s/OT-%d/opinions" % (opts.root, opts.term)
+  orootpath = "%s/OT-%d/opinions/orders" % (opts.root, opts.term)
 
   # If we only have one, run without the pool in case you're trying to debug something
   if opts.parallel != 1:
@@ -38,6 +39,13 @@ if __name__ == '__main__':
   ddirs = []
   for name in os.listdir(rootpath):
     dpath = "%s/%s" % (rootpath, name)
+    if os.path.isdir(dpath):
+      if os.path.exists("%s/indexes.json" % (dpath)) and not opts.reindex:
+        continue
+      ddirs.append(dpath)
+
+  for name in os.listdir(orootpath):
+    dpath = "%s/%s" % (orootpath, name)
     if os.path.isdir(dpath):
       if os.path.exists("%s/indexes.json" % (dpath)) and not opts.reindex:
         continue
