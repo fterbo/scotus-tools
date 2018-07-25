@@ -33,9 +33,11 @@ class OneLineDocketSummary(object):
 class TopsideCounsel(object):
   def output (self, docket_ref, extra_list):
     di = docket_ref.info
-    if di.atty_petitioner_cor:
-      return di.atty_petitioner_cor
-    else:
-      return "Pro Se (Probable)"
+    if di:
+      if di.atty_petitioner_cor:
+        return di.atty_petitioner_cor
+      else:
+        return "Pro Se (Probable)"
+    return "<No Info>"
 
 
