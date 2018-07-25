@@ -60,13 +60,17 @@ def engine (sources, filters, queries, output):
   pool = multiprocessing.ProcessingPool(nodes = PROCESSES)
 
   filtered_source_list = []
-  for source in source_list:
-    res = pool.amap(functools.partial(apply_filters, filter_list), [item for item in source])
-    while not res.ready():
-      time.sleep(0.5)
-    for sinfo in res.get():
-      if sinfo:
-        filtered_source_list.append(sinfo)
+  if filter_list:
+    for source in source_list:
+      res = pool.amap(functools.partial(apply_filters, filter_list), [item for item in source])
+      while not res.ready():
+        time.sleep(0.5)
+      for sinfo in res.get():
+        if sinfo:
+          filtered_source_list.append(sinfo)
+  else:
+    for source in source_list:
+      filtered_source_list.extend([item for item in source])
     
   if query_list:
     query_out = []
