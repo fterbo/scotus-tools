@@ -19,12 +19,23 @@ def output (typ):
 class OneLineDocketSummary(object):
   def output (self, docket_ref, extra_list):
     di = docket_ref.info
-    dstr = "%d-%d" % (di.term, di.docket)
 
     cabbr = None
     for k,v in LCNAMEMAP.items():
       if v == di.lowercourt:
         cabbr = k
 
-    return (di.term, di.docket, "[%7s][%11s][%5s] %s %s" % (dstr, di.casetype, cabbr, di.casename, di.getFlagString()))
+    return (di.term, di.docket, "[%11s][%5s] %s %s" % (di.casetype, cabbr, di.casename, di.getFlagString()))
+
+
+@output("petitioner-counsel-of-record")
+@SD.inputs("docket-reference")
+class TopsideCounsel(object):
+  def output (self, docket_ref, extra_list):
+    di = docket_ref.info
+    if di.atty_petitioner_cor:
+      return di.atty_petitioner_cor
+    else:
+      return "Pro Se (Probable)"
+
 
