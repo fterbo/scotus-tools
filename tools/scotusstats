@@ -12,6 +12,7 @@ import sys
 
 import scotus.util
 from scotus.attorneys import ATTYMAP
+from scotus.courts import NAMEMAP as LCNAMEMAP
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -29,6 +30,7 @@ def build_stats (opts, path):
   sdata = {"denied" : 0, "granted" : 0, "pending" : 0, "summary" : 0, "decided" : 0, "dismissed" : 0, "gvr" : 0,
            "grants" : [], "pends" : [], "decides" : [], "dismissals" : [] }
 
+  lower_courts = {}
   attys = {}
   gattys = {}
   pdattys = {}
@@ -76,6 +78,13 @@ def build_stats (opts, path):
         pass
       attys.setdefault(ra, [0])[0] += 1
 
+    lcabbr = None
+    if docket.lowercourt:
+      for k,v in LCNAMEMAP.items():
+        if v == docket.lowercourt:
+          lcabbr = k
+          break
+    lower_courts.setdefault(lcabbr, [0])[0] += 1
 
     if docket.gvr:
       sdata["gvr"] += 1
@@ -111,6 +120,8 @@ def build_stats (opts, path):
   sdata["grants"].sort()
   sdata["decides"].sort()
   sdata["dismissals"].sort()
+  lc_counts = [(str(k), v[0]) for k,v in lower_courts.items()]
+  lc_counts.sort(key = lambda x: x[1], reverse=True)
   atty_counts = [(str(k),v[0]) for k,v in attys.items()]
   atty_counts.sort(key = lambda x: x[1], reverse=True)
   gatty_counts = [(k.name,v[0]) for k,v in gattys.items()]
@@ -120,9 +131,11 @@ def build_stats (opts, path):
 
   if opts.write:
     sdata["_atty_counts"] = atty_counts
+    sdata["_lower_courts"] = lc_counts
     with open("summary.json", "w+") as f:
       f.write(json.dumps(sdata))
     del sdata["_atty_counts"]
+    del sdata["_lower_courts"]
 
     
   sdata["pends"] = ", ".join([str(x) for x in sdata["pends"]])
@@ -133,6 +146,7 @@ def build_stats (opts, path):
   sdata["attorneys"] = atty_counts[:10]
   sdata["gov-attorneys"] = gatty_counts[:10]
   sdata["pd-attorneys"] = pdatty_counts[:10]
+  sdata["lower-courts"] = lc_counts[:10]
 
   pprint.pprint(sdata)
 

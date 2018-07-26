@@ -33,7 +33,6 @@ class OneLineDocketSummary(object):
 class TopsideCounsel(object):
   def output (self, docket_ref, extra_list):
     di = docket_ref.info
-    atty_str = "<No Info>"
     if di:
       if di.atty_petitioner_cor:
         atty_str = di.atty_petitioner_cor
