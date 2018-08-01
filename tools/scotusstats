@@ -28,7 +28,7 @@ def parse_args ():
 
 def build_stats (opts, path):
   sdata = {"denied" : 0, "granted" : 0, "pending" : 0, "summary" : 0, "decided" : 0, "dismissed" : 0, "gvr" : 0,
-           "grants" : [], "pends" : [], "decides" : [], "dismissals" : [] }
+           "pro-se" : 0, "grants" : [], "pends" : [], "decides" : [], "dismissals" : [] }
 
   lower_courts = {}
   attys = {}
@@ -51,6 +51,9 @@ def build_stats (opts, path):
     docket = scotus.util.DocketStatusInfo(docket_obj)
 
     for pa in docket.attys_petitioner:
+      if pa == docket.atty_petitioner_prose:
+        sdata["pro-se"] += 1
+        continue
       try:
         aobj = ATTYMAP[pa]
         if aobj.isGov(docket.docket_date):
