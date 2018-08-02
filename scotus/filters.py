@@ -14,6 +14,18 @@ def srcfilter (typ):
     return k
   return decorator
 
+@srcfilter("capital")
+@SD.inputs("docket-reference")
+class CapitalFilter(object):
+  def __init__ (self, is_capital = True):
+    self.is_capital = is_capital
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    return docket_ref.info.capital == self.is_capital
+
 
 @srcfilter("lowercourt")
 @SD.inputs("docket-reference")
