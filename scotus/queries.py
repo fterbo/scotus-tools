@@ -25,6 +25,8 @@ class PetitionQuery(object):
 
   def query (self, docket_ref):
     qgram = len(self.query_term.split())
+    if not docket_ref.info:
+      return None
 
     try:
       ppath = docket_ref.info.petition_path
