@@ -14,6 +14,56 @@ def srcfilter (typ):
     return k
   return decorator
 
+@srcfilter("case-status")
+@SD.inputs("docket-reference")
+class CaseStatus(object):
+  def __init__ (self, pending = None, dismissed = None, granted = None, argued = None, denied = None,
+                judgment_issued = None, gvr = None):
+    self.pending = pending
+    self.dismissed = dismissed
+    self.granted = granted
+    self.argued = argued
+    self.denied = denied
+    self.judgment_issued = judgment_issed
+    self.gvr = gvr
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    di = docket_ref.info
+
+    if self.pending is not None:
+      if self.pending != di.pending:
+        return False
+
+    if self.dismissed is not None:
+      if self.dismissed != di.dismissed:
+        return False
+
+    if self.granted is not None:
+      if self.granted != di.granted:
+        return False
+
+    if self.argued is not None:
+      if self.argued != di.argued:
+        return False
+
+    if self.denied is not None:
+      if self.denied != di.denied:
+        return False
+
+    if self.judgment_issued is not None:
+      if self.judgment_issued != di.judgment_issued:
+        return False
+
+    if self.gvr is not None:
+      if self.gvr != di.gvr:
+        return False
+
+    return True
+
+
 @srcfilter("capital")
 @SD.inputs("docket-reference")
 class CapitalFilter(object):
