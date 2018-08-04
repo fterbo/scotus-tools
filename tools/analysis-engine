@@ -22,8 +22,9 @@ PROCESSES = 8
 
 def apply_filters (filter_list, sinfo):
   for srcf in filter_list:
-    if srcf.include(sinfo):
-      return sinfo
+    if not srcf.include(sinfo):
+      return None
+  return sinfo
 
 
 def apply_query (query_list, sinfo):
