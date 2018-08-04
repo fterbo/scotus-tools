@@ -24,7 +24,7 @@ class CaseStatus(object):
     self.granted = granted
     self.argued = argued
     self.denied = denied
-    self.judgment_issued = judgment_issed
+    self.judgment_issued = judgment_issued
     self.gvr = gvr
 
   def include (self, docket_ref):
