@@ -109,7 +109,7 @@ class DocketStatusInfo(object):
         for info in docket_obj["Petitioner"]:
           if info["IsCounselofRecord"]:
             self.atty_petitioner_cor = info["Attorney"]
-          if info["Attorney"] == info["PartyName"]:
+          if (info["Attorney"] == info["PartyName"]) or info["PrisonerId"]:
             self.atty_petitioner_prose = info["Attorney"]
           self.attys_petitioner.append(info["Attorney"])
 

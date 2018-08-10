@@ -58,12 +58,12 @@ def engine (sources, filters, queries, output):
   outklass = scotus.outputs.OUTPUTTYPES[output[0]](**output[1])
 
 
-  pool = multiprocessing.ProcessingPool(nodes = PROCESSES)
+  fpool = multiprocessing.ProcessingPool(nodes = PROCESSES)
 
   filtered_source_list = []
   if filter_list:
     for source in source_list:
-      res = pool.amap(functools.partial(apply_filters, filter_list), [item for item in source])
+      res = fpool.amap(functools.partial(apply_filters, filter_list), [item for item in source])
       while not res.ready():
         time.sleep(0.5)
       for sinfo in res.get():
@@ -72,7 +72,8 @@ def engine (sources, filters, queries, output):
   else:
     for source in source_list:
       filtered_source_list.extend([item for item in source])
-    
+ 
+  qpool = multiprocessing.ProcessingPool(nodes = PROCESSES)
   if query_list:
     query_out = []
     for sdata in filtered_source_list:
