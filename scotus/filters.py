@@ -2,6 +2,8 @@
 
 from __future__ import absolute_import
 
+import dateutil.parser
+
 from . import decorators as SD
 from .courts import NAMEMAP as LCNAMEMAP
 from .attorneys import Attorney, ATTYMAP
@@ -93,6 +95,20 @@ class LowerCourtFilter(object):
     for abbr in self.cabbrs:
       if LCNAMEMAP[abbr] == docket_ref.info.lowercourt:
         return True
+
+
+@srcfilter("docketdate")
+@SD.inputs("docket-reference")
+class DocketDate(object):
+  def __init__ (self, datestr):
+    self.ddate = dateutil.parser.parse(datestr).date()
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    if self.ddate == docket_ref.info.docket_date:
+      return True
 
 
 ATTY_ROLES = {
