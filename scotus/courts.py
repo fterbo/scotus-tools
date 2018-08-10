@@ -73,7 +73,7 @@ NAMEMAP = {
   "caMN" : "Court of Appeals of Minnesota",
   "caMO" : CourtMatch().setStart("Court of Appeals of Missouri"),
   "caMS" : "Court of Appeals of Mississippi",
-  "caNB" : "Court of Appeals of Nebraska",
+  "caNE" : "Court of Appeals of Nebraska",
   "caNC" : "Court of Appeals of North Carolina",
   "caNJ" : "Superior Court of New Jersey, Appellate Division",
   "caNM" : "Court of Appeals of New Mexico",
