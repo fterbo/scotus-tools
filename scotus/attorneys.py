@@ -146,6 +146,8 @@ _attys = [
     .setFirm("gonzalez-olivieri", date(2015, 11, 20), None),
   Attorney("Benjamin Noah Gutman")
     .setSG("or", date(2016, 1, 1), None),
+  Attorney("Michael Clark Holley")
+    .setFPD("tn", date(2014, 10, 20), None),
   Attorney("Conrad Benjamin Kahn")
     .setFPD("fl.unknown", date(2015, 11, 9), None),
   Attorney("Paul Edward Kalil")
@@ -167,6 +169,8 @@ _attys = [
     .setFPD("tx", date(2016, 5, 1), None),
   Attorney("Trisha Meggs Pate")
     .setAG("fl.unknown", date(2011, 3, 3), None),
+  Attorney("Margaret Scobey Russell")
+    .setSPD("fl.ccrc", date(2018, 3, 1), None),
   Attorney("Kannon K. Shanmugam")
     .setSG("us.assistant", date(2003, 6, 23), date(2008, 3, 24))
     .setFirm("williams-connolly", date(2008, 5, 2), None),
