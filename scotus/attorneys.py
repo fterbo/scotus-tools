@@ -134,6 +134,8 @@ _attys = [
     .setFPD("tx.nd", date(2016, 12, 15), None),
   Attorney("Tracy Dreispul", "Tracy M. Dreispul")
     .setFPD("fl.sd", date(2006, 11, 20), None),
+  Attorney("Ronald  Eisenberg")
+    .setDA("phi", date(2017, 1, 1), None),
   Attorney("Noel J. Francisco", "Noel Francisco")
     .setSG("us.acting", date(2017, 1, 23), date(2017, 3, 10))
     .setSG("us.stub", date(2017, 3, 11), date(2017, 9, 18))  # Stub for bad docket metadata
@@ -142,6 +144,8 @@ _attys = [
     .setAG("illinois.ccad", date(2006, 7, 1), None),
   Attorney("Raed Gonzalez")
     .setFirm("gonzalez-olivieri", date(2015, 11, 20), None),
+  Attorney("Benjamin Noah Gutman")
+    .setSG("or", date(2016, 1, 1), None),
   Attorney("Conrad Benjamin Kahn")
     .setFPD("fl.unknown", date(2015, 11, 9), None),
   Attorney("Paul Edward Kalil")
@@ -175,6 +179,8 @@ _attys = [
     .setSG("us.deputy", date(2017, 9, 20), None),
   Attorney("Sarah Hawkins Warren")
     .setSG("ga", date(2016, 12, 8), None),
+  Attorney("Carrie J. Williams")
+    .setAG("md.assistant", date(2016, 1, 1), None),
   Attorney("Nancy Winkelman")
     .setDA("phi", date(2017, 11, 1), None),
 ]
