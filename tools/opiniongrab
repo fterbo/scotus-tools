@@ -102,7 +102,7 @@ def scanOpinions (path, opts):
 
       dtext = cells[1].text
       if dtext.count("A"):
-        odata["docket"] = "A%d" % (int(dtext.split("A")[1]))
+        odata["docket"] = "A%s" % (dtext.split("A")[1])
       elif dtext.count("-"):
         odata["docket"] = int(dtext.split("-")[1])
       elif dtext.count(","):
