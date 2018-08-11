@@ -39,6 +39,10 @@ class Attorney(object):
     self.positions.append(("ag.%s" % (entity), start, end))
     return self
 
+  def setDA (self, entity, start, end = None):
+    self.positions.append(("da.%s" % (entity), start, end))
+    return self
+
   def setFirm (self, entity, start, end = None):
     self.positions.append(("practice.firm.%s" % (entity), start, end))
     return self
@@ -82,8 +86,18 @@ class Attorney(object):
           return True
     return False
 
+  def isDA (self, qdate):
+    for (position, start, end) in self.positions:
+      if end is None and qdate > start:
+        if position.startswith("da."):
+          return True
+      elif qdate > start and qdate <= end:
+        if position.startswith("da."):
+          return True
+    return False
+
   def isGov (self, qdate):
-    if self.isSG(qdate) or self.isAG(qdate):
+    if self.isSG(qdate) or self.isAG(qdate) or self.isDA(qdate):
       return True
     return False
 
@@ -110,6 +124,8 @@ _attys = [
     .setSG("us.deputy", date(2001, 2, 1), date(2004, 7, 11))
     .setSG("us.acting", date(2004, 7, 11), date(2005, 6, 13))
     .setSG("us", date(2005, 6, 13), date(2008, 6, 19)),
+  Attorney("L. Andrew Cooper")
+    .setAG("co.unknown", date(2017, 10, 1), None),
   Attorney("Trevor Stephen Cox")
     .setAG("va.unknown", date(2017, 2, 21), None),
   Attorney("Stephen R. Creason", "Stephen Richard Creason")
@@ -152,11 +168,15 @@ _attys = [
     .setFirm("williams-connolly", date(2008, 5, 2), None),
   Attorney("Carolyn M. Snurkowski")
     .setAG("fl", date(2016, 8, 1), None),
+  Attorney("Celia A. Terenzio")
+    .setAG("fl.assistant", date(2013, 5, 1), None),
   Attorney("Jeffrey B. Wall")
     .setSG("us.acting", date(2017, 3, 10), date(2017, 9, 19))
     .setSG("us.deputy", date(2017, 9, 20), None),
   Attorney("Sarah Hawkins Warren")
     .setSG("ga", date(2016, 12, 8), None),
+  Attorney("Nancy Winkelman")
+    .setDA("phi", date(2017, 11, 1), None),
 ]
 
 
