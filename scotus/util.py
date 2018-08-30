@@ -146,6 +146,8 @@ class DocketStatusInfo(object):
 
         etxt = event["Text"]
         if etxt.startswith("DISTRIBUTED"):
+          if etxt == "DISTRIBUTED.":
+            continue  # Rehearing distribution, probably, not for conference
           confdate = dateutil.parser.parse(etxt.split()[-1]).date()
           edate = dateutil.parser.parse(event["Date"]).date()
           self.distributed.append((edate, confdate))
