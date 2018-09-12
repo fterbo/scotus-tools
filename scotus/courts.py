@@ -110,6 +110,7 @@ NAMEMAP = {
   "minNC" : CourtMatch().setStart("Superior Court of North Carolina"),
   "minNM" : CourtMatch().setStart("District Court of New Mexico"),
   "minWV" : CourtMatch().setStart("Circuit Court of West Virginia"),
+  "minVA" : CourtMatch().setStart("Circuit Court of Virginia"),
 
   "scAK" : "Supreme Court of Alaska",
   "scAL" : "Supreme Court of Alabama",
