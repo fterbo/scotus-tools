@@ -60,6 +60,7 @@ NAMEMAP = {
   "caDC" : "District of Columbia Court of Appeals",
   "caFL" : CourtMatch().setStart("District Court of Appeal of Florida"),
   "caGA" : "Court of Appeals of Georgia",
+  "caHI" : "Intermediate Court of Appeals of Hawaii",
   "caIA" : "Court of Appeals of Iowa",
   "caID" : "Court of Appeals of Idaho",
   "caIL" : CourtMatch().setStart("Appellate Court of Illinois"),
@@ -93,9 +94,12 @@ NAMEMAP = {
   "caWI" : CourtMatch().setStart("Court of Appeals of Wisconsin"),
   "caWY" : CourtMatch().setStart("District Court of Wyoming"),
 
+  "dcDC" : "United States District Court for the District of Columbia",
+  "dcEPA" : "United States District Court for the Eastern District of Pennsylvania",
+  "dcEVA" : "United States District Court for the Eastern District of Virginia",
   "dcMD" : "United States District Court for the District of Maryland",
   "dcMNC" : "United States District Court for the Middle District of North Carolina",
-  "dcEPA" : "United States District Court for the Eastern District of Pennsylvania",
+  "dcSCA" : "United States District Court for the Southern District of California",
   "dcWTX" : "United States District Court for the Western District of Texas",
 
   "minAZ" : CourtMatch().setStart("Superior Court of Arizona"),

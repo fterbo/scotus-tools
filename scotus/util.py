@@ -55,6 +55,7 @@ class DocketStatusInfo(object):
 
     self.related = []
 
+    self.events = []
     self.granted = False
     self.grant_date = None
     self.argued = False
