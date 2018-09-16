@@ -117,6 +117,10 @@ _attys = [
   Attorney("Julie Marie Blake")
     .setAG("wv.assistant", date(2014, 1, 1), date(2017, 1, 27))  # Can't find a good start date
     .setAG("mo.unknown", date(2017, 1, 28), None),
+  Attorney("Eric Joseph Brignac")
+    .setFPD("nc", date(2014, 5, 1), None),
+  Attorney("Matthew A. Campbell")
+    .setFPD("wa.ed", date(2009, 05, 18), None),
   Attorney("Paul D. Clement")
     .setFirm("kirkland-ellis", date(2016, 9, 12), None)
     .setFirm("bancroft", date(2011, 3, 25), date(2016, 9, 12))
@@ -136,6 +140,8 @@ _attys = [
     .setFPD("fl.sd", date(2006, 11, 20), None),
   Attorney("Ronald  Eisenberg")
     .setDA("phi", date(2017, 1, 1), None),
+  Attorney("Peter Michael Fleury")
+    .setFPD("tx", date(2018, 1, 1), None),
   Attorney("Noel J. Francisco", "Noel Francisco")
     .setSG("us.acting", date(2017, 1, 23), date(2017, 3, 10))
     .setSG("us.stub", date(2017, 3, 11), date(2017, 9, 18))  # Stub for bad docket metadata
