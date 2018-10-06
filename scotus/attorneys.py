@@ -112,6 +112,8 @@ class Attorney(object):
 # Many of these are conservative date ranges based on filings, they are definitely NOT complete or accurate 
 
 _attys = [
+  Attorney("Kristafer Ross Ailslieger")
+    .setAG("ks.deputy", date(2017, 1, 1), None),
   Attorney("Jerry V. Beard")
     .setFPD("tx.nd", date(2017, 2, 1), None),
   Attorney("Julie Marie Blake")
@@ -144,6 +146,9 @@ _attys = [
     .setFPD("fl.sd", date(2006, 11, 20), None),
   Attorney("Ronald  Eisenberg")
     .setDA("phi", date(2017, 1, 1), None),
+  Attorney("Thomas M. Fisher")
+    .setSG("in", date(2005, 7, 1), None)
+    .setAG("in.deputy", date(2001, 2, 1), date(2005, 6, 30)),
   Attorney("Peter Michael Fleury")
     .setFPD("tx", date(2018, 1, 1), None),
   Attorney("Noel J. Francisco", "Noel Francisco")
