@@ -157,7 +157,7 @@ _attys = [
   Attorney("Benjamin Noah Gutman")
     .setSG("or", date(2016, 1, 1), None),
   Attorney("Toby Jay Heytens")
-    .setSG("va", date(2018, 1, 9), None),
+    .setSG("va", date(2018, 1, 9), None)
     .setSG("us.assistant", date(2007, 1, 1), date(2010, 12, 31)),
   Attorney("Michael Clark Holley")
     .setFPD("tn", date(2014, 10, 20), None),
