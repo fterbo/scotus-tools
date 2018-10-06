@@ -170,6 +170,9 @@ _attys = [
     .setFPD("fl.unknown", date(2015, 11, 9), None),
   Attorney("Paul Edward Kalil")
     .setSPD("fl.ccrc", date(2009, 5, 1), None),
+  Attorney("Scott A. Keller")
+    .setFirm("baker-botts", date(2018, 9, 10), None))
+    .setSG("tx", date(2015, 1, 1), date(2018, 9, 9)),
   Attorney("John M. Klawikofsky")
     .setAG("fl.unknown", date(2005, 3, 14), None),
   Attorney("Aaron David Lindstrom", "Aaron D. Lindstrom Jr.")
