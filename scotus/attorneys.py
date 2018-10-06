@@ -119,6 +119,10 @@ _attys = [
     .setAG("mo.unknown", date(2017, 1, 28), None),
   Attorney("Eric Joseph Brignac")
     .setFPD("nc", date(2014, 5, 1), None),
+  Attorney("Melody Jane Brown")
+    .setAG("sc.unknown", date(2014, 1, 1), None),
+  Attorney("Scott Andrew Browne")
+    .setAG("fl.assistant", date(1996, 4, 1), None),
   Attorney("Matthew A. Campbell")
     .setFPD("wa.ed", date(2009, 05, 18), None),
   Attorney("Paul D. Clement")
@@ -152,6 +156,9 @@ _attys = [
     .setFirm("gonzalez-olivieri", date(2015, 11, 20), None),
   Attorney("Benjamin Noah Gutman")
     .setSG("or", date(2016, 1, 1), None),
+  Attorney("Toby Jay Heytens")
+    .setSG("va", date(2018, 1, 9), None),
+    .setSG("us.assistant", date(2007, 1, 1), date(2010, 12, 31)),
   Attorney("Michael Clark Holley")
     .setFPD("tn", date(2014, 10, 20), None),
   Attorney("Conrad Benjamin Kahn")
