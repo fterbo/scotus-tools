@@ -95,6 +95,7 @@ NAMEMAP = {
   "caWY" : CourtMatch().setStart("District Court of Wyoming"),
 
   "dcDC" : "United States District Court for the District of Columbia",
+  "dcEAK" : "United States District Court for the Eastern District of Arkansas",
   "dcEPA" : "United States District Court for the Eastern District of Pennsylvania",
   "dcEVA" : "United States District Court for the Eastern District of Virginia",
   "dcMD" : "United States District Court for the District of Maryland",
@@ -108,6 +109,7 @@ NAMEMAP = {
   "minGA" : CourtMatch().setStart("Superior Court of Georgia"),
   "minMD" : CourtMatch().setStart("Circuit Court of Maryland"),
   "minNC" : CourtMatch().setStart("Superior Court of North Carolina"),
+  "minSC" : CourtMatch().setStart("Court of Common Pleas of South Carolina"),
   "minNM" : CourtMatch().setStart("District Court of New Mexico"),
   "minWV" : CourtMatch().setStart("Circuit Court of West Virginia"),
   "minVA" : CourtMatch().setStart("Circuit Court of Virginia"),
@@ -159,6 +161,7 @@ NAMEMAP = {
   "scUT" : "Supreme Court of Utah",
   "scVT" : "Supreme Court of Vermont",
   "scVA" : "Supreme Court of Virginia",
+  "scVI" : "Supreme Court of the Virgin Islands",
   "scWA" : "Supreme Court of Washington",
   "scWI" : "Supreme Court of Wisconsin",
   "scWV" : "Supreme Court of Appeals of West Virginia",
