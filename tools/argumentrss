@@ -29,6 +29,12 @@ def parse_args ():
   args = parser.parse_args()
   return args
 
+def valid_xml_char (char):
+  cp = ord(char)
+  return (0x20 <= cp <= 0xD7FF or
+          cp in (0x9, 0xA, 0xD) or
+          0xE000 <= cp <= 0xFFFD or
+          0x10000 <= cp <= 0x10FFFFF)
 
 def GET (url):
   logging.debug("GET: %s" % (url))
@@ -44,7 +50,7 @@ def build (term, root):
   fg = FeedGenerator()
   fg.load_extension("podcast")
   fg.title("Oral Arguments for OT-%d" % (term))
-  fg.description("Foo")
+  fg.description("RSS Feed for Supreme Court Oral Arguments")
   fg.link(href = "Bar")
 
   roote = BS.BeautifulSoup(r.content)
@@ -70,7 +76,7 @@ def build (term, root):
       aurl = MP3URL % (info.docketstr)
       fe.id(aurl)
       fe.title("%s: %s" % (info.docketstr, info.casename))
-      fe.description(qptxt)
+      fe.description(''.join(x for x in unicode(qptxt, encoding="utf-8") if valid_xml_char(x)))
       fe.link(href = aurl)
       fe.enclosure(aurl, 0, "audio/mpeg")
 
