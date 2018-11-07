@@ -55,6 +55,7 @@ class DocketStatusInfo(object):
     self.docket_date = None
     self.term = None
     self.docket = None
+    self.original = False
     self.capital = False
     self.casename = None
     self.casetype = None
@@ -152,9 +153,13 @@ class DocketStatusInfo(object):
     return ""
 
   def _build (self, docket_obj):
-    (tstr,dstr) = docket_obj["CaseNumber"].split()[0].split("-")
-    self.term = int(tstr)
-    self.docket = int(dstr)
+    if docket_obj["CaseNumber"].startswith("22O"):
+      self.original = True
+      self.docket = int(docket_obj["CaseNumber"][3:])
+    else:
+      (tstr,dstr) = docket_obj["CaseNumber"].split()[0].split("-")
+      self.term = int(tstr)
+      self.docket = int(dstr)
 
     try:
       self.docket_date = dateutil.parser.parse(docket_obj["DocketedDate"]).date()
