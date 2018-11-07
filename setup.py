@@ -5,7 +5,7 @@ import setuptools
 
 
 setup(name = "scotus-tools",
-      version = "0.9.40",
+      version = "0.9.41",
       author = "Floyd Terbo",
       author_email = "fterbo@protonmail.com",
       packages = setuptools.find_packages(),
@@ -22,5 +22,5 @@ setup(name = "scotus-tools",
                  'tools/docketsearch', 'tools/opiniongrab',
                  'tools/opinionindexer', 'tools/opinionsearch',
                  'tools/scotusstats', 'tools/docketsummary',
-                 'tools/analysis-engine']
+                 'tools/analysis-engine', 'tools/argumentrss']
   )
