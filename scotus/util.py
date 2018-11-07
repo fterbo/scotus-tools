@@ -141,7 +141,7 @@ class DocketStatusInfo(object):
           qp_lines.append(line)
 
     with open("%s/qp.txt" % (self.docketdir), "w+") as qpf:
-      qpf.write("".join(qp_lines))
+      qpf.write("\n".join(qp_lines))
 
   def getQPText (self):
     if self.granted:
