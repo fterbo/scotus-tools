@@ -15,6 +15,7 @@ import requests
 
 HEADERS = {"User-Agent" : "SCOTUS Docket Utility (https://github.com/fterbo/scotus-tools)"}
 QPURL = "https://www.supremecourt.gov/qp/%d-%05dqp.pdf"
+OQPURL = "https://www.supremecourt.gov/qp/%d%%20origqp.pdf"
 
 PETITION_LINKS = set(["Petition", "Appendix", "Jurisdictional Statement"])
 PETITION_TYPES = set(["certiorari", "mandamus", "habeas", "jurisdiction", "prohibition"])
@@ -118,7 +119,11 @@ class DocketStatusInfo(object):
       return path2
 
   def _generateQPText (self):
-    r = GET(QPURL % (self.term, self.docket))
+    if self.original:
+      r = GET(OQPURL % (self.docket))
+    else:
+      r = GET(QPURL % (self.term, self.docket))
+
     if r.status_code != 200:
       logging.warning("%s returned code %d" % (r.url, r.status_code))
       open("%s/qp.txt" % (self.docketdir), "w+").close()
