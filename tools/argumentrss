@@ -9,6 +9,7 @@ import os
 import sys
 
 import BeautifulSoup as BS
+import dateutil
 from feedgen.feed import FeedGenerator
 import requests
 
@@ -52,17 +53,13 @@ def build (term, root):
   fg.link(href = "Bar")
 
   roote = BS.BeautifulSoup(r.content)
-  links = roote.findAll("a")
-  for link in links:
-    href = link.get("href")
-    if href and href.split("/")[-1].count("-"):
-      try:
-        (cterm, cdocket) = href.split("/")[-1].split("-")
-        cterm = int(cterm)
-        if cdocket.count("rearg"):
-          cdocket = cdocket[:-5]
-      except ValueError:
-        continue
+  panels = roote.findAll("div", {"class" : "panel-body"})
+  for panel in panels:
+    rows = panel.findAll("tr")
+    for row in rows[1:]:
+      cells = row.findAll("td")
+      (cterm, cdocket) = cells[0].text.split("-")
+      cterm = int(cterm)
 
       if cdocket== "Orig":
         jpath = "%s/Orig/dockets/%d/docket.json" % (root, cterm)
@@ -81,6 +78,7 @@ def build (term, root):
       fe.title("%s: %s" % (info.audiodocketstr, info.casename))
       fe.description(''.join(x for x in unicode(qptxt, encoding="utf-8") if valid_xml_char(x)))
       fe.link(href = aurl)
+      fe.published(dateutil.parser.parse(cells[1].text))
       fe.enclosure(aurl, 0, "audio/mpeg")
 
   fg.rss_file("OT-%d.xml" % (term))
