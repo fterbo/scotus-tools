@@ -69,6 +69,7 @@ def build (term, root):
       fe.id(href)
       fe.title("%s: %s" % (info.docketstr, info.casename))
       fe.description(qptxt)
+      fe.link(href = href)
       fe.enclosure(href, 0, "audio/mpeg")
 
   fg.rss_file("OT-%d.xml" % (term))
