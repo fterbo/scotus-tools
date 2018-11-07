@@ -43,8 +43,8 @@ def build (term, root):
   fg = FeedGenerator()
   fg.load_extension("podcast")
   fg.title("Oral Arguments for OT-%d" % (term))
-  fg.description("")
-  fg.link(href = "")
+  fg.description("Foo")
+  fg.link(href = "Bar")
 
   roote = BS.BeautifulSoup(r.content)
   links = roote.findAll("a")
