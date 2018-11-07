@@ -127,8 +127,8 @@ def scanPetitions (path, opts):
     for item in docket_obj["ProceedingsandOrder"]:
       try:
         for link in item["Links"]:
-          if link["Description"] == "Petition":
-            # TODO: This does not tend to capture original actions or mandatory appeals
+          if link["Description"] == "Petition" or
+             link["Description"] == "Motion for Leave to File a Bill of Complaint":
             founditem = item
             break
         if founditem:
