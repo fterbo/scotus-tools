@@ -41,7 +41,7 @@ def parse_args ():
 
 def buildDocketStr (opts, num = None):
   if not num:
-    num = opts.docketnum
+    num = opts.docket_num
   if opts.orig:
     return "22O%d" % (num)
   return "%d-%d" % (opts.term, num)
