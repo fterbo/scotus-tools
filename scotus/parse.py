@@ -11,6 +11,8 @@ import unicodedata
 import PyPDF2
 
 JUSTICES = { 17 : set([u"ROBERTS,", u"GINSBURG,", u"KENNEDY,", u"THOMAS,", u"ALITO,",
+                       u"GORSUCH,", u"SOTOMAYOR,", u"KAGAN,", u"BREYER,"]),
+             18 : set([u"ROBERTS,", u"GINSBURG,", u"KAVANAUGH,", u"THOMAS,", u"ALITO,",
                        u"GORSUCH,", u"SOTOMAYOR,", u"KAGAN,", u"BREYER,"])}
 
 class DirIndex(object):

@@ -16,16 +16,11 @@ import sys
 
 from scotus import util
 from scotus.courts import NAMEMAP as LCNAMEMAP
+from scotus.exceptions import NoDocketError
 import scotus.parse
 
 logging.basicConfig(level=logging.INFO)
 
-
-class NoDocketError(Exception):
-  def __init__ (self, docketstr):
-    self.docket = docketstr
-  def __str__ (self):
-    return "No docket info found for %s" % (self.docket)
 
 
 def parse_args ():

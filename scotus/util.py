@@ -3,15 +3,24 @@
 from __future__ import absolute_import
 
 import codecs
+import logging
 import os
 import os.path
 import sys
 import urllib
 
 import dateutil.parser
+import requests
+
+HEADERS = {"User-Agent" : "SCOTUS Docket Utility (https://github.com/fterbo/scotus-tools)"}
+QPURL = "https://www.supremecourt.gov/qp/%d-%05dqp.pdf"
 
 PETITION_LINKS = set(["Petition", "Appendix", "Jurisdictional Statement"])
 PETITION_TYPES = set(["certiorari", "mandamus", "habeas", "jurisdiction", "prohibition"])
+
+def GET (url):
+  logging.debug("GET: %s" % (url))
+  return requests.get(url, headers=HEADERS)
 
 class SCOTUSError(Exception): pass
 
@@ -84,6 +93,15 @@ class DocketStatusInfo(object):
   def __hash__ (self):
     return hash("%d-%d" % (self.term, self.docket))
 
+  @property
+  def docketstr (self):
+    return "%d-%d" % (self.term, self.docket)
+
+  @property
+  def docketdir (self):
+    path = "OT-%d/dockets/%d" % (self.term, self.docket)
+    return path
+
   def _getLocalPath (self, link):
     path1 = "OT-%d/dockets/%d/%s" % (self.term, self.docket, link["File"])
     if os.path.exists(path1):
@@ -94,6 +112,42 @@ class DocketStatusInfo(object):
     if os.path.exists(path2):
       return path2
 
+  def _generateQPText (self):
+    r = GET(QPURL % (self.term, self.docket))
+    if r.status_code != 200:
+      logging.warning("%s returned code %d" % (r.url, r.status_code))
+      open("%s/qp.txt" % (self.docketdir), "w+").close()
+      return
+
+    outpath = "%s/%s" % (self.docketdir, r.url.split("/")[-1])
+    with open(outpath, "w+") as outfile:
+      outfile.write(r.content)
+
+    p = subprocess.Popen("pdftotext -layout %s -" % (outpath), stdout = subprocess.PIPE,
+                         stderr = subprocess.PIPE, shell=True)
+    (sout, serr) = p.communicate()
+
+    qp_lines = []
+    for line in sout.split("\n"):
+      capture = False
+      if line.startswith("QUESTION PRESENTED"):
+        capture = True
+        continue
+      if capture:
+        if line.strip():
+          if line.startswith("CERT. GRANTED"):
+            break
+          qp_lines.append(line)
+
+    with open("%s/qp.txt" % (self.docketdir), "w+") as qpf:
+      qpf.write("".join(qp_lines))
+
+  def getQPText (self):
+    if self.granted:
+      qptxtpath = "%s/qp.txt" % (self.docketdir)
+      if not os.path.exists(qptxtpath):
+        self._generateQPText()
+      return open(qptxtpath, "r").read()
 
   def _build (self, docket_obj):
     (tstr,dstr) = docket_obj["CaseNumber"].split()[0].split("-")
@@ -287,4 +341,4 @@ def setOutputEncoding (encoding='utf-8'):
     sys.stdout = codecs.getwriter(encoding)(sys.stdout)
   if not sys.stderr.encoding:
     sys.stderr = codecs.getwriter(encoding)(sys.stderr)
-    
+
