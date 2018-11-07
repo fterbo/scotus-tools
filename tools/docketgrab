@@ -39,6 +39,13 @@ def parse_args ():
   args = parser.parse_args()
   return args
 
+def buildDocketStr (opts, num = None):
+  if not num:
+    num = opts.docketnum
+  if opts.orig:
+    return "22O%d" % (num)
+  return "%d-%d" % (opts.term, num)
+
 def updateDockets (path, opts):
   nextnum = opts.docket_num
   while True:
@@ -47,7 +54,7 @@ def updateDockets (path, opts):
         return
 
       newpath = "%s/%d/" % (path, nextnum)
-      docketstr = "%d-%d" % (opts.term, nextnum)
+      docketstr = buildDocketStr(opts, nextnum)
 
       if not os.path.exists(newpath):
         if nextnum < opts.stop:
@@ -97,14 +104,14 @@ def scanPetitions (path, opts):
   nextnum = opts.docket_num
   while True:
     newpath = "%s/%d/" % (path, nextnum)
-    docketstr = "%d-%d" % (opts.term, nextnum)
+    docketstr = buildDocketStr(opts, nextnum)
 
     if os.path.exists("%s/docket.json" % (newpath)):
       # We already scanned this docket
       nextnum += 1
       continue
 
-    url = "%s/%d-%d.json" % (BASE, opts.term, nextnum)
+    url = "%s%s.json" % (BASE, docketstr)
     r = GET(url)
     if r.status_code != 200:
       if opts.stop and nextnum < opts.stop:
@@ -176,14 +183,14 @@ def scanPetitions (path, opts):
 # TODO: we should optionally allow checking last-modified with HEAD before we grab if the caller
 # is doing a larger scan where many are unlikely to be updated since last scan
 def downloadFull (path, opts):
-  docketstr = "%d-%d" % (opts.term, opts.docket_num)
+  docketstr = buildDocketStr(opts)
   newpath = "%s/%d/" % (path, opts.docket_num)
   try:
     os.makedirs(newpath)
   except OSError:
     pass
 
-  url = "%s/%d-%d.json" % (BASE, opts.term, opts.docket_num)
+  url = "%s%s.json" % (BASE, docketstr)
   r = GET(url)
   if r.status_code != 200:
     logging.error("Could not get docket metadata <%s> with code %d" % (url, r.status_code))
@@ -229,7 +236,11 @@ if __name__ == '__main__':
   else:
     logging.basicConfig(level=logging.INFO)
 
-  path = "%s/OT-%d/dockets" % (opts.root, opts.term)
+  if opts.orig:
+    path = "%s/Orig/dockets" % (opts.root)
+  else:
+    path = "%s/OT-%d/dockets" % (opts.root, opts.term)
+
   try:
     os.makedirs(path)
   except OSError:
