@@ -98,7 +98,15 @@ class DocketStatusInfo(object):
 
   @property
   def docketstr (self):
+    if self.original:
+      return "22O%d" % (self.docket)
     return "%d-%d" % (self.term, self.docket)
+
+  @property
+  def audiodocketstr (self):
+    if self.original:
+      return "%d-Orig" % (self.docket)
+    return self.docketstr
 
   @property
   def docketdir (self):

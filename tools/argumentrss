@@ -75,9 +75,9 @@ def build (term, root):
       qptxt = info.getQPText()
 
       fe = fg.add_entry()
-      aurl = MP3URL % (info.docketstr)
+      aurl = MP3URL % (info.audiodocketstr)
       fe.id(aurl)
-      fe.title("%s: %s" % (info.docketstr, info.casename))
+      fe.title("%s: %s" % (info.audiodocketstr, info.casename))
       fe.description(''.join(x for x in unicode(qptxt, encoding="utf-8") if valid_xml_char(x)))
       fe.link(href = aurl)
       fe.enclosure(aurl, 0, "audio/mpeg")
