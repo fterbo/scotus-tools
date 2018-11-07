@@ -101,16 +101,19 @@ class DocketStatusInfo(object):
 
   @property
   def docketdir (self):
-    path = "OT-%d/dockets/%d" % (self.term, self.docket)
+    if self.original:
+      path = "Orig/dockets/%d" % (self.docket)
+    else:
+      path = "OT-%d/dockets/%d" % (self.term, self.docket)
     return path
 
   def _getLocalPath (self, link):
-    path1 = "OT-%d/dockets/%d/%s" % (self.term, self.docket, link["File"])
+    path1 = "%s/%s" % (self.docketdir, link["File"])
     if os.path.exists(path1):
       return path1
 
     fname = urllib.unquote_plus(link["DocumentUrl"].split("/")[-1])
-    path2 = "OT-%d/dockets/%d/%s" % (self.term, self.docket, fname)
+    path2 = "%s/%s" % (self.docketdir, fname)
     if os.path.exists(path2):
       return path2
 
