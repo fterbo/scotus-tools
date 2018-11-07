@@ -47,8 +47,8 @@ def build (term, root):
   for link in links:
     href = link.get("href")
     if href and href.split("/")[-1].count("-"):
-      (cterm, cdocket) = href.split("/")[-1].split("-")
       try:
+        (cterm, cdocket) = href.split("/")[-1].split("-")
         cterm = int(cterm)
       except ValueError:
         continue
