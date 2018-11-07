@@ -60,6 +60,8 @@ def build (term, root):
       try:
         (cterm, cdocket) = href.split("/")[-1].split("-")
         cterm = int(cterm)
+        if cdocket.count("rearg"):
+          cdocket = cdocket[:-5]
       except ValueError:
         continue
 
