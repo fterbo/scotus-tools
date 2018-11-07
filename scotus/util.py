@@ -149,6 +149,7 @@ class DocketStatusInfo(object):
       if not os.path.exists(qptxtpath):
         self._generateQPText()
       return open(qptxtpath, "r").read()
+    return ""
 
   def _build (self, docket_obj):
     (tstr,dstr) = docket_obj["CaseNumber"].split()[0].split("-")

@@ -19,7 +19,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 HEADERS = {"User-Agent" : "SCOTUS Argument Grabber (https://github.com/fterbo/scotus-tools)"}
 BASE = "https://www.supremecourt.gov/oral_arguments/argument_audio"
-QPURL = "https://www.supremecourt.gov/qp/%d-%05dqp.pdf"
 MP3URL = "https://www.supremecourt.gov/media/audio/mp3files/%s.mp3"
 
 def parse_args ():
