@@ -129,8 +129,8 @@ class DocketStatusInfo(object):
     (sout, serr) = p.communicate()
 
     qp_lines = []
+    capture = False
     for line in sout.split("\n"):
-      capture = False
       if line.startswith("QUESTION PRESENTED"):
         capture = True
         continue
