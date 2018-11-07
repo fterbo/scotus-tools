@@ -48,8 +48,12 @@ def build (term, root):
     href = link.get("href")
     if href and href.split("/")[-1].count("-"):
       (cterm, cdocket) = href.split("/")[-1].split("-")
+      try:
+        cterm = int(cterm)
+      except ValueError:
+        continue
 
-      jpath = "%s/OT-%s/dockets/%s/docket.json" % (root, cterm, cdocket)
+      jpath = "%s/OT-%d/dockets/%s/docket.json" % (root, cterm, cdocket)
       if not os.path.exists(jpath):
         raise NoDocketError(jpath)
 
