@@ -112,6 +112,8 @@ class Attorney(object):
 # Many of these are conservative date ranges based on filings, they are definitely NOT complete or accurate 
 
 _attys = [
+  Attorney("Kristafer Ross Ailslieger")
+    .setAG("ks.deputy", date(2017, 1, 1), None),
   Attorney("Jerry V. Beard")
     .setFPD("tx.nd", date(2017, 2, 1), None),
   Attorney("Julie Marie Blake")
@@ -119,6 +121,10 @@ _attys = [
     .setAG("mo.unknown", date(2017, 1, 28), None),
   Attorney("Eric Joseph Brignac")
     .setFPD("nc", date(2014, 5, 1), None),
+  Attorney("Melody Jane Brown")
+    .setAG("sc.unknown", date(2014, 1, 1), None),
+  Attorney("Scott Andrew Browne")
+    .setAG("fl.assistant", date(1996, 4, 1), None),
   Attorney("Matthew A. Campbell")
     .setFPD("wa.ed", date(2009, 05, 18), None),
   Attorney("Paul D. Clement")
@@ -140,6 +146,9 @@ _attys = [
     .setFPD("fl.sd", date(2006, 11, 20), None),
   Attorney("Ronald  Eisenberg")
     .setDA("phi", date(2017, 1, 1), None),
+  Attorney("Thomas M. Fisher")
+    .setSG("in", date(2005, 7, 1), None)
+    .setAG("in.deputy", date(2001, 2, 1), date(2005, 6, 30)),
   Attorney("Peter Michael Fleury")
     .setFPD("tx", date(2018, 1, 1), None),
   Attorney("Noel J. Francisco", "Noel Francisco")
@@ -152,12 +161,18 @@ _attys = [
     .setFirm("gonzalez-olivieri", date(2015, 11, 20), None),
   Attorney("Benjamin Noah Gutman")
     .setSG("or", date(2016, 1, 1), None),
+  Attorney("Toby Jay Heytens")
+    .setSG("va", date(2018, 1, 9), None)
+    .setSG("us.assistant", date(2007, 1, 1), date(2010, 12, 31)),
   Attorney("Michael Clark Holley")
     .setFPD("tn", date(2014, 10, 20), None),
   Attorney("Conrad Benjamin Kahn")
     .setFPD("fl.unknown", date(2015, 11, 9), None),
   Attorney("Paul Edward Kalil")
     .setSPD("fl.ccrc", date(2009, 5, 1), None),
+  Attorney("Scott A. Keller")
+    .setFirm("baker-botts", date(2018, 9, 10), None)
+    .setSG("tx", date(2015, 1, 1), date(2018, 9, 9)),
   Attorney("John M. Klawikofsky")
     .setAG("fl.unknown", date(2005, 3, 14), None),
   Attorney("Aaron David Lindstrom", "Aaron D. Lindstrom Jr.")
