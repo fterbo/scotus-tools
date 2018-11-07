@@ -58,7 +58,7 @@ def build (term, root):
     rows = panel.findAll("tr")
     for row in rows[1:]:
       cells = row.findAll("td")
-      (cterm, cdocket) = cells[0].text.split("-")
+      (cterm, cdocket) = cells[0].findAll("a")[0].text.split("-")
       cterm = int(cterm)
 
       if cdocket== "Orig":
