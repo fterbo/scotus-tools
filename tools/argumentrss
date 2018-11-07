@@ -51,7 +51,7 @@ def build (term, root):
 
       jpath = "%s/OT-%s/dockets/%s/docket.json" % (root, cterm, cdocket)
       if not os.path.exists(jpath):
-        raise NoDocketError(docket_str)
+        raise NoDocketError(jpath)
 
       docket_obj = json.loads(open(jpath, "rb").read())
       info = scotus.util.DocketStatusInfo(docket_obj)
