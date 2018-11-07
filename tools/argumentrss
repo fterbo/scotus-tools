@@ -42,8 +42,8 @@ def build (term, root):
   fg = FeedGenerator()
   fg.load_extension("podcast")
 
-  root = BS.BeautifulSoup(r.content)
-  links = root.findAll("a")
+  roote = BS.BeautifulSoup(r.content)
+  links = roote.findAll("a")
   for link in links:
     href = link.get("href")
     if href and href.split("/")[-1].count("-"):
