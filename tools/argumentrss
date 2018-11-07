@@ -9,7 +9,7 @@ import os
 import sys
 
 import BeautifulSoup as BS
-import dateutil
+from dateutil import parser, tz
 from feedgen.feed import FeedGenerator
 import requests
 
@@ -39,6 +39,10 @@ def valid_xml_char (char):
 def GET (url):
   logging.debug("GET: %s" % (url))
   return requests.get(url, headers=HEADERS)
+
+def build_dt (datestr):
+  dt = parser.parse(datestr)
+  return dt.replace(tzinfo = tz.gettz("America/New_York"))
 
 def build (term, root):
   r = GET("%s/20%d" % (BASE, term))
@@ -78,7 +82,7 @@ def build (term, root):
       fe.title("%s: %s" % (info.audiodocketstr, info.casename))
       fe.description(''.join(x for x in unicode(qptxt, encoding="utf-8") if valid_xml_char(x)))
       fe.link(href = aurl)
-      fe.published(dateutil.parser.parse(cells[1].text))
+      fe.published(build_dt(cells[1].text))
       fe.enclosure(aurl, 0, "audio/mpeg")
 
   fg.rss_file("OT-%d.xml" % (term))
