@@ -63,7 +63,10 @@ def build (term, root):
       except ValueError:
         continue
 
-      jpath = "%s/OT-%d/dockets/%s/docket.json" % (root, cterm, cdocket)
+      if cterm == "Orig":
+        jpath = "%s/Orig/dockets/%s/docket.json" % (root, cdocket)
+      else:
+        jpath = "%s/OT-%d/dockets/%s/docket.json" % (root, cterm, cdocket)
       if not os.path.exists(jpath):
         raise NoDocketError(jpath)
 
