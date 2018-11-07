@@ -39,12 +39,6 @@ def GET (url):
   logging.debug("GET: %s" % (url))
   return requests.get(url, headers=HEADERS)
 
-def wrap_cdata (text):
-  return "<![CDATA[ %s ]]>" % (text)
-
-def add_br (text):
-  return "<br/>".join(line for line in text.split("\n"))
-
 def build (term, root):
   r = GET("%s/20%d" % (BASE, term))
   if r.status_code != 200:
@@ -79,13 +73,13 @@ def build (term, root):
 
       docket_obj = json.loads(open(jpath, "rb").read())
       info = scotus.util.DocketStatusInfo(docket_obj)
-      qptxt = add_br(info.getQPText())
+      qptxt = info.getQPText()
 
       fe = fg.add_entry()
       aurl = MP3URL % (info.audiodocketstr)
       fe.id(aurl)
       fe.title("%s: %s" % (info.audiodocketstr, info.casename))
-      fe.description(wrap_cdata(''.join(x for x in unicode(qptxt, encoding="utf-8") if valid_xml_char(x))))
+      fe.description(''.join(x for x in unicode(qptxt, encoding="utf-8") if valid_xml_char(x)))
       fe.link(href = aurl)
       fe.enclosure(aurl, 0, "audio/mpeg")
 
