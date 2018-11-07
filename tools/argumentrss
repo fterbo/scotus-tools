@@ -64,7 +64,7 @@ def build (term, root):
 
       fe = fg.add_entry()
       fe.id(href)
-      fe.title("%s: %s" % (info.docketstr, scotus.util.buildCasename(info)))
+      fe.title("%s: %s" % (info.docketstr, info.casename))
       fe.description(qptxt)
       fe.enclosure(href, 0, "audio/mpeg")
 
