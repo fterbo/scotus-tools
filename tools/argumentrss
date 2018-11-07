@@ -20,6 +20,7 @@ logging.basicConfig(level=logging.INFO)
 HEADERS = {"User-Agent" : "SCOTUS Orders Grabber (https://github.com/fterbo/scotus-tools)"}
 BASE = "https://www.supremecourt.gov/oral_arguments/argument_audio"
 QPURL = "https://www.supremecourt.gov/qp/%d-%05dqp.pdf"
+MP3URL = "https://www.supremecourt.gov/media/audio/mp3files/%s.mp3"
 
 def parse_args ():
   parser = argparse.ArgumentParser()
@@ -66,11 +67,12 @@ def build (term, root):
       qptxt = info.getQPText()
 
       fe = fg.add_entry()
-      fe.id(href)
+      aurl = MP3URL % (info.docketstr)
+      fe.id(aurl)
       fe.title("%s: %s" % (info.docketstr, info.casename))
       fe.description(qptxt)
-      fe.link(href = href)
-      fe.enclosure(href, 0, "audio/mpeg")
+      fe.link(href = aurl)
+      fe.enclosure(aurl, 0, "audio/mpeg")
 
   fg.rss_file("OT-%d.xml" % (term))
       
