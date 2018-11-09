@@ -54,6 +54,7 @@ def build (term, root):
   fg.load_extension("podcast")
   fg.title("Oral Arguments for OT-%d" % (term))
   fg.description("RSS Feed for Supreme Court Oral Arguments")
+  fg.logo("https://s3-us-west-2.amazonaws.com/scotus.terbo/OT-%d.jpg" % (term))
   fg.link(href = "Bar")
 
   roote = BS.BeautifulSoup(r.content)
