@@ -190,6 +190,8 @@ _attys = [
     .setFPD("tx", date(2016, 5, 1), None),
   Attorney("Trisha Meggs Pate")
     .setAG("fl.unknown", date(2011, 3, 3), None),
+  Attorney("Andrew Alan Pinson")
+    .setSG("ga", date(2018, 5, 1), None),
   Attorney("Margaret Scobey Russell")
     .setSPD("fl.ccrc", date(2018, 3, 1), None),
   Attorney("Kannon K. Shanmugam")
