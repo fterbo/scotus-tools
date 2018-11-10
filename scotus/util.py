@@ -21,7 +21,7 @@ QPURL = "https://www.supremecourt.gov/qp/%d-%05dqp.pdf"
 OQPURL = "https://www.supremecourt.gov/qp/%d%%20origqp.pdf"
 
 PETITION_LINKS = set(["Petition", "Appendix", "Jurisdictional Statement"])
-PETITION_TYPES = set(["certiorari", "mandamus", "habeas", "jurisdiction", "prohibition", "stay"])
+PETITION_TYPES = set(["certiorari", "mandamus", "habeas", "jurisdiction", "prohibition", "stay", "bail"])
 
 def GET (url):
   logging.debug("GET: %s" % (url))
@@ -345,7 +345,7 @@ def getCaseType (docket_obj):
   if not founditem:
     raise exceptions.CaseTypeError(docket_obj["CaseNumber"].strip())
 
-  match = list(set(founditem["Text"].split()) & PETITION_TYPES)
+  match = list(set(founditem["Text"].replace(",", "").split()) & PETITION_TYPES)
   if not match:
     raise exceptions.CaseTypeError(docket_obj["CaseNumber"].strip())
 
