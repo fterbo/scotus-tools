@@ -155,6 +155,8 @@ def build_stats (opts, path):
 
 
 if __name__ == '__main__':
+  scotus.util.setOutputEncoding()
+
   opts = parse_args()
   path = "%s/OT-%d/dockets" % (opts.root, opts.term)
 
