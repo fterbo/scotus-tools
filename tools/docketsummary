@@ -168,7 +168,11 @@ def getCommonHeader (info):
     
 
 def summarize (opts):
-  jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, opts.docket_num)
+  if opts.application:
+    jpath = "%s/OT-%d/dockets/A/%d/docket.json" % (opts.root, opts.term, opts.docket_num)
+  else:
+    jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, opts.docket_num)
+
   docket_str = scotus.util.buildDocketStr(opts)
   if not os.path.exists(jpath):
     raise NoDocketError(docket_str)
