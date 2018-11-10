@@ -346,6 +346,9 @@ def getCaseType (docket_obj):
     raise exceptions.CaseTypeError(docket_obj["CaseNumber"].strip())
 
   match = list(set(founditem["Text"].split()) & PETITION_TYPES)
+  if not match:
+    raise exceptions.CaseTypeError(docket_obj["CaseNumber"].strip())
+
   return match[0]
 
 
