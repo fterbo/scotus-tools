@@ -163,7 +163,7 @@ def getCommonHeader (info):
     hdr.append("     %s" % (info.lowercourt))
     hdr.append("     %s - %s" % (info.lowercourt_docket, info.lowercourt_decision_date.strftime("%Y-%m-%d")))
   if info.distributed:
-    lines.append("  - Distributed: %s" % (", ".join([x[1].strftime("%Y-%m-%d") for x in info.distributed])))
+    hdr.append("  - Distributed: %s" % (", ".join([x[1].strftime("%Y-%m-%d") for x in info.distributed])))
   return hdr
     
 
