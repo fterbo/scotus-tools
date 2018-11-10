@@ -30,6 +30,7 @@ def parse_args ():
   parser = argparse.ArgumentParser()
   parser.add_argument("-t", "--term", dest="term", type=int)
   parser.add_argument("-o", "--orig", dest="orig", default = False, action="store_true")
+  parser.add_argument("-A", "--application", dest="application", default=False, action="store_true")
   parser.add_argument("-n", "--docket-num", dest="docket_num", type=int)
   parser.add_argument("-a", "--action", dest="action", type=str, default="scan-petition")
   parser.add_argument("--dry-run", dest="dry_run", action="store_true")
@@ -44,7 +45,7 @@ def buildDocketStr (opts, num = None):
     num = opts.docket_num
   if opts.orig:
     return "22O%d" % (num)
-  elif opts.action.count("application"):
+  elif opts.action.count("application") or opts.application:
     return "%dA%d" % (opts.term, num)
 
   return "%d-%d" % (opts.term, num)
@@ -186,7 +187,7 @@ def scanPetitions (path, opts):
 def scanApplications (path, opts):
   nextnum = opts.docket_num
   while True:
-    newpath = "%s/A/%d"% (path, nextnum)
+    newpath = "%s/%d"% (path, nextnum)
     docketstr = buildDocketStr(opts, nextnum)
 
     if os.path.exists("%s/docket.json" % (newpath)):
@@ -287,6 +288,8 @@ ACTIONS = {
 
 if __name__ == '__main__':
   opts = parse_args()
+  if opts.action.count("application"):
+    opts.application = True
 
   if opts.debug:
     logging.basicConfig(level=logging.DEBUG)
@@ -295,6 +298,8 @@ if __name__ == '__main__':
 
   if opts.orig:
     path = "%s/Orig/dockets" % (opts.root)
+  elif opts.application:
+    path = "%s/OT-%d/dockets/A" % (opts.root, opts.term)
   else:
     path = "%s/OT-%d/dockets" % (opts.root, opts.term)
 
@@ -303,5 +308,9 @@ if __name__ == '__main__':
   except OSError:
     pass
 
-  func = ACTIONS[opts.action]
+  if opts.action.count("petition") and opts.application:
+    func = ACTIONS["scan-applications"]
+  else:
+    func = ACTIONS[opts.action]
+
   func(path, opts)
