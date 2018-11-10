@@ -26,7 +26,7 @@ logging.basicConfig(level=logging.INFO)
 def parse_args ():
   parser = argparse.ArgumentParser()
   parser.add_argument("-t", "--term", dest="term", type=int)
-  parser.add_argument("-n", "--num", dest="num", type=int)
+  parser.add_argument("-n", "--num", dest="docket_num", type=int)
   parser.add_argument("-A", "--application", dest="application", default=False, action="store_true")
   parser.add_argument("--stop", dest="stop", type=int)
   parser.add_argument("-s", "--scan", dest="scan", action="store_true")
@@ -46,8 +46,8 @@ def scan (opts):
   ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (opts.root, opts.term)) if not x.startswith(".")]
   ddirs.sort()
   for ddir in ddirs:
-    if opts.num:
-      if int(ddir) < opts.num:
+    if opts.docket_num:
+      if int(ddir) < opts.docket_num:
         continue
 
     if opts.stop:
@@ -168,7 +168,7 @@ def getCommonHeader (info):
     
 
 def summarize (opts):
-  jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, opts.num)
+  jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, opts.docket_num)
   docket_str = scotus.util.buildDocketStr(opts)
   if not os.path.exists(jpath):
     raise NoDocketError(docket_str)
