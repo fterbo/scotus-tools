@@ -43,7 +43,8 @@ def parse_args ():
 
 
 def scan (opts):
-  ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (opts.root, opts.term)) if not x.startswith(".")]
+  ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (opts.root, opts.term))
+            if not x.startswith(".") and x != "A"]
   ddirs.sort()
   for ddir in ddirs:
     if opts.docket_num:
