@@ -153,7 +153,10 @@ def conference (opts):
 def getCommonHeader (info):
   hdr = []
   hdr.append("[%s] %s %s" % (info.docketstr, info.casename, info.getFlagString()))
-  hdr.append("  - Docketed %s" % (info.docket_date.strftime("%Y-%m-%d")))
+  if info.docket_date:
+    hdr.append("  - Docketed %s" % (info.docket_date.strftime("%Y-%m-%d")))
+  else:
+    hdr.append("  - Docketed <DATE UNSET>")
   if info.related:
     hdr.append("  - RELATED")
     for ri in info.related:
