@@ -44,6 +44,9 @@ def buildDocketStr (opts, num = None):
     num = opts.docket_num
   if opts.orig:
     return "22O%d" % (num)
+  elif opts.action.count("application"):
+    return "%dA%d" % (opts.term, num)
+
   return "%d-%d" % (opts.term, num)
 
 def updateDockets (path, opts):
@@ -180,6 +183,59 @@ def scanPetitions (path, opts):
     nextnum += 1
         
 
+def scanApplications (path, opts):
+  nextnum = opts.docket_num
+  while True:
+    newpath = "%s/A/%d"% (path, nextnum)
+    docketstr = buildDocketStr(opts, nextnum)
+
+    if os.path.exists("%s/docket.json" % (newpath)):
+      # We already scanned this docket
+      nextnum += 1
+      continue
+
+    url = "%s%s.json" % (BASE, docketstr)
+    r = GET(url)
+    if r.status_code != 200:
+      if opts.stop and nextnum < opts.stop:
+        logging.info("Skipping <%s> with no docket [STATUS: %d]" % (url, r.status_code))
+        nextnum += 1
+        continue
+      else:
+        logging.info("Stopped for URL <%s> with code %d" % (url, r.status_code))
+        break
+
+    docket_obj = r.json()
+    with open("%s/docket.json" % (newpath), "w+") as f:
+      f.write(json.dumps(r.json()))
+
+    founditem = None
+    for item in docket_obj["ProceedingsandOrder"]:
+      try:
+        for link in item["Links"]:
+          if (link["Description"] == "Main Document"):
+            logging.info("[%s] %s" % (docketstr, founditem["Text"]))
+            founditem = item
+            break
+        if founditem:
+          break
+      except KeyError:
+        # Likely original extension of time to file
+        logging.debug("[%s] No links: %s" % (docketstr, item["Text"]))
+        continue
+
+    try:
+      os.makedirs(newpath)
+    except OSError:
+      pass # Should check errno, but probably already exists
+
+    if not founditem:
+      logging.error("Couldn't find application text for docket %s" % (docketstr))
+      nextnum += 1
+      continue
+
+
+
 # TODO: we should optionally allow checking last-modified with HEAD before we grab if the caller
 # is doing a larger scan where many are unlikely to be updated since last scan
 def downloadFull (path, opts):
@@ -223,6 +279,7 @@ def downloadFull (path, opts):
 ACTIONS = {
   "scan-petition" : scanPetitions,
   "petitions" : scanPetitions,
+  "scan-applications" : scanApplications,
   "download-full" : downloadFull,
   "download" : downloadFull,
   "update" : updateDockets,

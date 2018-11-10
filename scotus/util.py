@@ -13,6 +13,8 @@ import urllib
 import dateutil.parser
 import requests
 
+from . import exceptions
+
 HEADERS = {"User-Agent" : "SCOTUS Docket Utility (https://github.com/fterbo/scotus-tools)"}
 QPURL = "https://www.supremecourt.gov/qp/%d-%05dqp.pdf"
 OQPURL = "https://www.supremecourt.gov/qp/%d%%20origqp.pdf"
@@ -23,20 +25,6 @@ PETITION_TYPES = set(["certiorari", "mandamus", "habeas", "jurisdiction", "prohi
 def GET (url):
   logging.debug("GET: %s" % (url))
   return requests.get(url, headers=HEADERS)
-
-class SCOTUSError(Exception): pass
-
-class CasenameError(SCOTUSError):
-  def __init__ (self, docket):
-    self.docket = docket
-  def __str__ (self):
-    return "Unable to create case name for %s" % (self.docket)
-
-class CaseTypeError(SCOTUSError):
-  def __init__ (self, docket):
-    self.docket = docket
-  def __str__ (self):
-    return "Unable to determine case type for %s" % (self.docket)
 
 
 class MultiMatch(object):
@@ -57,6 +45,7 @@ class DocketStatusInfo(object):
     self.term = None
     self.docket = None
     self.original = False
+    self.application = False
     self.capital = False
     self.casename = None
     self.casetype = None
@@ -94,12 +83,14 @@ class DocketStatusInfo(object):
     self._build(docket_obj)
 
   def __hash__ (self):
-    return hash("%d-%d" % (self.term, self.docket))
+    return hash(self.docketstr)
 
   @property
   def docketstr (self):
     if self.original:
       return "22O%d" % (self.docket)
+    elif self.application:
+      return "%dA%d" % (self.term, self.docket)
     return "%d-%d" % (self.term, self.docket)
 
   @property
@@ -112,6 +103,8 @@ class DocketStatusInfo(object):
   def docketdir (self):
     if self.original:
       path = "Orig/dockets/%d" % (self.docket)
+    elif self.application:
+      path = "OT-%d/dockets/A/%d" % (self.term, self.docket)
     else:
       path = "OT-%d/dockets/%d" % (self.term, self.docket)
     return path
@@ -129,6 +122,8 @@ class DocketStatusInfo(object):
   def _generateQPText (self):
     if self.original:
       r = GET(OQPURL % (self.docket))
+    elif self.application:
+      raise exceptions.NoPetitionForApplicationError(self.docketstr)
     else:
       r = GET(QPURL % (self.term, self.docket))
 
@@ -172,6 +167,11 @@ class DocketStatusInfo(object):
     if docket_obj["CaseNumber"].startswith("22O"):
       self.original = True
       self.docket = int(docket_obj["CaseNumber"][3:])
+    elif docket_obj["CaseNumber"].split()[0].count("A"):
+      self.application = True
+      (tstr,dstr) = docket_obj["CaseNumber"].split()[0].split("A")
+      self.term = int(tstr)
+      self.docket = int(dstr)
     else:
       (tstr,dstr) = docket_obj["CaseNumber"].split()[0].split("-")
       self.term = int(tstr)
@@ -332,7 +332,7 @@ def getCaseType (docket_obj):
       continue
 
   if not founditem:
-    raise CaseTypeError(docket_obj["CaseNumber"].strip())
+    raise exceptions.CaseTypeError(docket_obj["CaseNumber"].strip())
 
   match = list(set(founditem["Text"].split()) & PETITION_TYPES)
   return match[0]
@@ -363,7 +363,7 @@ def buildCasename (docket_obj):
         petitioner = docket_obj["PetitionerTitle"][:-12]  # Remove ", Petitioner" from metadata
         casename = "%s v. %s" % (petitioner, docket_obj["RespondentTitle"])
   except Exception:
-    raise CasenameError(docket_obj["CaseNumber"].strip())
+    raise exceptions.CasenameError(docket_obj["CaseNumber"].strip())
 
   return casename
 
