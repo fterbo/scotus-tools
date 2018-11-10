@@ -219,7 +219,7 @@ def scanApplications (path, opts):
       try:
         for link in item["Links"]:
           if (link["Description"] == "Main Document"):
-            logging.info("[%s] %s" % (docketstr, founditem["Text"]))
+            logging.info("[%s] %s" % (docketstr, item["Text"]))
             founditem = item
             break
         if founditem:
