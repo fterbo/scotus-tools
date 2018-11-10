@@ -2,7 +2,7 @@
 
 # Copyright (c) 2018  Floyd Terbo
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 
 import argparse
 import datetime
@@ -27,6 +27,7 @@ def parse_args ():
   parser = argparse.ArgumentParser()
   parser.add_argument("-t", "--term", dest="term", type=int)
   parser.add_argument("-n", "--num", dest="num", type=int)
+  parser.add_argument("-A", "--application", dest="application", default=False, action="store_true")
   parser.add_argument("--stop", dest="stop", type=int)
   parser.add_argument("-s", "--scan", dest="scan", action="store_true")
   parser.add_argument("--ifp", dest="ifp", action="store_true")
@@ -149,44 +150,57 @@ def conference (opts):
         break
 
 
+def getCommonHeader (info):
+  hdr = []
+  hdr.append("[%s] %s %s" % (info.docketstr, info.casename, info.getFlagString()))
+  hdr.append("  - Docketed %s" % (info.docket_date.strftime("%Y-%m-%d")))
+  if info.related:
+    hdr.append("  - RELATED")
+    for ri in info.related:
+      hdr.append("      (%d-%d, %s)" % (ri[0], ri[1], ri[2]))
+  if info.lowercourt:
+    hdr.append("  - Lower Court")
+    hdr.append("     %s" % (info.lowercourt))
+    hdr.append("     %s - %s" % (info.lowercourt_docket, info.lowercourt_decision_date.strfime("%Y-%m-%d")))
+  if info.distributed:
+    lines.append("  - Distributed: %s" % (", ".join([x[1].strftime("%Y-%m-%d") for x in info.distributed])))
+  return hdr
+    
+
 def summarize (opts):
   jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, opts.num)
-  docket_str = "%d-%d" % (opts.term, opts.num)
+  docket_str = scotus.util.buildDocketStr(opts)
   if not os.path.exists(jpath):
     raise NoDocketError(docket_str)
 
   docket_obj = json.loads(open(jpath, "rb").read())
   info = util.DocketStatusInfo(docket_obj)
 
-  last_order = docket_obj["ProceedingsandOrder"][-1]
-
-  print("[%s] %s %s" % (docket_str, info.casename, info.getFlagString()))
-  print("  - Docketed %s" % (info.docket_date.strftime("%Y-%m-%d")))
-  if info.related:
-    print ("  - RELATED")
-    for ri in info.related:
-      print ("      (%d-%d, %s)" % (ri[0], ri[1], ri[2]))
-  if info.distributed:
-    print("  - Distributed: %s" % (", ".join([x[1].strftime("%Y-%m-%d") for x in info.distributed])))
-  if docket_obj["LowerCourt"]:
-    print("  - Lower Court")
-    print("     %s" % (docket_obj["LowerCourt"]))
-    print("     %s - %s" % (docket_obj["LowerCourtCaseNumbers"], docket_obj["LowerCourtDecision"]))
-  if info.cert_amici:
-    print("  - Cert Amici")
-    for amicus in info.cert_amici:
-      print("      %s" % (amicus))
-  print("  - Last Order")
-  print("     %s - %s" % (last_order["Date"], last_order["Text"]))
-  if info.petition_path:
+  lines = getCommonHeader(info)
+  if opts.application:
+    lines.append("  - EVENTS")
+    for event in info.events:
+      lines.append("    %s" % (str(event)))
+  else:
+    if info.cert_amici:
+      lines.append("  - Cert Amici")
+      for amicus in info.cert_amici:
+        lines.append("      %s" % (amicus))
+    last_order = docket_obj["ProceedingsandOrder"][-1]
+    lines.append("  - Last Order")
+    lines.append("     %s - %s" % (last_order["Date"], last_order["Text"]))
+    if info.petition_path:
 #    qp = scotus.parse.getQP("%s/%s" % (opts.root, info.petition_path))
 #    if qp:
 #      print("  - QP(1)")
 #      print("      %s" % (" ".join(qp)))
-    qp2 = scotus.parse.getQP2("%s/%s" % (opts.root, info.petition_path))
-    if qp2:
-      print("  - QP")
-      print("      %s" % (" ".join(qp2)))
+      qp2 = scotus.parse.getQP2("%s/%s" % (opts.root, info.petition_path))
+      if qp2:
+        lines.append("  - QP")
+        lines.append("      %s" % (" ".join(qp2)))
+
+  for line in lines:
+    print(line)
 
 
 

@@ -40,16 +40,6 @@ def parse_args ():
   args = parser.parse_args()
   return args
 
-def buildDocketStr (opts, num = None):
-  if not num:
-    num = opts.docket_num
-  if opts.orig:
-    return "22O%d" % (num)
-  elif opts.action.count("application") or opts.application:
-    return "%dA%d" % (opts.term, num)
-
-  return "%d-%d" % (opts.term, num)
-
 def updateDockets (path, opts):
   nextnum = opts.docket_num
   while True:
@@ -58,7 +48,7 @@ def updateDockets (path, opts):
         return
 
       newpath = "%s/%d/" % (path, nextnum)
-      docketstr = buildDocketStr(opts, nextnum)
+      docketstr = scotus.util.buildDocketStr(opts, nextnum)
 
       if not os.path.exists(newpath):
         if nextnum < opts.stop:
@@ -108,7 +98,7 @@ def scanPetitions (path, opts):
   nextnum = opts.docket_num
   while True:
     newpath = "%s/%d/" % (path, nextnum)
-    docketstr = buildDocketStr(opts, nextnum)
+    docketstr = scotus.util.buildDocketStr(opts, nextnum)
 
     if os.path.exists("%s/docket.json" % (newpath)):
       # We already scanned this docket
@@ -188,7 +178,7 @@ def scanApplications (path, opts):
   nextnum = opts.docket_num
   while True:
     newpath = "%s/%d"% (path, nextnum)
-    docketstr = buildDocketStr(opts, nextnum)
+    docketstr = scotus.util.buildDocketStr(opts, nextnum)
 
     if os.path.exists("%s/docket.json" % (newpath)):
       # We already scanned this docket
@@ -240,7 +230,7 @@ def scanApplications (path, opts):
 # TODO: we should optionally allow checking last-modified with HEAD before we grab if the caller
 # is doing a larger scan where many are unlikely to be updated since last scan
 def downloadFull (path, opts):
-  docketstr = buildDocketStr(opts)
+  docketstr = scotus.util.buildDocketStr(opts)
   newpath = "%s/%d/" % (path, opts.docket_num)
   try:
     os.makedirs(newpath)

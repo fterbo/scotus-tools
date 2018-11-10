@@ -13,6 +13,7 @@ import urllib
 import dateutil.parser
 import requests
 
+from . import events
 from . import exceptions
 
 HEADERS = {"User-Agent" : "SCOTUS Docket Utility (https://github.com/fterbo/scotus-tools)"}
@@ -214,15 +215,17 @@ class DocketStatusInfo(object):
         except ValueError as e:
           self._errors.append(str(e))
 
-      for event in docket_obj["ProceedingsandOrder"]:
+      for einfo in docket_obj["ProceedingsandOrder"]:
         try:
-          for link in event["Links"]:
+          for link in einfo["Links"]:
             if link["Description"] == "Petition":
               self.petition_path = self._getLocalPath(link)
         except KeyError:
           pass
 
-        etxt = event["Text"]
+        self.events.append(events.DocketEvent(einfo))
+
+        etxt = einfo["Text"]
         if etxt.startswith("DISTRIBUTED"):
           if etxt == "DISTRIBUTED.":
             continue  # Rehearing distribution, probably, not for conference
@@ -373,4 +376,20 @@ def setOutputEncoding (encoding='utf-8'):
     sys.stdout = codecs.getwriter(encoding)(sys.stdout)
   if not sys.stderr.encoding:
     sys.stderr = codecs.getwriter(encoding)(sys.stderr)
+
+
+def buildDocketStr (opts, num = None):
+  """Used to build the requested docket string before we know if we have a docket object"""
+  if not num:
+    num = opts.docket_num
+
+  try:
+    if opts.orig:
+      return "22O%d" % (num)
+    elif opts.application or opts.action.count("application"):
+      return "%dA%d" % (opts.term, num)
+  except AttributeError:
+    pass
+
+  return "%d-%d" % (opts.term, num)
 
