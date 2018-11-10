@@ -21,7 +21,8 @@ QPURL = "https://www.supremecourt.gov/qp/%d-%05dqp.pdf"
 OQPURL = "https://www.supremecourt.gov/qp/%d%%20origqp.pdf"
 
 PETITION_LINKS = set(["Petition", "Appendix", "Jurisdictional Statement"])
-PETITION_TYPES = set(["certiorari", "mandamus", "habeas", "jurisdiction", "prohibition", "stay", "bail"])
+PETITION_TYPES = set(["certiorari", "mandamus", "habeas", "jurisdiction", "prohibition", "stay",
+                      "bail", "extension"])
 
 def GET (url):
   logging.debug("GET: %s" % (url))
