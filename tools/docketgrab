@@ -205,6 +205,11 @@ def scanApplications (path, opts):
         logging.info("Stopped for URL <%s> with code %d" % (url, r.status_code))
         break
 
+    try:
+      os.makedirs(newpath)
+    except OSError:
+      pass # Should check errno, but probably already exists
+
     docket_obj = r.json()
     with open("%s/docket.json" % (newpath), "w+") as f:
       f.write(json.dumps(r.json()))
@@ -223,11 +228,6 @@ def scanApplications (path, opts):
         # Likely original extension of time to file
         logging.debug("[%s] No links: %s" % (docketstr, item["Text"]))
         continue
-
-    try:
-      os.makedirs(newpath)
-    except OSError:
-      pass # Should check errno, but probably already exists
 
     if not founditem:
       logging.error("Couldn't find application text for docket %s" % (docketstr))
