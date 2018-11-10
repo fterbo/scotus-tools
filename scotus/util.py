@@ -179,7 +179,8 @@ class DocketStatusInfo(object):
       self.docket = int(dstr)
 
     try:
-      self.docket_date = dateutil.parser.parse(docket_obj["DocketedDate"]).date()
+      if docket_obj["DocketedDate"].strip():
+        self.docket_date = dateutil.parser.parse(docket_obj["DocketedDate"]).date()
       self.capital = docket_obj["bCapitalCase"]
       self.casename = buildCasename(docket_obj)
       self.casetype = getCaseType(docket_obj)
