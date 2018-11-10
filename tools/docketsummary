@@ -187,7 +187,7 @@ def summarize (opts):
   if opts.application:
     lines.append("  - EVENTS")
     for event in info.events:
-      lines.append("    %s" % (str(event)))
+      lines.append("    %s" % (unicode(event)))
   else:
     if info.cert_amici:
       lines.append("  - Cert Amici")
