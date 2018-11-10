@@ -230,14 +230,14 @@ class DocketStatusInfo(object):
           if etxt == "DISTRIBUTED.":
             continue  # Rehearing distribution, probably, not for conference
           confdate = dateutil.parser.parse(etxt.split()[-1]).date()
-          edate = dateutil.parser.parse(event["Date"]).date()
+          edate = dateutil.parser.parse(einfo["Date"]).date()
           self.distributed.append((edate, confdate))
         elif etxt.startswith("Brief amici curiae of"):
           if not self.granted:
             self.cert_amici.append(" ".join(etxt.split()[4:-1]))
         elif etxt == "Petition GRANTED.":
           self.granted = True
-          self.grant_date = dateutil.parser.parse(event["Date"]).date()
+          self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt.count("GRANTED"):
           if etxt.count("Motion for leave"):
             continue
@@ -246,7 +246,7 @@ class DocketStatusInfo(object):
           if gs.count("expedite consideration"):
             continue
           self.granted = True
-          self.grant_date = dateutil.parser.parse(event["Date"]).date()
+          self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
           if etxt.count("REVERSED") and etxt.count("REMANDED"):
             # This is not really a GVR, but we'll throw it in the bucket for now
             self.gvr = True
@@ -256,34 +256,34 @@ class DocketStatusInfo(object):
             self.gvr_date = self.grant_date
         elif etxt.startswith("Argued."):
           self.argued = True
-          self.argued_date = dateutil.parser.parse(event["Date"]).date()
+          self.argued_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt.startswith("Petition Dismissed"):
           self.dismissed = True
-          self.dismiss_date = dateutil.parser.parse(event["Date"]).date()
+          self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt.startswith("Petition DENIED"):
           self.denied = True
-          self.deny_date = dateutil.parser.parse(event["Date"]).date()
+          self.deny_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt == "JUDGMENT ISSUED.":
           self.judgment_issued = True
-          self.judgment_date = dateutil.parser.parse(event["Date"]).date()
+          self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt.startswith("Adjudged to be AFFIRMED."):
           self.judgment_issued = True
-          self.judgment_date = dateutil.parser.parse(event["Date"]).date()
+          self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt.startswith("Judgment REVERSED"):
           self.judgment_issued = True
-          self.judgment_date = dateutil.parser.parse(event["Date"]).date()
+          self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt.count("petition for a writ of certiorari is dismissed"):
           self.dismissed = True
-          self.dismiss_date = dateutil.parser.parse(event["Date"]).date()
+          self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt.count("petition for a writ of mandamus/prohibition is dismissed"):
           self.dismissed = True
-          self.dismiss_date = dateutil.parser.parse(event["Date"]).date()
+          self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt.count("petition for a writ of habeas corpus is dismissed"):
           self.dismissed = True
-          self.dismiss_date = dateutil.parser.parse(event["Date"]).date()
+          self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt.count("petition for a writ of mandamus is dismissed"):
           self.dismissed = True
-          self.dismiss_date = dateutil.parser.parse(event["Date"]).date()
+          self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
     except Exception:
       print "Exception in case: %s" % (docket_obj["CaseNumber"])
       raise
