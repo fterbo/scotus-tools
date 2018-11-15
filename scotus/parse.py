@@ -149,6 +149,8 @@ def indexDir (path, force_pdf = False):
     except PyPDF2.utils.PdfReadError:
       grams = {"1-gram" : [], "2-gram" : [], "3-gram" : []}
       indexes[name] = grams
+    except Exception:
+      continue
 
   with open("%s/indexes.json" % (path), "w+") as ij:
     logging.debug("Writing index json (%s)" % (path))
