@@ -76,10 +76,17 @@ def engine (sources, filters, queries, output):
   qpool = multiprocessing.ProcessingPool(nodes = PROCESSES)
   if query_list:
     query_out = []
-    for sdata in filtered_source_list:
-      qdata = apply_query(query_list, sdata)
-      for k,v in qdata.items():
-        query_out.append((k,v))
+    res = qpool.amap(functools.partial(apply_query, query_list), [item for item in filtered_source_list])
+    while not res.ready():
+      time.sleep(0.5)
+    for rinfo in res.get():
+      for k,v in rinfo.items():
+        query_out.append((k, v))
+#    query_out = []
+#    for sdata in filtered_source_list:
+#      qdata = apply_query(query_list, sdata)
+#      for k,v in qdata.items():
+#        query_out.append((k,v))
   else:
     query_out = [(x, []) for x in filtered_source_list]
 
