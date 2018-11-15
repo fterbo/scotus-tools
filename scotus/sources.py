@@ -27,7 +27,8 @@ class DocketSource(object):
     self.paid = paid
     self.ifp = ifp
 
-    self.didxs  = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (root_path, term)) if not x.startswith(".")]
+    self.didxs  = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (root_path, term))
+                    if not x.startswith(".") and x != "A"]
     self.didxs.sort()
 
   def __iter__ (self):
