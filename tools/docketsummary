@@ -205,10 +205,13 @@ def summarize (opts):
 #    if qp:
 #      print("  - QP(1)")
 #      print("      %s" % (" ".join(qp)))
-      qp2 = scotus.parse.getQP2("%s/%s" % (opts.root, info.petition_path))
-      if qp2:
-        lines.append("  - QP")
-        lines.append("      %s" % (" ".join(qp2)))
+#    qp2 = scotus.parse.getQP2("%s/%s" % (opts.root, info.petition_path))
+#    if qp2:
+#      lines.append("  - QP")
+#      lines.append("      %s" % (" ".join(qp2)))
+      qptxt = info.getQPText()
+      lines.append("  - QP")
+      lines.extend(["      %s" % (x) for x in qptxt.split("\n")])
 
   for line in lines:
     print(line)
