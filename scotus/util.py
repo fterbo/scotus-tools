@@ -141,7 +141,7 @@ class DocketStatusInfo(object):
     else:
       outpath = self.petition_path
 
-    p = subprocess.Popen("pdftotext -layout %s -" % (outpath), stdout = subprocess.PIPE,
+    p = subprocess.Popen("pdftotext -layout \"%s\" -" % (outpath), stdout = subprocess.PIPE,
                          stderr = subprocess.PIPE, shell=True)
     (sout, serr) = p.communicate()
 
