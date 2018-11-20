@@ -122,48 +122,57 @@ class DocketStatusInfo(object):
       return path2
 
   def _generateQPText (self):
-    if self.original:
-      r = GET(OQPURL % (self.docket))
-    elif self.application:
-      raise exceptions.NoPetitionForApplicationError(self.docketstr)
+    if self.granted:
+      if self.original:
+        r = GET(OQPURL % (self.docket))
+      elif self.application:
+        raise exceptions.NoPetitionForApplicationError(self.docketstr)
+      else:
+        r = GET(QPURL % (self.term, self.docket))
+
+      if r.status_code != 200:
+        logging.warning("%s returned code %d" % (r.url, r.status_code))
+        open("%s/qp.txt" % (self.docketdir), "w+").close()
+        return
+
+      outpath = "%s/%s" % (self.docketdir, r.url.split("/")[-1])
+      with open(outpath, "w+") as outfile:
+        outfile.write(r.content)
     else:
-      r = GET(QPURL % (self.term, self.docket))
-
-    if r.status_code != 200:
-      logging.warning("%s returned code %d" % (r.url, r.status_code))
-      open("%s/qp.txt" % (self.docketdir), "w+").close()
-      return
-
-    outpath = "%s/%s" % (self.docketdir, r.url.split("/")[-1])
-    with open(outpath, "w+") as outfile:
-      outfile.write(r.content)
+      outpath = self.petition_path
 
     p = subprocess.Popen("pdftotext -layout %s -" % (outpath), stdout = subprocess.PIPE,
                          stderr = subprocess.PIPE, shell=True)
     (sout, serr) = p.communicate()
 
+    START_TERMS = ["QUESTION PRESENTED", "QUESTIONS PRESENTED"]
+    END_TERMS = ["TABLE OF CONTENTS", "PARTIES TO", "CORPORATE DISCLOSURE", "LIST OF PARTIES", "RULE 29.6",
+                 "CERT. GRANTED"]
     qp_lines = []
     capture = False
+    done = False
     for line in sout.split("\n"):
-      if line.startswith("QUESTION PRESENTED"):
-        capture = True
-        continue
+      for term in START_TERMS:
+        if line.strip().startswith(term):
+          capture = True
+          continue
       if capture:
-        if line.strip():
-          if line.startswith("CERT. GRANTED"):
+        for term in END_TERMS:
+          if line.startswith(term):
+            done = True
             break
-          qp_lines.append(line)
+        if done:
+          break
+        qp_lines.append(line)
 
     with open("%s/qp.txt" % (self.docketdir), "w+") as qpf:
       qpf.write("\n".join(qp_lines))
 
   def getQPText (self):
-    if self.granted:
-      qptxtpath = "%s/qp.txt" % (self.docketdir)
-      if not os.path.exists(qptxtpath):
-        self._generateQPText()
-      return open(qptxtpath, "r").read()
-    return ""
+    qptxtpath = "%s/qp.txt" % (self.docketdir)
+    if not os.path.exists(qptxtpath):
+      self._generateQPText()
+    return open(qptxtpath, "r").read()
 
   def _build (self, docket_obj):
     if docket_obj["CaseNumber"].startswith("22O"):
