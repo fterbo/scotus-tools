@@ -152,13 +152,14 @@ class DocketStatusInfo(object):
     capture = False
     done = False
     for line in sout.split("\n"):
-      for term in START_TERMS:
-        if line.strip().startswith(term):
-          capture = True
-          continue
-      if capture:
+      if not capture:
+        for term in START_TERMS:
+          if line.strip().startswith(term):
+            capture = True
+            continue
+      else:
         for term in END_TERMS:
-          if line.startswith(term):
+          if line.strip().startswith(term):
             done = True
             break
         if done:
