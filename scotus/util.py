@@ -61,6 +61,8 @@ class DocketStatusInfo(object):
     self.events = []
     self.granted = False
     self.grant_date = None
+    self.cvsg = False
+    self.cvsg_date = None
     self.argued = False
     self.argued_date = None
     self.distributed = []
@@ -247,6 +249,9 @@ class DocketStatusInfo(object):
         elif etxt.startswith("Brief amici curiae of"):
           if not self.granted:
             self.cert_amici.append(" ".join(etxt.split()[4:-1]))
+        elif etxt.startswith("The Solicitor General is invited to file a brief"):
+          self.cvsg = True
+          self.cvsg_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt == "Petition GRANTED.":
           self.granted = True
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
@@ -310,6 +315,7 @@ class DocketStatusInfo(object):
     flags = []
     if self.capital: flags.append("CAPITAL")
     if self.related: flags.append("RELATED")
+    if self.cvsg: flags.append("CVSG")
     if self.argued: flags.append("ARGUED")
     if self.gvr:
       flags.append("GVR")
