@@ -172,7 +172,11 @@ def getCommonHeader (info):
   if info.distributed:
     hdr.append("  - Distributed: %s" % (", ".join([x[1].strftime("%Y-%m-%d") for x in info.distributed])))
   if info.cvsg:
-    hdr.append("  - CVSG: %s" % (info.cvsg_date.strftime("%Y-%m-%d")))
+    if info.cvsg_return_date:
+      hdr.append("  - CVSG: %s - %s" % (info.cvsg_date.strftime("%Y-%m-%d"),
+                                        info.cvsg_return_date.strftime("%Y-%m-%d")))
+    else:
+      hdr.append("  - CVSG: %s" % (info.cvsg_date.strftime("%Y-%m-%d")))
   return hdr
     
 
