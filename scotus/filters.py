@@ -78,6 +78,19 @@ class CapitalFilter(object):
 
     return docket_ref.info.capital == self.is_capital
 
+@srcfilter("cvsg")
+@SD.inputs("docket-reference")
+class CVSGFilter(object):
+  def __init__ (self, has_cvsg = True):
+    self.cvsg = cvsg
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    return docket_ref.info.cvsg == self.has_cvsg
+
+
 
 @srcfilter("lowercourt")
 @SD.inputs("docket-reference")
