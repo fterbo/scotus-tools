@@ -247,10 +247,10 @@ class DocketStatusInfo(object):
           confdate = dateutil.parser.parse(etxt.split()[-1]).date()
           edate = dateutil.parser.parse(einfo["Date"]).date()
           self.distributed.append((edate, confdate))
-        elif etxt.startswith("Brief amici curiae of"):
+        elif etxt.startswith("Brief amici curiae of") or etxt.startswith("Brief amicus curiae of"):
           if not self.granted:
             self.cert_amici.append(" ".join(etxt.split()[4:-1]))
-          if etxt.startswith("Brief amici curiae of United States filed") and self.cvsg:
+          if etxt.startswith("Brief amicus curiae of United States filed") and self.cvsg:
             self.cvsg_return_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt.startswith("The Solicitor General is invited to file a brief"):
           self.cvsg = True
