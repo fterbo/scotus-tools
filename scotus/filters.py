@@ -83,7 +83,7 @@ class CapitalFilter(object):
 @SD.inputs("docket-reference")
 class CVSGFilter(object):
   def __init__ (self, has_cvsg = True):
-    self.cvsg = has_cvsg
+    self.has_cvsg = has_cvsg
 
   def include (self, docket_ref):
     if not docket_ref.info:
