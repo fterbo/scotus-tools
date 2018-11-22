@@ -53,6 +53,7 @@ NAMEMAP = {
   "caAK" : "Court of Appeals of Alaska",
   "caAL" : CourtMatch("Court of Criminal Appeals of Alabama",
                            "Court of Civil Appeals of Alabama").setStart("Circuit Court of Alabama"),
+  "caAR" : "Court of Appeals of Arkansas",
   "caAZ" : CourtMatch().setStart("Court of Appeals of Arizona"),
   "caCA" : CourtMatch().setStart("Court of Appeal of California"),
   "caCO" : "Court of Appeals of Colorado",
