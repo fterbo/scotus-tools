@@ -145,7 +145,7 @@ def getPage (opts):
       logging.error("[%s] Not a legacy docket" % (dstr))
       sys.exit(1)
 
-    r = requests.get(URL % (term, docket))
+    r = requests.get(URL % (opts.term, opts.docket))
     if r.status_code == 200:
       with open(local_path, "w+") as dhtml:
         dhtml.write(r.content)
