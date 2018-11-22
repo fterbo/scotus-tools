@@ -148,7 +148,7 @@ def getPage (opts):
     jr = GET("%s%s.json" % (JSONBASE, dstr))
     if jr.status_code == 200:
       logging.error("[%s] Not a legacy docket" % (dstr))
-      with open("%s/docket.json" % (droot)) as jdf:
+      with open("%s/docket.json" % (droot), "w+") as jdf:
         jdf.write(jr.content)
       sys.exit(1)
 
