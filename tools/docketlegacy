@@ -128,7 +128,7 @@ def generateDocket (opts):
 
   dobj["ProceedingsandOrder"] = plist
 
-  droot = "%s/dockets/%d" % (opts.root, opts.docket_num)
+  droot = "%s/OT-%d/dockets/%d" % (opts.root, opts.term, opts.docket_num)
   with open("%s/docket.json" % (droot), "w+") as df:
     df.write(json.dumps(dobj))
 
@@ -136,7 +136,7 @@ def generateDocket (opts):
 def getPage (opts):
   dstr = scotus.util.buildDocketStr(opts)
 
-  droot = "%s/dockets/%d" % (opts.root, opts.docket_num)
+  droot = "%s/OT-%d/dockets/%d" % (opts.root, opts.term, opts.docket_num)
   local_path = "%s/legacy.html" % (droot)
   if not os.path.exists(droot):
     os.makedirs(droot)
