@@ -93,7 +93,7 @@ def generateDocket (opts):
   content = getPage(opts)
   dom = BS.BeautifulSoup(content, convertEntities = BS.BeautifulSoup.HTML_ENTITIES)
 
-  dobj = {"bCapitalCase" : False, "CaseNumber" : "%d-%d" % (opts.term, opts.docket)}
+  dobj = {"bCapitalCase" : False, "CaseNumber" : "%d-%d" % (opts.term, opts.docket_num)}
 
   dtable = dom.find("table", {"id" : "docketinfo"})
   started = False
