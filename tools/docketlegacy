@@ -70,6 +70,8 @@ def parseTitle (ltext, rcell):
   span = rcell.find("span")
   if len(span.contents) == 5:
     return { "PetitionerTitle" : span.contents[0], "RespondentTitle" : span.contents[4] }
+  elif len(span.contents) == 2:
+    return { "PetitionerTitle" : span.contents[0] }
   logging.info(span.contents)
   raise ValueError()
 
