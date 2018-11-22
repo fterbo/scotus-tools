@@ -132,6 +132,9 @@ def generateDocket (opts):
   with open("%s/docket.json" % (droot), "w+") as df:
     df.write(json.dumps(dobj))
 
+  dstr = scotus.util.buildDocketStr(opts)
+  logging.info("[%s] Created docket json" % (dstr))
+
 
 def getPage (opts):
   dstr = scotus.util.buildDocketStr(opts)
