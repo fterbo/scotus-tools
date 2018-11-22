@@ -106,6 +106,8 @@ def generateDocket (opts):
       cell = row.find("td")
       if cell.get("class") == "InfoTitle":
         started = True
+        if cell.text.count("CAPITAL"):
+          dobj["bCapitalCase"] = True
         continue
     else:
       (lcell, rcell) = row.findAll("td")
