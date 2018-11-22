@@ -1,0 +1,169 @@
+#!/usr/bin/env python
+
+# Copyright (c) 2018  Floyd Terbo
+
+from __future__ import absolute_import, print_function
+
+import argparse
+import json
+import logging
+import os
+import os.path
+import sys
+
+import BeautifulSoup as BS
+import requests
+
+import scotus.util
+
+JSONBASE = "https://www.supremecourt.gov/rss/cases/JSON/"
+HEADERS = {"User-Agent" : "SCOTUS Legacy Docket Builder (https://github.com/fterbo/scotus-tools)"}
+URL = "https://www.supremecourt.gov/search.aspx?filename=/docket/docketfiles/html/public/%d-%d.html"
+
+def GET (url):
+  logging.debug("GET: %s" % (url))
+  return requests.get(url, headers=HEADERS)
+
+def parse_args ():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-t", "--term", dest="term", type=int)
+  parser.add_argument("-n", "--docket-num", dest="docket_num", type=int)
+  parser.add_argument("--debug", dest="debug", action="store_true")
+  parser.add_argument("--root", dest="root", type=str, default=".")
+  args = parser.parse_args()
+  return args
+
+class FuzzyMatch(object):
+  def __init__ (self, *args):
+    self.names = args
+    self.start = []
+    self.partial = None
+
+  def __eq__ (self, val):
+    if not val:
+      return False
+    if val in self.names:
+      return True
+    if self.start:
+      for frag in self.start:
+        if val.startswith(frag):
+          return True
+    if self.partial and val.count(self.partial):
+      return True
+    return False
+
+  def __ne__ (self, val):
+    return not self == val
+
+  def setStart (self, val):
+    self.start.append(val)
+    return self
+
+  def setPartial (self, val):
+    self.partial = val
+    return self
+
+def parseLink (ltext, rcell):
+  return {"Links" : ltext}
+
+def parseTitle (ltext, rcell):
+  span = rcell.find("span")
+  if len(span.contents) == 5:
+    return { "PetitionerTitle" : span.contents[0], "RespondentTitle" : span.contents[4] }
+  logging.info(span.contents)
+  raise ValueError()
+
+KEYFUNC_MAP = {
+  parseLink : FuzzyMatch().setStart("Linked with"),
+  parseTitle : "Title:"
+}
+
+TRANS_TABLE = {
+  "Case Numbers:" : "LowerCourtCaseNumbers",
+  "Decision Date:" : "LowerCourtDecision",
+  "Rehearing Denied:" : "LowerCourtRehearingDenied",
+  "Lower Ct:" : "LowerCourt",
+  "Docketed:" : "DocketedDate"
+}
+
+def simpleTranslate (ltext, rtext):
+  return { TRANS_TABLE[ltext] : rtext }
+
+def generateDocket (opts)
+  content = getPage(opts)
+  dom = BS.BeautifulSoup(content, convertEntities = BS.BeautifulSoup.HTML_ENTITIES)
+
+  dobj = {"bCapitalCase" : False, "CaseNumber" : "%d-%d" % (opts.term, opts.docket)}
+
+  dtable = dom.find("table", {"id" : "docketinfo"})
+  started = False
+  for row in dtable.findAll("tr"):
+    if row.get("style") == "display:none":
+      continue
+    if not started:
+      cell = row.find("td")
+      if cell.get("class") == "InfoTitle":
+        started = True
+        continue
+    else:
+      (lcell, rcell) = row.findAll("td")
+      if lcell.text in TRANS_TABLE:
+        dobj.update(simpleTranslate(lcell.text, rcell.text))
+      else:
+        for k,v in KEYFUNC_MAP.items():
+          if v == lcell.text:
+            dobj.update(k(lcell.text, rcell))
+            break
+
+  plist = []
+  ptable = dom.find("table", {"id" : "proceedings"})
+  for row in ptable.findAll("tr")[1:]:
+    (lcell, rcell) = row.findAll("td")
+    if lcell.get("class") == "borderbttm":
+      continue
+    edata = { "Date" : lcell.text, "Text" : rcell.text }
+    plist.append(edata)
+
+  dobj["ProceedingsandOrder"] = plist
+
+  droot = "%s/dockets/%d" % (opts.root, opts.docket_num)
+  with open("%s/docket.json" % (droot), "w+") as df:
+    df.write(json.dumps(dobj))
+
+
+def getPage (opts):
+  dstr = scotus.util.buildDocketStr(opts)
+
+  droot = "%s/dockets/%d" % (opts.root, opts.docket_num)
+  local_path = "%s/legacy.html" % (droot)
+  if not os.path.exists(droot):
+    os.makedirs(droot)
+
+  if not os.path.exists(local_path):
+    jr = GET("%s%s.json" % (JSONBASE, dstr))
+    if jr.status_code == 200:
+      logging.error("[%s] Not a legacy docket" % (dstr))
+      sys.exit(1)
+
+    r = requests.get(URL % (term, docket))
+    if r.status_code == 200:
+      with open(local_path, "w+") as dhtml:
+        dhtml.write(r.content)
+      return r.content
+    else:
+      logging.error(r.status_code)
+      sys.exit(1)
+  else:
+    content = open(local_path, "rb").read()
+    return content
+
+if __name__ == '__main__':
+  opts = parse_args()
+
+  if opts.debug:
+    logging.basicConfig(level=logging.DEBUG)
+  else:
+    logging.basicConfig(level=logging.INFO)
+
+  generateDocket(opts)
+
