@@ -89,7 +89,7 @@ TRANS_TABLE = {
 def simpleTranslate (ltext, rtext):
   return { TRANS_TABLE[ltext] : rtext }
 
-def generateDocket (opts)
+def generateDocket (opts):
   content = getPage(opts)
   dom = BS.BeautifulSoup(content, convertEntities = BS.BeautifulSoup.HTML_ENTITIES)
 
