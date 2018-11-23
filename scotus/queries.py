@@ -58,7 +58,7 @@ QTYPES = {
 @SD.returns("docket-reference")
 class EventTextQuery(object):
   def __init__ (self, query_term, qtype = "contains", case_sensitive = False):
-    self.query_type = QTYPE[qtype]
+    self.query_type = QTYPES[qtype]
     self.query_term = query_term
     self.case_sensitive = case_sensitive
 
