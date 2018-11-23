@@ -65,6 +65,18 @@ class CaseStatus(object):
 
     return True
 
+@srcfilter("case-type")
+@SD.inputs("docket-reference")
+class CaseType(object):
+  def __init__ (self, type):
+    self.case_type = type
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    return docket_ref.info.casetype == self.case_type
+
 
 @srcfilter("capital")
 @SD.inputs("docket-reference")
