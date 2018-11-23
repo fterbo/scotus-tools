@@ -18,7 +18,7 @@ import scotus.util
 
 JSONBASE = "https://www.supremecourt.gov/rss/cases/JSON/"
 HEADERS = {"User-Agent" : "SCOTUS Legacy Docket Builder (https://github.com/fterbo/scotus-tools)"}
-URL = "https://www.supremecourt.gov/search.aspx?filename=/docket/docketfiles/html/public/%d-%d.html"
+URL = "https://www.supremecourt.gov/search.aspx?filename=/docket/docketfiles/html/public/%s.html"
 
 def GET (url):
   logging.debug("GET: %s" % (url))
@@ -162,7 +162,7 @@ def getPage (opts):
         jdf.write(jr.content)
       sys.exit(1)
 
-    r = requests.get(URL % (opts.term, opts.docket_num))
+    r = requests.get(URL % (dstr))
     if r.status_code == 200:
       with open(local_path, "w+") as dhtml:
         dhtml.write(r.content)
