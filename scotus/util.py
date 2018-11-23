@@ -415,10 +415,10 @@ def buildDocketStr (opts, num = None):
     num = opts.docket_num
 
   try:
-    if opts.orig:
-      return "22O%d" % (num)
-    elif opts.application or opts.action.count("application"):
+    if opts.application or opts.action.count("application"):
       return "%dA%d" % (opts.term, num)
+    elif opts.orig:
+      return "22O%d" % (num)
   except AttributeError:
     pass
 
