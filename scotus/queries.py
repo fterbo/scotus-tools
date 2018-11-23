@@ -44,3 +44,38 @@ class PetitionQuery(object):
     if count < self.min_count:
       return False
     return (docket_ref, {"query_term" : self.query_term, "count" : count})
+
+
+QTYPES = {
+  "contains" : 0,
+  "startswith" : 1,
+  "endswith" : 2,
+  "regexp" : 3
+}
+
+@query("event-text")
+@SD.inputs("docket-reference")
+@SD.returns("docket-reference")
+class EventTextQuery(object):
+  def __init__ (self, query_term, qtype = "contains", case_sensitive = False):
+    self.query_type = QTYPE[qtype]
+    self.query_term = query_term
+    self.case_sensitive = case_sensitive
+
+    if not self.case_sensitive:
+      self.query_term = self.query_term.lower()
+
+  def query (self, docket_ref):
+    if not docket_ref.info:
+      return None
+
+    for event in docket_ref.info.events:
+      etxt = event.text
+      if not case_sensitive:
+        etxt = etxt.lower()
+
+      if self.query_type == 0:
+        if etxt.count(self.query_term):
+          return (docket_ref, {})
+        else:
+          return False
