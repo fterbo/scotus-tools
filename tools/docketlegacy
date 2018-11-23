@@ -96,7 +96,8 @@ def generateDocket (opts):
   content = getPage(opts)
   dom = BS.BeautifulSoup(content, convertEntities = BS.BeautifulSoup.HTML_ENTITIES)
 
-  dobj = {"bCapitalCase" : False, "CaseNumber" : "%d-%d" % (opts.term, opts.docket_num)}
+  dstr = scotus.util.buildDocketStr(opts)
+  dobj = {"bCapitalCase" : False, "CaseNumber" : dstr}
 
   dtable = dom.find("table", {"id" : "docketinfo"})
   started = False
@@ -138,7 +139,6 @@ def generateDocket (opts):
   with open("%s/docket.json" % (droot), "w+") as df:
     df.write(json.dumps(dobj))
 
-  dstr = scotus.util.buildDocketStr(opts)
   logging.info("[%s] Created docket json" % (dstr))
 
 
