@@ -71,7 +71,7 @@ class EventTextQuery(object):
 
     for event in docket_ref.info.events:
       etxt = event.text
-      if not case_sensitive:
+      if not self.case_sensitive:
         etxt = etxt.lower()
 
       if self.query_type == 0:
