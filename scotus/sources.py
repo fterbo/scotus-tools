@@ -58,7 +58,8 @@ class DocketSource(object):
                     if not x.startswith(".") and x != "A"]
     self.didxs.sort()
 
-    self.adidxs = [int(x) for x in os.listdir("%s/OT-%d/dockets/A/" % (root_path, term))]
+    self.adidxs = [int(x) for x in os.listdir("%s/OT-%d/dockets/A/" % (root_path, term))
+                    if not x.startswith(".") and x != "indexes.json"]
     self.adidxs.sort()
 
   def __iter__ (self):
