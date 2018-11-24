@@ -4,6 +4,7 @@
 
 import functools
 import json
+import logging
 from pathos import multiprocessing
 import sys
 import time
@@ -72,6 +73,8 @@ def engine (sources, filters, queries, output):
   else:
     for source in source_list:
       filtered_source_list.extend([item for item in source])
+
+  logging.debug("Filtered sources: %d" % (len(filtered_source_list)))
  
   qpool = multiprocessing.ProcessingPool(nodes = PROCESSES)
   if query_list:
@@ -98,6 +101,11 @@ def engine (sources, filters, queries, output):
     
 
 if __name__ == '__main__':
+  if os.getenv("SCOTUSDEBUG"):
+    logging.basicConfig(level=logging.DEBUG)
+  else:
+    logging.basicConfig(level=logging.INFO)
+
   kwargs = json.loads(sys.argv[1])
   out = engine(**kwargs)
   d = {"v" : 1, "arguments" : kwargs, "output" : out}

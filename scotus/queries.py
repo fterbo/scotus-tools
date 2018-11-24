@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import, print_function
 
+import logging
 import os.path
 
 from . import decorators as SD
@@ -22,6 +23,7 @@ class PetitionQuery(object):
   def __init__ (self, query_term, min_count = 1):
     self.query_term = query_term
     self.min_count = min_count
+    logging.debug("<(petition-ngram) query_term : %s, min_count: %d>" % (query_term, min_count))
 
   def query (self, docket_ref):
     qgram = len(self.query_term.split())
@@ -64,6 +66,9 @@ class EventTextQuery(object):
 
     if not self.case_sensitive:
       self.query_term = self.query_term.lower()
+
+    logging.debug("<(event-text) query_type: %d, query_term: %s, case_sensitive: %s>" % (
+                  self.query_type, self.query_term, self.case_sensitive))
 
   def query (self, docket_ref):
     if not docket_ref.info:
