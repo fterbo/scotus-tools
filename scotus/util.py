@@ -317,16 +317,16 @@ class DocketStatusInfo(object):
   def getFlagString (self):
     flags = []
     if self.capital: flags.append("CAPITAL")
-    if self.related: flags.append("RELATED")
-    if self.cvsg: flags.append("CVSG")
-    if self.argued: flags.append("ARGUED")
     if self.gvr:
       flags.append("GVR")
     else:
       if self.granted: flags.append("GRANTED")
-      if self.dismissed: flags.append("DISMISSED")
-      if self.denied: flags.append("DENIED")
-      if self.judgment_issued: flags.append("ISSUED")
+    if self.related: flags.append("RELATED")
+    if self.cvsg: flags.append("CVSG")
+    if self.argued: flags.append("ARGUED")
+    if self.dismissed: flags.append("DISMISSED")
+    if self.denied: flags.append("DENIED")
+    if self.judgment_issued: flags.append("ISSUED")
     if flags:
       return "[%s]" % (", ".join(flags))
     else:
