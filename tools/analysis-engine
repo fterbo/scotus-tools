@@ -59,7 +59,6 @@ def engine (sources, filters, queries, output):
 
   outklass = scotus.outputs.OUTPUTTYPES[output[0]](**output[1])
 
-
   fpool = multiprocessing.ProcessingPool(nodes = PROCESSES)
 
   filtered_source_list = []

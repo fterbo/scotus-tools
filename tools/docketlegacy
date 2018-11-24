@@ -97,7 +97,7 @@ def generateDocket (opts):
   dom = BS.BeautifulSoup(content, convertEntities = BS.BeautifulSoup.HTML_ENTITIES)
 
   dstr = scotus.util.buildDocketStr(opts)
-  dobj = {"bCapitalCase" : False, "CaseNumber" : dstr}
+  dobj = {"bCapitalCase" : False, "CaseNumber" : dstr, "Petitioner" : [], "Respondent" : [], "Other" : []}
 
   dtable = dom.find("table", {"id" : "docketinfo"})
   started = False
@@ -131,6 +131,40 @@ def generateDocket (opts):
     plist.append(edata)
 
   dobj["ProceedingsandOrder"] = plist
+
+  ctable = dom.find("table", {"id": "Contacts"})
+  in_pet = in_resp = in_other = False
+  for cell in ctable.findAll("td"):
+    if cell.get("class") == "ContactSubHeader":
+      if cell.text == "Attorneys for Petitioners":
+        in_resp = False
+        in_other = False
+        in_pet = True
+      elif cell.text == "Attorneys for Respondents":
+        in_pet = False
+        in_other = False
+        in_resp = True
+      elif cell.text == "Other":
+        in_pet = False
+        in_resp = False
+        in_other = True
+      else:
+        in_pet = False
+        in_resp = False
+        in_other = False
+      continue
+    elif cell.get("class") == "ContactData2":
+      parts = cell.text.split("<br>")
+      pd = {"Attorney" : parts[0], "PrisonerId" : None}
+      if len(parts) == 2 and parts[1] == "Counsel of Record":
+        pd["IsCounselOfRecord"] = True
+      if in_pet:
+        dobj["Petitioner"].append(pd)
+      elif in_resp:
+        dobj["Respondent"].append(pd)
+      elif in_other:
+        dobj["Other"].append(pd)
+
 
   if opts.application:
     droot = "%s/OT-%d/dockets/A/%d" % (opts.root, opts.term, opts.docket_num)
