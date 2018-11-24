@@ -159,16 +159,14 @@ def generateDocket (opts):
       pd["Attorney"] = " ".join(parts[0].split())
       if len(parts) == 3 and parts[2].strip() == "Counsel of Record":
         pd["IsCounselofRecord"] = True
-      if in_pet:
-        pd["PartyName"] = dobj["PetitionerTitle"]
+    elif cell.text.startswith("Party name:"):
+      pd["PartyName"] = cell.text[12:]
+      if in_other:
+        dobj["Other"].append(pd)
+      elif in_pet:
         dobj["Petitioner"].append(pd)
       elif in_resp:
-        pd["PartyName"] = dobj["RespondentTitle"]
         dobj["Respondent"].append(pd)
-    elif cell.text.startswith("Party name:"):
-      if in_other:
-        pd["PartyName"] = cell.text[12:]
-        dobj["Other"].append(pd)
 
 
   if opts.application:
