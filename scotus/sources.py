@@ -18,28 +18,6 @@ def source (typ):
   return decorator
 
 
-@source("docket")
-@SD.returns("docket-reference")
-class DocketSource(object):
-  def __init__ (self, root_path, term, paid = False, ifp = False):
-    self.term = term
-    self.root_path = root_path
-    self.paid = paid
-    self.ifp = ifp
-
-    self.didxs  = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (root_path, term))
-                    if not x.startswith(".") and x != "A"]
-    self.didxs.sort()
-
-  def __iter__ (self):
-    for didx in self.didxs:
-      if not self.paid and didx < 5000:
-        continue
-      elif not self.ifp and didx > 5000:
-        continue
-      yield DocketReference("%s/OT-%d/dockets/%s" % (self.root_path, self.term, didx))
-
-
 class DocketReference(object):
   def __init__ (self, path):
     self.path = path
@@ -64,6 +42,36 @@ class DocketReference(object):
     if not self._index:
       self._index = parse.DirIndex(self.path)
     return self._index
+
+
+@source("docket")
+@SD.returns("docket-reference")
+class DocketSource(object):
+  def __init__ (self, root_path, term, paid = False, ifp = False, application = False):
+    self.term = term
+    self.root_path = root_path
+    self.paid = paid
+    self.ifp = ifp
+    self.application = application
+
+    self.didxs  = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (root_path, term))
+                    if not x.startswith(".") and x != "A"]
+    self.didxs.sort()
+
+    self.adidxs = [int(x) for x in os.listdir("%s/OT-%d/dockets/A/" % (root_path, term))]
+    self.adidxs.sort()
+
+  def __iter__ (self):
+    if self.paid or self.ifp:
+      for didx in self.didxs:
+        if not self.paid and didx < 5000:
+          continue
+        elif not self.ifp and didx > 5000:
+          continue
+        yield DocketReference("%s/OT-%d/dockets/%s" % (self.root_path, self.term, didx))
+    if self.application:
+      for idx in self.adidxs:
+        yield DocketReference("%s/OT-%d/dockets/A/%s" % (self.root_path, self.term, idx))
 
 
 @source("opinion")
