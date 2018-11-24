@@ -140,7 +140,7 @@ def generateDocket (opts):
         in_resp = False
         in_other = False
         in_pet = True
-      elif cell.text == "Attorneys for Respondents":
+      elif cell.text.startswith("Attorneys for Respondent"):
         in_pet = False
         in_other = False
         in_resp = True
@@ -155,7 +155,7 @@ def generateDocket (opts):
       continue
     elif cell.get("class") == "ContactData2":
       parts = cell.contents
-      pd = {"Attorney" : parts[0], "PrisonerId" : None}
+      pd = {"Attorney" : " ".join(parts[0].split()), "PrisonerId" : None}
       if len(parts) == 3 and parts[2].strip() == "Counsel of Record":
         pd["IsCounselOfRecord"] = True
       if in_pet:
