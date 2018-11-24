@@ -136,7 +136,7 @@ def generateDocket (opts):
   in_pet = in_resp = in_other = False
   for cell in ctable.findAll("td"):
     if cell.get("class") == "ContactSubHeader":
-      if cell.text == "Attorneys for Petitioners":
+      if cell.text.startswith("Attorneys for Petitioner"):
         in_resp = False
         in_other = False
         in_pet = True
