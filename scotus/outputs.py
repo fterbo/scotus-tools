@@ -25,7 +25,8 @@ class OneLineDocketSummary(object):
       if v == di.lowercourt:
         cabbr = k
 
-    return (di.term, di.docket, "[%11s][%5s] %s %s" % (di.casetype, cabbr, di.casename, di.getFlagString()))
+    return (di.term, di.docket, di.docketstr,
+            "[%11s][%5s] %s %s" % (di.casetype, cabbr, di.casename, di.getFlagString()))
 
 
 @output("petitioner-counsel-of-record")
