@@ -82,5 +82,5 @@ class EventTextQuery(object):
       if self.query_type == 0:
         if etxt.count(self.query_term):
           return (docket_ref, {})
-        else:
-          return False
+
+    return False
