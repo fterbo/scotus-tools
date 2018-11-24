@@ -154,7 +154,7 @@ def generateDocket (opts):
         in_other = False
       continue
     elif cell.get("class") == "ContactData2":
-      parts = cell.text.split("<br>")
+      parts = cell.contents
       pd = {"Attorney" : parts[0], "PrisonerId" : None}
       if len(parts) == 2 and parts[1] == "Counsel of Record":
         pd["IsCounselOfRecord"] = True
