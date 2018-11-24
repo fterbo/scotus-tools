@@ -155,9 +155,9 @@ def generateDocket (opts):
       continue
     elif cell.get("class") == "ContactData2":
       parts = cell.contents
-      pd = {"Attorney" : " ".join(parts[0].split()), "PrisonerId" : None}
+      pd = {"Attorney" : " ".join(parts[0].split()), "PrisonerId" : None, "IsCounselofRecord" : False}
       if len(parts) == 3 and parts[2].strip() == "Counsel of Record":
-        pd["IsCounselOfRecord"] = True
+        pd["IsCounselofRecord"] = True
       if in_pet:
         dobj["Petitioner"].append(pd)
       elif in_resp:
