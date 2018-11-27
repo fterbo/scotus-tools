@@ -68,9 +68,9 @@ class CaseStatus(object):
 @srcfilter("distribution")
 @SD.inputs("docket-reference")
 class Distribution(object):
-  def __init__ (self, count = None, conf_date = None):
+  def __init__ (self, min_count = None, conf_date = None):
     self.conf_date = None
-    self.count = count
+    self.count = min_count
 
     if conf_date:
       self.conf_date = dateutil.parser.parse(conf_date)
