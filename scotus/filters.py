@@ -65,6 +65,34 @@ class CaseStatus(object):
 
     return True
 
+@srcfilter("distribution")
+@SD.inputs("docket-reference")
+class Distribution(object):
+  def __init__ (self, count = None, conf_date = None):
+    self.conf_date = None
+    self.count = count
+
+    if conf_date:
+      self.conf_date = dateutil.parser.parse(conf_date)
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    if self.count:
+      if len(docket_ref.info.distributed) < self.count:
+        return False
+
+    if self.conf_date:
+      for (edate, cdate) in info.distributed:
+        if self.conf_date == cdate:
+          return True
+      return False
+
+    return True
+
+
+
 @srcfilter("case-type")
 @SD.inputs("docket-reference")
 class CaseType(object):
