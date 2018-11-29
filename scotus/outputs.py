@@ -41,6 +41,3 @@ class TopsideCounsel(object):
         atty_str = "Pro Se (Probable)"
       return (di.term, di.docket, atty_str)
     return (-1, -1, "<No Info>")
-    
-
-

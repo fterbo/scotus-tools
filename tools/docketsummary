@@ -43,8 +43,12 @@ def parse_args ():
 
 
 def scan (opts):
-  ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (opts.root, opts.term))
-            if not x.startswith(".") and x != "A"]
+  if opts.application:
+    ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/A/" % (opts.root, opts.term))
+              if not x.startswith(".") and x != "indexes.json"]
+  else:
+    ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (opts.root, opts.term))
+              if not x.startswith(".") and x != "A"]
   ddirs.sort()
   for ddir in ddirs:
     if opts.docket_num:
@@ -57,8 +61,10 @@ def scan (opts):
     elif int(ddir) > 4999 and not opts.ifp:
       return
 
-    jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, ddir)
-    docket_str = "%d-%d" % (opts.term, ddir)
+    if opts.application:
+      jpath = "%s/OT-%d/dockets/A/%d/docket.json" % (opts.root, opts.term, ddir)
+    else:
+      jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, ddir)
     if not os.path.exists(jpath):
       continue
 #      raise NoDocketError(docket_str)
@@ -68,7 +74,7 @@ def scan (opts):
     if opts.unknown:
       if docket_obj["LowerCourt"]:
         if docket_obj["LowerCourt"] not in LCNAMEMAP.values():
-          print("[%s] Unknown Lower Court: %s" % (docket_str, docket_obj["LowerCourt"]))
+          print("[%s] Unknown Lower Court: %s" % (info.docketstr, docket_obj["LowerCourt"]))
       continue
       
     if opts.lower:
@@ -85,7 +91,7 @@ def scan (opts):
     for k,v in LCNAMEMAP.items():
       if v == info.lowercourt:
         cabbr = k
-    print ("[%7s][%11s][%5s] %s %s" % (docket_str, info.casetype, cabbr, info.casename, info.getFlagString()))
+    print ("[%7s][%11s][%5s] %s %s" % (info.docketstr, info.casetype, cabbr, info.casename, info.getFlagString()))
 
 
 def conference (opts):
