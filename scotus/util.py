@@ -82,6 +82,8 @@ class DocketStatusInfo(object):
     self.atty_respondent_cor = None
     self.attys_petitioner = []
     self.attys_respondent = []
+
+    self.attys_amici = []
     self.cert_amici = []
 
     self._errors = []
@@ -213,6 +215,10 @@ class DocketStatusInfo(object):
           self.attys_respondent.append(info["Attorney"])
           if info["IsCounselofRecord"]:
             self.atty_respondent_cor = info["Attorney"]
+
+      if "Other" in docket_obj:
+        for info in docket_obj["Other"]:
+          self.attys_amici.append(info["Attorney"])
 
       if "RelatedCaseNumber" in docket_obj:
         for rc in docket_obj["RelatedCaseNumber"]:
