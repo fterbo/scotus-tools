@@ -32,7 +32,10 @@ class Attorney(object):
     return unicode(self).encode('utf-8')
 
   def __unicode__ (self):
-    return self.names[0]
+    try:
+      return unicode(self.names[0], "utf-8")
+    except TypeError:
+      return self.names[0]
 
   def setSG (self, entity, start, end = None):
     self.positions.append(("sg.%s" % (entity), start, end))
@@ -214,5 +217,4 @@ _attys = [
   Attorney("Nancy Winkelman")
     .setDA("phi", date(2017, 11, 1), None),
 ]
-
 
