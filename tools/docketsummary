@@ -120,7 +120,7 @@ def conference (opts):
     lower_map = LCNAMEMAP
 
   ddirs = [int(x) for x in os.listdir("%s/OT-%d/dockets/" % (opts.root, opts.term))
-            if not x.startswith(".") and X != "A"]
+            if not x.startswith(".") and x != "A"]
   ddirs.sort()
   for ddir in ddirs:
 #    if int(ddir) > 4999 and not opts.ifp:
