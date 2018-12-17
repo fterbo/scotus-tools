@@ -29,6 +29,9 @@ class Attorney(object):
     return self.names[0]
 
   def __str__ (self):
+    return unicode(self).encode('utf-8')
+
+  def __unicode__ (self):
     return self.names[0]
 
   def setSG (self, entity, start, end = None):
