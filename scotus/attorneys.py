@@ -28,14 +28,14 @@ class Attorney(object):
   def name (self):
     return self.names[0]
 
-  def __str__ (self):
-    return unicode(self).encode('utf-8')
+  def __repr__ (self):
+    return self.name
 
   def __unicode__ (self):
     try:
-      return unicode(self.names[0], "utf-8")
+      return unicode(self.name, "utf-8")
     except TypeError:
-      return self.names[0]
+      return self.name
 
   def setSG (self, entity, start, end = None):
     self.positions.append(("sg.%s" % (entity), start, end))
