@@ -154,7 +154,7 @@ def conference (opts):
         for k,v in lower_map.items():
           if v == info.lowercourt:
             cabbr = k
-        print ("[%s][%s][%s] %s %s" % (docket_str, info.casetype, cabbr, info.casename, info.getFlagString()))
+        print ("[%7s][%11s][%5s] %s %s" % (docket_str, info.casetype, cabbr, info.casename, info.getFlagString()))
         break
 
 
