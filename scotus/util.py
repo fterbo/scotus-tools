@@ -76,6 +76,7 @@ class DocketStatusInfo(object):
     self.judgment_date = None
     self.gvr = False
     self.gvr_date = None
+    self.removed = False
 
     self.atty_petitioner_prose = None
     self.atty_petitioner_cor = None
@@ -316,13 +317,15 @@ class DocketStatusInfo(object):
         elif etxt.count("petition for a writ of mandamus is dismissed"):
           self.dismissed = True
           self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
+        elif etxt.count("Case removed from Docket"):
+          self.removed = True
     except Exception:
       print "Exception in case: %s" % (docket_obj["CaseNumber"])
       raise
 
   @property
   def pending (self):
-    if self.dismissed or self.denied or self.judgment_issued or self.gvr:
+    if self.dismissed or self.denied or self.judgment_issued or self.gvr or self.removed:
       return False
     return True
 
@@ -338,6 +341,7 @@ class DocketStatusInfo(object):
     if self.argued: flags.append("ARGUED")
     if self.dismissed: flags.append("DISMISSED")
     if self.denied: flags.append("DENIED")
+    if self.removed: flags.append("REMOVED")
     if self.judgment_issued: flags.append("ISSUED")
     if flags:
       return "[%s]" % (", ".join(flags))
