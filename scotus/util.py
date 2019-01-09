@@ -259,8 +259,8 @@ class DocketStatusInfo(object):
           if not self.granted:
             self.cert_amici.append(" ".join(etxt.split()[4:-1]))
           if self.cvsg:
-            if etxt.startswith("Brief amicus curiae of United States filed") or
-               etxt.startswith("Brief amicus curiae of United States of America filed"):
+            if (etxt.startswith("Brief amicus curiae of United States filed") or
+               etxt.startswith("Brief amicus curiae of United States of America filed")):
               self.cvsg_return_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt.startswith("The Solicitor General is invited to file a brief"):
           self.cvsg = True
