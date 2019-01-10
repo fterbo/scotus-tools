@@ -148,7 +148,7 @@ def conference (opts):
       if not found:
         continue
 
-    for (edate, cdate) in info.distributed:
+    for (edate, cdate, rescheduled) in info.distributed:
       if cdate == conf_date:
         cabbr = None
         for k,v in lower_map.items():
@@ -177,7 +177,14 @@ def getCommonHeader (info):
     else:
       hdr.append("     %s" % (info.lowercourt_docket))
   if info.distributed:
-    hdr.append("  - Distributed: %s" % (", ".join([x[1].strftime("%Y-%m-%d") for x in info.distributed])))
+    dstrs = []
+    for x in info.distributed:
+      cdate = x[1].strftime("%Y-%m-%d")
+      if x[2]:
+        dstrs.append("%s[R]" % (cdate))
+      else:
+        dstrs.append(cdate)
+    hdr.append("  - Distributed: %s" % (", ".join(dstrs)))
   if info.cvsg:
     if info.cvsg_return_date:
       hdr.append("  - CVSG: %s - %s" % (info.cvsg_date.strftime("%Y-%m-%d"),

@@ -254,7 +254,10 @@ class DocketStatusInfo(object):
             continue  # Rehearing distribution, probably, not for conference
           confdate = dateutil.parser.parse(etxt.split()[-1]).date()
           edate = dateutil.parser.parse(einfo["Date"]).date()
-          self.distributed.append((edate, confdate))
+          self.distributed.append((edate, confdate, False))
+        elif etxt == "Rescheduled.":
+          last_dist = self.distributed[-1]
+          self.distributed[-1] = (last_dist[0], last_dist[1], True)
         elif etxt.startswith("Brief amici curiae of") or etxt.startswith("Brief amicus curiae of"):
           if not self.granted:
             self.cert_amici.append(" ".join(etxt.split()[4:-1]))
