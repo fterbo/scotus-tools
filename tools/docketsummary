@@ -103,6 +103,7 @@ def conference (opts):
     else:
       conf_date = d + datetime.timedelta(((3 - d.weekday()) + 7) % 7)
   conf_date = conf_date.date()
+
   if opts.relists:
     print("Relisted Petitions Considered at Conference on %s" % (conf_date.strftime("%Y-%m-%d")))
     print("---------------------------------------------------------")
@@ -137,8 +138,16 @@ def conference (opts):
     if opts.relists:
       if len(info.distributed) < 2:
         continue
+
       live_dists  = [x for x in info.distributed if not x[2]]
-      if len(live_dists) < 2:
+      if len(live_dists) < min_live:
+        continue
+
+      valid_relist = False
+      for idx,dist in enumerate(live_dists[1:]):
+        if dist[1] - live_dists[idx][1] < datetime.timedelta(days=15):
+          valid_relist = True
+      if not valid_relist:
         continue
 
     if lower_set:
