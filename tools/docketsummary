@@ -137,6 +137,9 @@ def conference (opts):
     if opts.relists:
       if len(info.distributed) < 2:
         continue
+      live_dists  = [x for x in info.distributed if not x[2]]
+      if len(live_dists) < 2:
+        continue
 
     if lower_set:
       if not docket_obj["LowerCourt"]:
