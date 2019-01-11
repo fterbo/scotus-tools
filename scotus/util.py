@@ -153,8 +153,8 @@ class DocketStatusInfo(object):
     (sout, serr) = p.communicate()
 
     START_TERMS = ["QUESTION PRESENTED", "QUESTIONS PRESENTED", "STATEMENT OF THE QUESTION"]
-    END_TERMS = ["TABLE", "PARTIES TO", "CORPORATE DISCLOSURE", "LIST OF", "RULE 29.6",
-                 "CERT. GRANTED", "PARTIES AND"]
+    END_TERMS = ["TABLE", "PARTIES", "CORPORATE DISCLOSURE", "LIST OF", "RULE 29.6",
+                 "CERT. GRANTED"]
     qp_lines = []
     capture = False
     done = False
