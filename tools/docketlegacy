@@ -192,7 +192,7 @@ def getPage (opts):
   if not os.path.exists(droot):
     os.makedirs(droot)
 
-  if not os.path.exists(local_path) and not opts.force:
+  if not os.path.exists(local_path) or opts.force:
     if not opts.force:
       jr = GET("%s%s.json" % (JSONBASE, dstr))
       if jr.status_code == 200:
