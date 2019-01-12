@@ -317,7 +317,8 @@ class DocketStatusInfo(object):
               or etxt.count("petition for a writ of mandamus and/or prohibition is dismissed")):
           self.dismissed = True
           self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
-        elif etxt.count("Case removed from Docket"):
+        elif (etxt.count("Case removed from Docket")
+              or etxt == "Case considered closed."):
           self.removed = True
 
         if etxt.count("petitioner has repeatedly abused"):
