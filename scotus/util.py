@@ -77,6 +77,7 @@ class DocketStatusInfo(object):
     self.gvr = False
     self.gvr_date = None
     self.removed = False
+    self.abuse = False
 
     self.atty_petitioner_prose = None
     self.atty_petitioner_cor = None
@@ -302,26 +303,26 @@ class DocketStatusInfo(object):
         elif etxt == "JUDGMENT ISSUED.":
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
-        elif etxt.startswith("Adjudged to be AFFIRMED."):
+        elif (etxt.startswith("Adjudged to be AFFIRMED.")
+              or etxt.count("judgment is affirmed under 28 U. S. C.")):
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt.startswith("Judgment REVERSED"):
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
-        elif etxt.count("petition for a writ of certiorari is dismissed"):
-          self.dismissed = True
-          self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
-        elif etxt.count("petition for a writ of mandamus/prohibition is dismissed"):
-          self.dismissed = True
-          self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
-        elif etxt.count("petition for a writ of habeas corpus is dismissed"):
-          self.dismissed = True
-          self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
-        elif etxt.count("petition for a writ of mandamus is dismissed"):
+        elif (etxt.count("petition for a writ of certiorari is dismissed")
+              or etxt.count("petition for a writ of mandamus/prohibition is dismissed")
+              or etxt.count("petition for a writ of habeas corpus is dismissed")
+              or etxt.count("petition for a writ of mandamus is dismissed")
+              or etxt.count("petition for a writ of mandamus and/or prohibition is dismissed")):
           self.dismissed = True
           self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt.count("Case removed from Docket"):
           self.removed = True
+
+        if etxt.count("petitioner has repeatedly abused"):
+          self.abuse = True
+
     except Exception:
       print "Exception in case: %s" % (docket_obj["CaseNumber"])
       raise
