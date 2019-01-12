@@ -294,10 +294,9 @@ class DocketStatusInfo(object):
         elif etxt.startswith("Petition Dismissed"):
           self.dismissed = True
           self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
-        elif etxt.startswith("Petition DENIED"):
-          self.denied = True
-          self.deny_date = dateutil.parser.parse(einfo["Date"]).date()
-        elif etxt.count("before judgment DENIED"):
+        elif (etxt.startswith("Petition DENIED")
+              or etxt.count("The petition for a writ of certiorari is denied")
+              or etxt.count("before judgment DENIED")):
           self.denied = True
           self.deny_date = dateutil.parser.parse(einfo["Date"]).date()
         elif etxt == "JUDGMENT ISSUED.":
