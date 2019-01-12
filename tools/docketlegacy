@@ -30,6 +30,7 @@ def parse_args ():
   parser.add_argument("-n", "--docket-num", dest="docket_num", type=int)
   parser.add_argument("-A", "--application", dest="application", default=False, action="store_true")
   parser.add_argument("--debug", dest="debug", action="store_true")
+  parser.add_argument("--force", dest="force", action="store_true")
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
   return args
@@ -191,13 +192,14 @@ def getPage (opts):
   if not os.path.exists(droot):
     os.makedirs(droot)
 
-  if not os.path.exists(local_path):
-    jr = GET("%s%s.json" % (JSONBASE, dstr))
-    if jr.status_code == 200:
-      logging.error("[%s] Not a legacy docket" % (dstr))
-      with open("%s/docket.json" % (droot), "w+") as jdf:
-        jdf.write(jr.content)
-      sys.exit(1)
+  if not os.path.exists(local_path) and not opts.force:
+    if not opts.force:
+      jr = GET("%s%s.json" % (JSONBASE, dstr))
+      if jr.status_code == 200:
+        logging.error("[%s] Not a legacy docket" % (dstr))
+        with open("%s/docket.json" % (droot), "w+") as jdf:
+          jdf.write(jr.content)
+        sys.exit(1)
 
     r = requests.get(URL % (dstr))
     if r.status_code == 200:
