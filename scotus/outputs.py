@@ -49,5 +49,9 @@ class DistributionData(object):
   def output (self, docket_ref, extra_list):
     di = docket_ref.info
     if di:
-      return (di.docketstr, di.distributed)
+      exlist = []
+      for (edate, cdate, resch) in di.distributed:
+        item = [(edate.year, edate.month, edate.day), (cdate.year, cdate.month, cdate.day), resch]
+        exlist.append(item)
+      return (di.docketstr, exlist)
     return (None, [])
