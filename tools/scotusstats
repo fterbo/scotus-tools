@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2018  Floyd Terbo
+# Copyright (c) 2018-2019  Floyd Terbo
 
 import argparse
 import json
@@ -11,7 +11,7 @@ import pprint
 import sys
 
 import scotus.util
-from scotus.attorneys import ATTYMAP
+from scotus.attorneys import ATTYMAP, Attorney
 from scotus.courts import NAMEMAP as LCNAMEMAP
 
 logging.basicConfig(level=logging.DEBUG)
@@ -128,10 +128,11 @@ def build_stats (opts, path):
       sdata["denied"] += 1
 
   def tryunicode(val):
-    try:
+    if isinstance(val, str):
       return unicode(val, "utf-8", "ignore")
-    except TypeError:
-      return val
+    elif isinstance(val, Attorney):
+      return unicode(val)
+    return val
 
   sdata["pends"].sort()
   sdata["grants"].sort()
