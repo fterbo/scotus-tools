@@ -129,7 +129,7 @@ def build_stats (opts, path):
 
   def tryunicode(val):
     try:
-      return unicode(val, "utf-8")
+      return unicode(val, "utf-8", "ignore")
     except TypeError:
       return val
 
@@ -139,13 +139,13 @@ def build_stats (opts, path):
   sdata["dismissals"].sort()
   lc_counts = [(str(k), v[0]) for k,v in lower_courts.items()]
   lc_counts.sort(key = lambda x: x[1], reverse=True)
-  atty_counts = [(str(k),v[0]) for k,v in attys.items()]
+  atty_counts = [(tryunicode(k),v[0]) for k,v in attys.items()]
   atty_counts.sort(key = lambda x: x[1], reverse=True)
   gatty_counts = [(k.name,v[0]) for k,v in gattys.items()]
   gatty_counts.sort(key = lambda x: x[1], reverse=True)
   pdatty_counts = [(k.name,v[0]) for k,v in pdattys.items()]
   pdatty_counts.sort(key = lambda x: x[1], reverse=True)
-  aatty_counts = [(str(k),v[0]) for k,v in amici_attys.items()]
+  aatty_counts = [(tryunicode(k),v[0]) for k,v in amici_attys.items()]
   aatty_counts.sort(key = lambda x: x[1], reverse=True)
 
   if opts.write:
