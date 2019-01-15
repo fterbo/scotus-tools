@@ -29,7 +29,7 @@ class Attorney(object):
     return self.names[0]
 
   def __repr__ (self):
-    return self.name
+    return unicode(self)
 
   def __unicode__ (self):
     try:
