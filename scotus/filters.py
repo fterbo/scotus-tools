@@ -75,7 +75,7 @@ class Distribution(object):
     self.count = min_count
 
     if conf_date:
-      self.conf_date = dateutil.parser.parse(conf_date)
+      self.conf_date = dateutil.parser.parse(conf_date).date()
       logging.debug("conference date parsed as: %s" % (self.conf_date))
 
   def include (self, docket_ref):
