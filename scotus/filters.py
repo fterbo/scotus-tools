@@ -97,14 +97,14 @@ class Distribution(object):
     elif self.rescheduled is not None:
       if not self.rescheduled:
         # Return True only if we've never been rescheduled
-        for (edate, cdate, was_rescheduled):
+        for (edate, cdate, was_rescheduled) in docket_ref.info.distributed:
           if was_rescheduled:
             return False
         return True
       else:
         # Return True if we've been rescheduled min_count times
         rcount = 0
-        for (edate, cdate, was_rescheduled):
+        for (edate, cdate, was_rescheduled) in docket_ref.info.distributed:
           if was_rescheduled:
             rcount += 1
         if rcount >= self.count:
