@@ -32,11 +32,11 @@ class Attorney(object):
     return "<Attorney: %s>" % (str(self))
 
   def __str__ (self):
-    return str(unicode(self))
+    return unicode(self).encode('utf-8')
 
   def __unicode__ (self):
     try:
-      return unicode(self.name, "latin-1", "ignore")
+      return unicode(self.name, "utf-8", "ignore")
     except TypeError:
       return self.name
 
