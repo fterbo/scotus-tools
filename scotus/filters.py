@@ -1,4 +1,4 @@
-# Copyright (c) 2018  Floyd Terbo
+# Copyright (c) 2018-2019  Floyd Terbo
 
 from __future__ import absolute_import
 
@@ -94,6 +94,22 @@ class Distribution(object):
             return False
           return True
       return False
+    elif self.rescheduled is not None:
+      if not self.rescheduled:
+        # Return True only if we've never been rescheduled
+        for (edate, cdate, was_rescheduled):
+          if was_rescheduled:
+            return False
+        return True
+      else:
+        # Return True if we've been rescheduled min_count times
+        rcount = 0
+        for (edate, cdate, was_rescheduled):
+          if was_rescheduled:
+            rcount += 1
+        if rcount >= self.count:
+          return True
+        return False
 
     return True
 
