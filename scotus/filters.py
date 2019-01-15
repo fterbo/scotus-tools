@@ -2,6 +2,8 @@
 
 from __future__ import absolute_import
 
+import logging
+
 import dateutil.parser
 
 from . import decorators as SD
@@ -74,6 +76,7 @@ class Distribution(object):
 
     if conf_date:
       self.conf_date = dateutil.parser.parse(conf_date)
+      logging.debug("conference date parsed as: %s" % (self.conf_date))
 
   def include (self, docket_ref):
     if not docket_ref.info:
