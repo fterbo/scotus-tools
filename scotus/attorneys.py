@@ -36,7 +36,7 @@ class Attorney(object):
 
   def __unicode__ (self):
     try:
-      return unicode(self.name, "utf-8")
+      return unicode(self.name, "latin-1", "ignore")
     except TypeError:
       return self.name
 
