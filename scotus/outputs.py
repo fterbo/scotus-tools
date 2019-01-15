@@ -45,6 +45,7 @@ class TopsideCounsel(object):
 
 @output("distribution-data")
 @SD.inputs("docket-reference")
+class DistributionData(object):
   def output (self, docket_ref, extra_list):
     di = docket_ref.info
     if di:
