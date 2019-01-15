@@ -84,7 +84,7 @@ class Distribution(object):
         return False
 
     if self.conf_date:
-      for (edate, cdate, rescheduled) in info.distributed:
+      for (edate, cdate, rescheduled) in docket_ref.info.distributed:
         if self.conf_date == cdate:
           return True
       return False
