@@ -70,9 +70,10 @@ class CaseStatus(object):
 @srcfilter("distribution")
 @SD.inputs("docket-reference")
 class Distribution(object):
-  def __init__ (self, min_count = None, conf_date = None):
+  def __init__ (self, min_count = None, conf_date = None, rescheduled = None):
     self.conf_date = None
     self.count = min_count
+    self.rescheduled = rescheduled
 
     if conf_date:
       self.conf_date = dateutil.parser.parse(conf_date).date()
@@ -87,8 +88,10 @@ class Distribution(object):
         return False
 
     if self.conf_date:
-      for (edate, cdate, rescheduled) in docket_ref.info.distributed:
+      for (edate, cdate, was_rescheduled) in docket_ref.info.distributed:
         if self.conf_date == cdate:
+          if self.rescheduled is not None and was_rescheduled != self.rescheduled:
+            return False
           return True
       return False
 
