@@ -10,7 +10,7 @@ import scotus.util
 
 PAGE = """<html>
 <head>
-  <meta chartset="UTF-8">
+  <meta charset="UTF-8">
   <title>Conference Report (%s)</title>
   <style>
   table {
@@ -29,6 +29,52 @@ PAGE = """<html>
 
   .hidden {
     display: none;
+  }
+
+  .tooltip {
+          position: relative;
+          display: inline-block;
+          border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+  }
+
+  /* Tooltip text */
+  .tooltip .tooltiptext {
+          visibility: hidden;
+          width: 600px;
+          background-color: #555;
+          color: #fff;
+          text-align: left;
+          padding: 10px 0;
+          border-radius: 6px;
+
+          /* Position the tooltip text */
+          position: absolute;
+          z-index: 1;
+          bottom: -200%%;
+          left: 50%%;
+          margin-left: 20px;
+
+          /* Fade in tooltip */
+          opacity: 0;
+          transition: opacity 0.3s;
+  }
+
+  /* Tooltip arrow */
+  .tooltip .tooltiptext::after {
+          content: "";
+          position: absolute;
+          top: 100%%;
+          left: 50%%;
+          margin-left: 10px;
+          border-width: 5px;
+          border-style: solid;
+          border-color: #555 transparent transparent transparent;
+  }
+
+  /* Show the tooltip text when you mouse over the tooltip container */
+  .tooltip:hover .tooltiptext {
+          visibility: visible;
+          opacity: 1;
   }
   </style>
   <link type="text/css" rel="stylesheet" href="http://qtip2.com/v/stable/jquery.qtip.css"/>
@@ -79,23 +125,36 @@ def main():
     djson = json.loads(open("OT-%d/dockets/%d/docket.json" % (term, num), "rb").read())
     docket = scotus.util.DocketStatusInfo(djson)
 
+    lcinfo = []
+    lcinfo.append(docket.lowercourt)
+    if docket.lowercourt_decision_date:
+      lcinfo.append("%s - %s" % (docket.lowercourt_docket, docket.lowercourt_decision_date.strftime("%Y-%m-%d")))
+    else:
+      lcinfo.append(docket.lowercourt_docket)
+
     dstrl = []
+    dcount = 0
+    rdcount = 0
     for (ed, cd, r) in docket.distributed:
+      dcount += 1
       cds = cd.strftime("%Y-%m-%d")
       if r:
         dstrl.append("%s[R]" % (cds))
+        rdcount += 1
       else:
         dstrl.append(cds)
 
     row = [u'<a href="%s" target="_blank">%s</a>' % (docket.docketurl, docket.docketstr)]
-    row.extend([docket.casetype, cabbr])
+    row.append(docket.casetype)
+    row.append(u'<div class="hasTooltip">%s</div>' % (cabbr))
+    row.append(u'<div class="hidden">%s</div>' % ("\n".join(lcinfo)))
     qp = docket.getQPText().strip().decode("utf-8")
     if qp:
       row.append(u'<details><summary>%s</summary><pre>%s</pre></details>' % (docket.casename, docket.getQPText().decode("utf-8")))
     else:
       row.append(docket.casename)
     row.append(docket.getFlagString())
-    row.append("<br>".join(dstrl))
+    row.append(u'<details><summary>%d (%d Resch.)</summary>%s</details' % (dcount, rdcount, "<br>".join(dstrl)))
     tdata.append(tuple(row))
 
   ROWFMT = u"<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
@@ -111,4 +170,3 @@ def main():
 if __name__ == '__main__':
   scotus.util.setOutputEncoding()
   main()
-
