@@ -29,6 +29,20 @@ class OneLineDocketSummary(object):
             "[%11s][%5s] %s %s" % (di.casetype, cabbr, di.casename, di.getFlagString()))
 
 
+@output("docket-meta")
+@SD.inputs("docket-reference")
+class ShortDocketMetadata(object):
+  def output (self, docket_ref, extra_list):
+    di = docket_ref.info
+
+    cabbr = None
+    for k,v in LCNAMEMAP.items():
+      if v == di.lowercourt:
+        cabbr = k
+
+    return (di.term, di.docket, cabbr)
+
+
 @output("petitioner-counsel-of-record")
 @SD.inputs("docket-reference")
 class TopsideCounsel(object):
