@@ -147,7 +147,7 @@ def main():
     row = [u'<a href="%s" target="_blank">%s</a>' % (docket.docketurl, docket.docketstr)]
     row.append(docket.casetype)
     if cabbr != "None":
-      row.append(u'<div class="hasTooltip">%s</div><div class="hidden">%s</div>' % (cabbr, "\n".join(lcinfo)))
+      row.append(u'<div class="hasTooltip">%s</div><div class="hidden">%s</div>' % (cabbr, "<br>".join(lcinfo)))
     else:
       row.append(cabbr)
     qp = docket.getQPText().strip().decode("utf-8")
