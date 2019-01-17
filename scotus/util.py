@@ -104,6 +104,10 @@ class DocketStatusInfo(object):
     return "%d-%d" % (self.term, self.docket)
 
   @property
+  def docketurl (self):
+    return "https://www.supremecourt.gov/search.aspx?filename=/docket/docketfiles/html/public/%s.html" % (self.docketstr)
+
+  @property
   def audiodocketstr (self):
     if self.original:
       return "%d-Orig" % (self.docket)
