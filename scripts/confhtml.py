@@ -126,8 +126,7 @@ def main():
     docket = scotus.util.DocketStatusInfo(djson)
 
     lcinfo = []
-    if docket.lowercourt:
-      lcinfo.append(docket.lowercourt)
+    lcinfo.append(docket.lowercourt)
     if docket.lowercourt_decision_date:
       lcinfo.append("%s - %s" % (docket.lowercourt_docket, docket.lowercourt_decision_date.strftime("%Y-%m-%d")))
     else:
@@ -147,7 +146,7 @@ def main():
 
     row = [u'<a href="%s" target="_blank">%s</a>' % (docket.docketurl, docket.docketstr)]
     row.append(docket.casetype)
-    if lcinfo:
+    if cabbr:
       row.append(u'<div class="hasTooltip">%s</div>' % (cabbr))
       row.append(u'<div class="hidden">%s</div>' % ("\n".join(lcinfo)))
     else:
