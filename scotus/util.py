@@ -159,7 +159,10 @@ class DocketStatusInfo(object):
 
     START_TERMS = ["QUESTION PRESENTED", "QUESTIONS PRESENTED", "STATEMENT OF THE QUESTION"]
     END_TERMS = ["TABLE", "PARTIES", "CORPORATE DISCLOSURE", "LIST OF", "RULE 29.6",
-                 "CERT. GRANTED", "INTERESTED PARTIES", "NO.", "Parties to the Proceedings"]
+                 "CERT. GRANTED", "INTERESTED PARTIES", "NO.", "Parties to the Proceedings",
+                 "PETITION FOR WRIT", "List of all Parties", "List of Parties", "No. ____",
+                 "CONSTITUTIONAL PROVISION", "OPINIONS BELOW", "TOPICAL INDEX", "RELIEF SOUGHT",
+                 "JURISDICTION"]
     qp_lines = []
     capture = False
     done = False
