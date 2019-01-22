@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+
+# Copyright (c) 2019  Floyd Terbo
+
+import argparse
+import datetime
+import json
+import logging
+import os
+import os.path
+import sys
+import time
+import urllib
+
+import BeautifulSoup as BS
+import requests
+
+logging.basicConfig(level=logging.INFO)
+
+HEADERS = {"User-Agent" : "SCOTUS Transcript Grabber (https://github.com/fterbo/scotus-tools)"}
+BASE = "https://www.supremecourt.gov/"
+
+
+def GET (url):
+  logging.debug("GET: %s" % (url))
+  return requests.get(url, headers=HEADERS)
+
+
+def parse_args ():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-y", "--year", dest="term", type=int)
+  parser.add_argument("--root", dest="root", type=str, default=".")
+  args = parser.parse_args()
+  return args
+
+
+def download (year, path):
+  r = GET("%s/oral_arguments/argument_transcript/%d" % (BASE, year))
+  if r.status_code != 200:
+    print r.status_code
+    sys.exit(1)
+
+  root = BS.BeautifulSoup(r.content)
+  links = root.findAll("a")
+  for link in links:
+    href = link.get("href")
+    if href and len(href) > 4 and href[-4:] == ".pdf":
+      if not href.count("transcripts"):
+        continue
+
+      fname = href.split("/")[-1]
+      outpath = "%s/%s" % (path, fname)
+      if os.path.exists(outpath):
+        logging.debug("Skipping cached transcript: %s" % (href))
+        continue
+
+      logging.info("Downloading: %s" % (href))
+      order = GET("%s%s" % (BASE, href))
+      with open(outpath, "w+") as f:
+        f.write(order.content)
+
+
+if __name__ == '__main__':
+  opts = parse_args()
+
+  path = "%s/Transcripts/%d" % (opts.root, opts.year)
+  try:
+    os.makedirs(path)
+  except OSError:
+    pass
+  download(opts.year, path)
+

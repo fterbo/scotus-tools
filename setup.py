@@ -1,11 +1,11 @@
-# Copyright (c) 2018  Floyd Terbo
+# Copyright (c) 2018-2019  Floyd Terbo
 
 from distutils.core import setup
 import setuptools
 
 
 setup(name = "scotus-tools",
-      version = "0.9.48",
+      version = "0.9.49",
       author = "Floyd Terbo",
       author_email = "fterbo@protonmail.com",
       packages = setuptools.find_packages(),
@@ -23,5 +23,5 @@ setup(name = "scotus-tools",
                  'tools/opinionindexer', 'tools/opinionsearch',
                  'tools/scotusstats', 'tools/docketsummary',
                  'tools/analysis-engine', 'tools/argumentrss',
-                 'tools/docketlegacy']
+                 'tools/docketlegacy', 'tools/transcriptgrab']
   )
