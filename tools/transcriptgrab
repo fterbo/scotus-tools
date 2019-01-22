@@ -28,7 +28,7 @@ def GET (url):
 
 def parse_args ():
   parser = argparse.ArgumentParser()
-  parser.add_argument("-y", "--year", dest="term", type=int)
+  parser.add_argument("-y", "--year", dest="year", type=int)
   parser.add_argument("--root", dest="root", type=str, default=".")
   args = parser.parse_args()
   return args
