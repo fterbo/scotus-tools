@@ -35,6 +35,9 @@ class ShortDocketMetadata(object):
   def output (self, docket_ref, extra_list):
     di = docket_ref.info
 
+    if not di:
+      return (None, None, None)
+
     cabbr = None
     for k,v in LCNAMEMAP.items():
       if v == di.lowercourt:
