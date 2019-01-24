@@ -54,9 +54,10 @@ def main():
 
 
     rd = {}
-    rd["docketurl"] = docket.docketurl
-    rd["docketstr"] = docket.docketstr
-    rd["casename"] = docket.casename
+    rd["docket-url"] = docket.docketurl
+    rd["docket-str"] = docket.docketstr
+    rd["case-name"] = docket.casename
+    rd["case-type"] = docket.casetype
     rd["dist-count"] = dcount
     rd["resch-count"] = rdcount
     rd["dist-details"] = "<br>".join(dstrl)
