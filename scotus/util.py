@@ -340,6 +340,25 @@ class DocketStatusInfo(object):
       return False
     return True
 
+  def getFlagDict (self):
+    flags = {"capital" : False, "gvr" : False, "granted" : False, "related" : False,
+             "cvsg" : False, "argued" : False, "dismissed" : False, "denied" : False,
+             "removed" : False, "issued" : False}
+
+    if self.capital: flags["capital"] = True
+    if self.gvr:
+      flags["gvr"] = True
+    else:
+      if self.granted: flags["granted"] = True
+    if self.related: flags["related"] = True
+    if self.cvsg: flags["cvsg"] = True
+    if self.argued: flags["argued"] = True
+    if self.dismissed: flags["dismissed"] = True
+    if self.denied: flags["denied"] = True
+    if self.removed: flags["removed"] = True
+    if self.judgment_issued: flags["issued"] = True
+    return flags
+
   def getFlagString (self):
     flags = []
     if self.capital: flags.append("CAPITAL")
