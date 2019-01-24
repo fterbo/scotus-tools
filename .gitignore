@@ -103,3 +103,6 @@ ENV/
 # vim
 *.swo
 *.swp
+
+#static-html
+html-static/data/*
