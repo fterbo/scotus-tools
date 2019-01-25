@@ -13,7 +13,7 @@ class DocketEvent(object):
     self.denied = False
     self.dismissed = False
     self.brief = False
-    self.grant = False
+    self.granted = False
     self.argued = False
     self.removed = False
     self.remanded = False
