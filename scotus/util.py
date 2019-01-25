@@ -361,7 +361,7 @@ class DocketStatusInfo(object):
 
   @property
   def current_status (self):
-    if self.issued: return "ISSUED"
+    if self.judgment_issued: return "ISSUED"
     if self.argued: return "ARGUED"
     if self.dismissed: return "DISMISSED"
     if self.removed: return "REMOVED"
