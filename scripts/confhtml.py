@@ -25,8 +25,6 @@ PAGE = """<html>
     border: 1px solid black;
   }
 
-  tr:nth-child(even) {background-color: #f2f2f2;}
-
   .hidden {
     display: none;
   }
