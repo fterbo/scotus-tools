@@ -359,6 +359,17 @@ class DocketStatusInfo(object):
     if self.judgment_issued: flags["issued"] = True
     return flags
 
+  @property
+  def current_status (self):
+    if self.issued: return "ISSUED"
+    if self.argued: return "ARGUED"
+    if self.dismissed: return "DISMISSED"
+    if self.removed: return "REMOVED"
+    if self.denied: return "DENIED"
+    if self.gvr: return "GVR"
+    if self.granted: return "GRANTED"
+    return "PENDING"
+
   def getFlagString (self):
     flags = []
     if self.capital: flags.append("CAPITAL")

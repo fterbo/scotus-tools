@@ -58,6 +58,7 @@ def main():
     rd["docket-str"] = docket.docketstr
     rd["case-name"] = docket.casename
     rd["case-type"] = docket.casetype
+    rd["current-status"] = docket.current_status
     rd["dist-count"] = dcount
     rd["resch-count"] = rdcount
     rd["dist-details"] = "<br>".join(dstrl)
