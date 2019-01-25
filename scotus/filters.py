@@ -198,13 +198,24 @@ ATTY_ROLES = {
 @srcfilter("attorney")
 @SD.inputs("docket-reference")
 class PartyAttorney(object):
-  def __init__ (self, atty_name, role = None, petitioner = None, respondent = None):
+  def __init__ (self, atty_name, role = None, petitioner = None, respondent = None, require_cor = False):
     self.atty_name = atty_name
     self.role = None
     self.petitioner = petitioner
     self.respondent = respondent
+    self.require_cor = require_cor
     if role:
       self.role = getattr(Attorney, ATTY_ROLES[role])
+
+  def __match (self, source, target):
+    if source != target:
+      return False
+    if self.role:
+      if self.role(source, docket.docket_date):
+        return True
+      return False
+    else:
+      return True
 
   def include (self, docket_ref):
     if not docket_ref.info:
@@ -218,28 +229,44 @@ class PartyAttorney(object):
     docket = docket_ref.info
 
     if self.petitioner or self.petitioner is None:
-      for atty in docket.attys_petitioner:
+      if self.require_cor:
         try:
-          aobj = ATTYMAP[atty]
-          if fobj == aobj:
-            if self.role:
-              if self.role(aobj, docket.docket_date):
-                return True
-            else:
-              return True
+          aobj = ATTYMAP[docket.atty_petitioner_cor]
+          if self.__match(aobj, fobj):
+            return True
         except KeyError:
-          continue
+          pass
+      else:
+        for atty in docket.attys_petitioner:
+          try:
+            aobj = ATTYMAP[atty]
+            if fobj == aobj:
+              if self.role:
+                if self.role(aobj, docket.docket_date):
+                  return True
+              else:
+                return True
+          except KeyError:
+            continue
 
     if self.respondent or self.respondent is None:
-      for atty in docket.attys_respondent:
+      if self.require_cor:
         try:
-          aobj = ATTYMAP[atty]
-          if fobj == aobj:
-            if self.role:
-              if self.role(aobj, docket.docket_date):
-                return True
-            else:
-              return True
+          aobj = ATTYMAP[docket.atty_respondent_cor]
+          if self.__match(aobj, fobj):
+            return True
         except KeyError:
-          continue
+          pass
+      else:
+        for atty in docket.attys_respondent:
+          try:
+            aobj = ATTYMAP[atty]
+            if fobj == aobj:
+              if self.role:
+                if self.role(aobj, docket.docket_date):
+                  return True
+              else:
+                return True
+          except KeyError:
+            continue
 
