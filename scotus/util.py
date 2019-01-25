@@ -80,8 +80,8 @@ class DocketStatusInfo(object):
     self.abuse = False
 
     self.atty_petitioner_prose = None
-    self.atty_petitioner_cor = None
-    self.atty_respondent_cor = None
+    self.attys_petitioner_cor = []
+    self.attys_respondent_cor = []
     self.attys_petitioner = []
     self.attys_respondent = []
 
@@ -249,7 +249,7 @@ class DocketStatusInfo(object):
       if "Petitioner" in docket_obj:
         for info in docket_obj["Petitioner"]:
           if info["IsCounselofRecord"]:
-            self.atty_petitioner_cor = info["Attorney"]
+            self.attys_petitioner_cor.append(info["Attorney"])
           if (info["Attorney"] == info["PartyName"]) or info["PrisonerId"]:
             self.atty_petitioner_prose = info["Attorney"]
           self.attys_petitioner.append(info["Attorney"])
@@ -258,7 +258,7 @@ class DocketStatusInfo(object):
         for info in docket_obj["Respondent"]:
           self.attys_respondent.append(info["Attorney"])
           if info["IsCounselofRecord"]:
-            self.atty_respondent_cor = info["Attorney"]
+            self.attys_respondent_cor.append(info["Attorney"])
 
       if "Other" in docket_obj:
         for info in docket_obj["Other"]:

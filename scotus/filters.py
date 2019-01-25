@@ -230,12 +230,13 @@ class PartyAttorney(object):
 
     if self.petitioner or self.petitioner is None:
       if self.require_cor:
-        try:
-          aobj = ATTYMAP[docket.atty_petitioner_cor]
-          if self.__match(aobj, fobj):
-            return True
-        except KeyError:
-          pass
+        for atty in docket.attys_petitioner_cor:
+          try:
+            aobj = ATTYMAP[atty]
+            if self.__match(aobj, fobj):
+              return True
+          except KeyError:
+           continue
       else:
         for atty in docket.attys_petitioner:
           try:
@@ -251,12 +252,13 @@ class PartyAttorney(object):
 
     if self.respondent or self.respondent is None:
       if self.require_cor:
-        try:
-          aobj = ATTYMAP[docket.atty_respondent_cor]
-          if self.__match(aobj, fobj):
-            return True
-        except KeyError:
-          pass
+        for atty in docket.attys_respondent_cor:
+          try:
+            aobj = ATTYMAP[atty]
+            if self.__match(aobj, fobj):
+              return True
+          except KeyError:
+           continue
       else:
         for atty in docket.attys_respondent:
           try:
