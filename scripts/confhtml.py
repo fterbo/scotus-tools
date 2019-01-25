@@ -144,7 +144,16 @@ def main():
       else:
         dstrl.append(cds)
 
-    row = [u'<a href="%s" target="_blank">%s</a>' % (docket.docketurl, docket.docketstr)]
+    if docket.granted:
+      row = ["#cceecc"]
+    elif docket.denied or docket.dismissed:
+      row = ["#ffcccc"]
+    elif idx % 2:
+      row = ["#FFFFFF"]
+    else:
+      row = ["#f2f2f2"]
+
+    row.append(u'<a href="%s" target="_blank">%s</a>' % (docket.docketurl, docket.docketstr))
     row.append(docket.casetype)
     if cabbr != "None":
       row.append(u'<div class="hasTooltip">%s</div><div class="hidden">%s</div>' % (cabbr, "<br>".join(lcinfo)))
@@ -159,7 +168,7 @@ def main():
     row.append(u'<details><summary>%d (%d Resch.)</summary>%s</details' % (dcount, rdcount, "<br>".join(dstrl)))
     tdata.append(tuple(row))
 
-  ROWFMT = u"<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
+  ROWFMT = u"<tr bgcolor=\"%s\"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
   out = PAGE % (cdatestr, cdatestr, u"\n".join([ROWFMT % x for x in tdata]))
 
   with codecs.open("webroot/reports/conf.html", "w+", encoding="utf-8") as f:

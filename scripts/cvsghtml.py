@@ -60,13 +60,22 @@ def main():
     if docket.cvsg_return_date:
       cvsg_return_date = docket.cvsg_return_date.strftime("%Y-%m-%d")
 
-    row = ['<a href="%s">%s</a>' % (docket.docketurl, docket.docketstr)]
+    if docket.granted:
+      row = ["#cceecc"]
+    elif docket.denied or docket.dismissed:
+      row = ["#ffcccc"]
+    elif idx % 2:
+      row = ["#FFFFFF"]
+    else:
+      row = ["#f2f2f2"]
+
+    row.append('<a href="%s">%s</a>' % (docket.docketurl, docket.docketstr))
     row.extend([cvsg_date, cvsg_return_date])
     row.extend([docket.casetype, cabbr, docket.casename])
     row.append(docket.getFlagString())
     tdata.append(tuple(row))
 
-  ROWFMT = u"<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
+  ROWFMT = u"<tr bgcolor=\"%s\"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
   out = PAGE % (u"\n".join([ROWFMT % x for x in tdata]))
 
   with codecs.open("webroot/reports/cvsg.html", "w+", encoding="utf-8") as f:
