@@ -37,7 +37,10 @@ class DocketReference(object):
     elif other.info and not self.info:
       return False
     else:
-      return self.info.docket_date < other.info.docket_date
+      if self.info.term != other.info.term:
+        return self.info.term < other.info.term
+      else:
+        return self.info.docket < other.info.docket
 
   @property
   def info (self):
