@@ -44,7 +44,7 @@ def apply_query (query_list, sinfo):
 
 
 
-def engine (sources, filters = [], queries = [], output, rejects = []):
+def engine (sources, output, filters = [], queries = [], rejects = []):
   source_list = []
   for (sname, sargs) in sources:
     source_list.append(scotus.sources.SOURCETYPES[sname](root_path = ".", **sargs))
