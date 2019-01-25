@@ -82,13 +82,12 @@ def engine (sources, output, filters = [], queries = [], rejects = []):
 
   rejected_source_set = set(filtered_source_list)
   if reject_list:
-    for source in filtered_source_list:
-      res = fpool.amap(functools.partial(apply_filters, reject_list), [item for item in source])
-      while not res.ready():
-        time.sleep(0.5)
-      for sinfo in res.get():
-        if sinfo:
-          rejected_source_set.discard(sinfo)
+    res = fpool.amap(functools.partial(apply_filters, reject_list), [item for item in filtered_source_list])
+    while not res.ready():
+      time.sleep(0.5)
+    for sinfo in res.get():
+      if sinfo:
+        rejected_source_set.discard(sinfo)
     rejected_source_list = sorted(list(rejected_source_set))
   else:
     rejected_source_list = filtered_source_list
