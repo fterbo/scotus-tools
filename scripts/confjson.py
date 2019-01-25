@@ -22,7 +22,7 @@ def main():
 
   for fname,fargs in obj["arguments"]["filters"]:
     if fname == "distribution":
-      cdate = dateutil.parser.parse(fargs["conf_date"])
+      cdate = dateutil.parser.parse(fargs["conf_date"]).date()
       cdatestr = cdate.strftime("%B %d, %Y")
       cshortstr = cdate.strftime("%Y%m%d")
 
