@@ -8,3 +8,12 @@ div
 table{
   width: 100%;
 }
+.GRANTED{
+  background-color: #cceecc;
+}
+.DENIED{
+  background-color: #ffcccc;
+}
+.RELISTED{
+  background-color: khaki;
+}
