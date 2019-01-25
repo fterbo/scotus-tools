@@ -1,4 +1,4 @@
-# Copyright (c) 2018  Floyd Terbo
+# Copyright (c) 2018-2019  Floyd Terbo
 
 from __future__ import absolute_import
 
@@ -190,6 +190,41 @@ class DocketStatusInfo(object):
       self._generateQPText()
     return open(qptxtpath, "r").read()
 
+  def getConfAction (self, rcdate):
+    for (edate, cdate, resch) in self.distributed:
+      if cdate == rcdate and resch:
+        return "RESCHEDULED"
+
+    # Go through events after the conference date and see if we find
+    # something useful
+    post = False
+    for event in self.events:
+      if event.date < rcdate:
+        continue
+
+      # We found events after the conference date
+      post = True
+
+      if event.distributed:
+        return "RELISTED"
+      elif event.dismissed:
+        return "DISMISSED"
+      elif event.remanded:
+        return "REMANDED"
+      elif event.granted:
+        return "GRANTED"
+      elif event.removed:
+        return "REMOVED"
+      elif event.denied:
+        return "DENIED"
+      elif event.cvsg:
+        return "CVSG"
+
+    if not post:
+      return ""
+    else:
+      return "UNKNOWN"
+
   def _build (self, docket_obj):
     if docket_obj["CaseNumber"].startswith("22O"):
       self.original = True
@@ -254,7 +289,8 @@ class DocketStatusInfo(object):
         except KeyError:
           pass
 
-        self.events.append(events.DocketEvent(einfo))
+        evtobj = events.DocketEvent(einfo)
+        self.events.append(evtobj)
 
         etxt = einfo["Text"]
         if etxt.startswith("DISTRIBUTED"):
@@ -263,10 +299,12 @@ class DocketStatusInfo(object):
           confdate = dateutil.parser.parse(etxt.split()[-1]).date()
           edate = dateutil.parser.parse(einfo["Date"]).date()
           self.distributed.append((edate, confdate, False))
+          evtobj.distributed = True
         elif etxt == "Rescheduled.":
           last_dist = self.distributed[-1]
           self.distributed[-1] = (last_dist[0], last_dist[1], True)
         elif etxt.startswith("Brief amici curiae of") or etxt.startswith("Brief amicus curiae of"):
+          evtobj.brief = True
           if not self.granted:
             self.cert_amici.append(" ".join(etxt.split()[4:-1]))
           if self.cvsg:
@@ -279,6 +317,7 @@ class DocketStatusInfo(object):
         elif etxt == "Petition GRANTED.":
           self.granted = True
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.granted = True
         elif etxt.count("GRANTED"):
           if etxt.count("Motion for leave"): continue
           if etxt.count("Motion to substitute") : continue
@@ -288,34 +327,43 @@ class DocketStatusInfo(object):
             continue
           self.granted = True
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.granted = True
           if etxt.count("REVERSED") and etxt.count("REMANDED"):
             # This is not really a GVR, but we'll throw it in the bucket for now
             self.gvr = True
             self.gvr_date = self.grant_date
+            evtobj.remanded = True
           elif etxt.count("VACATED") and etxt.count("REMANDED"):
             self.gvr = True
             self.gvr_date = self.grant_date
+            evtobj.remanded = True
         elif etxt.startswith("Argued."):
           self.argued = True
           self.argued_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.argued = True
         elif etxt.startswith("Petition Dismissed"):
           self.dismissed = True
           self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.dismissed = True
         elif (etxt.startswith("Petition DENIED")
               or etxt.count("The petition for a writ of certiorari is denied")
               or etxt.count("before judgment DENIED")):
           self.denied = True
           self.deny_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.denied = True
         elif etxt == "JUDGMENT ISSUED.":
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.issued = True
         elif (etxt.startswith("Adjudged to be AFFIRMED.")
               or etxt.count("judgment is affirmed under 28 U. S. C.")):
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.issued = True
         elif etxt.startswith("Judgment REVERSED"):
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.issued = True
         elif (etxt.count("petition for a writ of certiorari is dismissed")
               or etxt.count("petition for a writ of mandamus/prohibition is dismissed")
               or etxt.count("petition for a writ of habeas corpus is dismissed")
@@ -323,9 +371,11 @@ class DocketStatusInfo(object):
               or etxt.count("petition for a writ of mandamus and/or prohibition is dismissed")):
           self.dismissed = True
           self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.dismissed = True
         elif (etxt.count("Case removed from Docket")
               or etxt == "Case considered closed."):
           self.removed = True
+          evtobj.removed = True
 
         if etxt.count("petitioner has repeatedly abused"):
           self.abuse = True

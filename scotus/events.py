@@ -1,4 +1,4 @@
-# Copyright (c) 2018  Floyd Terbo
+# Copyright (c) 2018-2019  Floyd Terbo
 
 import dateutil.parser
 
@@ -8,6 +8,18 @@ class DocketEvent(object):
     self.text = None
     self._e_dict = edict
     self._build()
+
+    self.distributed = False
+    self.denied = False
+    self.dismissed = False
+    self.brief = False
+    self.grant = False
+    self.argued = False
+    self.removed = False
+    self.remanded = False
+    self.cvsg = False
+    self.argued = False
+    self.issued = False
 
   def _build (self):
     self.date = dateutil.parser.parse(self._e_dict["Date"]).date()
