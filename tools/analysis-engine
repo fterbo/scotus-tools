@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2018  Floyd Terbo
+# Copyright (c) 2018-2019  Floyd Terbo
 
 import functools
 import json
@@ -44,7 +44,7 @@ def apply_query (query_list, sinfo):
 
 
 
-def engine (sources, filters, queries, output):
+def engine (sources, filters, queries, output, rejects = []):
   source_list = []
   for (sname, sargs) in sources:
     source_list.append(scotus.sources.SOURCETYPES[sname](root_path = ".", **sargs))
@@ -52,6 +52,10 @@ def engine (sources, filters, queries, output):
   filter_list = []
   for (fname, fargs) in filters:
     filter_list.append(scotus.filters.FILTERTYPES[fname](**fargs))
+
+  reject_list = []
+  for (rfname, rfargs) in rejects:
+    reject_list.append(scotus.filters.FILTERTYPES[rfname](**rfargs))
 
   query_list = []
   for (qname, qargs) in queries:
@@ -75,11 +79,26 @@ def engine (sources, filters, queries, output):
       filtered_source_list.extend([item for item in source])
 
   logging.debug("Filtered sources: %d" % (len(filtered_source_list)))
+
+  rejected_source_set = set(filtered_source_list)
+  if reject_list:
+    for source in filtered_source_list:
+      res = fpool.amap(functools.partial(apply_filters, reject_list), [item for item in source])
+      while not res.ready():
+        time.sleep(0.5)
+      for sinfo in res.get():
+        if sinfo:
+          rejected_source_set.discard(sinfo)
+    rejected_source_list = sorted(list(rejected_source_set))
+  else:
+    rejected_source_list = filtered_source_list
+
+  logging.debug("Sources after rejection: %d" % (len(rejected_source_list)))
  
   qpool = multiprocessing.ProcessingPool(nodes = PROCESSES)
   if query_list:
     query_out = []
-    res = qpool.amap(functools.partial(apply_query, query_list), [item for item in filtered_source_list])
+    res = qpool.amap(functools.partial(apply_query, query_list), [item for item in rejected_source_list])
     while not res.ready():
       time.sleep(0.5)
     for rinfo in res.get():
@@ -91,7 +110,7 @@ def engine (sources, filters, queries, output):
 #      for k,v in qdata.items():
 #        query_out.append((k,v))
   else:
-    query_out = [(x, []) for x in filtered_source_list]
+    query_out = [(x, []) for x in rejected_source_list]
 
   out = []
   for k,v in query_out:

@@ -1,4 +1,4 @@
-# Copyright (c) 2018  Floyd Terbo
+# Copyright (c) 2018-2019  Floyd Terbo
 
 from __future__ import absolute_import
 
@@ -24,6 +24,20 @@ class DocketReference(object):
 
     self._info = None
     self._index = None
+
+  def __eq__ (self, other):
+    return self.path == other.path
+
+  def __hash__ (self):
+    return hash(self.path)
+
+  def __lt__ (self, other):
+    if self.info and not other.info:
+      return True
+    elif other.info and not self.info:
+      return False
+    else:
+      return self.info.docket_date < other.info.docket_date
 
   @property
   def info (self):
