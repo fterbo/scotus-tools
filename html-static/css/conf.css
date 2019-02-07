@@ -3,10 +3,11 @@ div
     display: inline-block;
 }
 .text {
-    border:1px;
+  border:1px;
 }
 table{
   width: 100%;
+  border-collapse: collapse;
 }
 .GRANTED{
   background-color: #cceecc;
@@ -17,3 +18,16 @@ table{
 .RELISTED{
   background-color: khaki;
 }
+.tooltiptext{
+  display: none;
+}
+.header{
+  text-align: left;
+}
+.conf{
+  border: 1px;
+}
+table, th, td {
+  border: 1px solid black;
+}
+tr:nth-child(even) {background-color: #f2f2f2;}
