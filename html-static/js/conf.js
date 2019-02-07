@@ -20,7 +20,7 @@
 
 
   function GetConfData(action){
-    $.getJSON("data/confdates.json",
+    $.getJSON("data/confdates.json?_=" + new Date().getTime(),
       function(data){
         action(data);
       }
@@ -94,7 +94,8 @@ var ConfTable = (function() {
   var flags = "flags"
   return{
      PopulateTable:function(date){
-      $.getJSON("data/conf/"+date+".json", function(data){
+      $.getJSON("data/conf/"+date+".json?_=" + new Date().getTime(),
+      function(data){
         GenerateTable(data);
       });
     }
