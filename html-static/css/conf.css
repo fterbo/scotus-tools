@@ -18,6 +18,9 @@ table{
 .DISMISSED{
   background-color: #ffcccc;
 }
+.REMOVED{
+  background-color: #ffcccc;
+}
 .GVR{
   background-color: #ccccff;
 }
