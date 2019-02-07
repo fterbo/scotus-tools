@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2018  Floyd Terbo
+# Copyright (c) 2018-2019  Floyd Terbo
 
 from __future__ import absolute_import, print_function
 
@@ -19,6 +19,7 @@ import scotus.util
 JSONBASE = "https://www.supremecourt.gov/rss/cases/JSON/"
 HEADERS = {"User-Agent" : "SCOTUS Legacy Docket Builder (https://github.com/fterbo/scotus-tools)"}
 URL = "https://www.supremecourt.gov/search.aspx?filename=/docket/docketfiles/html/public/%s.html"
+OLDURL = "https://www.supremecourt.gov/search.aspx?filename=/docketfiles/%s.htm"
 
 def GET (url):
   logging.debug("GET: %s" % (url))
@@ -93,13 +94,7 @@ TRANS_TABLE = {
 def simpleTranslate (ltext, rtext):
   return { TRANS_TABLE[ltext] : rtext }
 
-def generateDocket (opts):
-  content = getPage(opts)
-  dom = BS.BeautifulSoup(content, convertEntities = BS.BeautifulSoup.HTML_ENTITIES)
-
-  dstr = scotus.util.buildDocketStr(opts)
-  dobj = {"bCapitalCase" : False, "CaseNumber" : dstr, "Petitioner" : [], "Respondent" : [], "Other" : []}
-
+def parseModernDocket (dom, dobj):
   dtable = dom.find("table", {"id" : "docketinfo"})
   started = False
   for row in dtable.findAll("tr"):
@@ -170,6 +165,39 @@ def generateDocket (opts):
         dobj["Respondent"].append(pd)
 
 
+def parseOldDocket (dom, dobj):
+  dobj["oldurl"] = True
+
+  metalist = dom.findAll("meta")
+  metasource = False
+  for elem in metalist:
+    try:
+      if elem["name"] == "Petitioner":
+        dobj["PetitionerTitle"] = elem["content"]
+      elif elem["name"] == "Respondent":
+        dobj["RespondentTitle"] = elem["content"]
+      elif elem["name"] == "Docketed":
+        dobj["DocketDate"] = elem["Content"]
+        metasource = True
+    except KeyError:
+      continue
+
+  maindiv = dom.find("div", {"id" : "pagemaindiv"})
+  dtables = maindiv.findall("table")
+
+
+def generateDocket (opts):
+  content,old = getPage(opts)
+  dom = BS.BeautifulSoup(content, convertEntities = BS.BeautifulSoup.HTML_ENTITIES)
+
+  dstr = scotus.util.buildDocketStr(opts)
+  dobj = {"bCapitalCase" : False, "CaseNumber" : dstr, "Petitioner" : [], "Respondent" : [], "Other" : []}
+
+  if not old:
+    parseModernDocket(dom, dobj)
+  else:
+    parseOldDocket(dom, dobj)
+
   if opts.application:
     droot = "%s/OT-%d/dockets/A/%d" % (opts.root, opts.term, opts.docket_num)
   else:
@@ -192,7 +220,12 @@ def getPage (opts):
   if not os.path.exists(droot):
     os.makedirs(droot)
 
-  if not os.path.exists(local_path) or opts.force:
+  old = False
+  oldlocal_path = "%s/oldlegacy.html" % (droot)
+  if os.path.exists(oldlocal_path):
+    old = True
+
+  if (not os.path.exists(local_path) and not os.path.exists(oldlocal_path)) or opts.force:
     if not opts.force:
       jr = GET("%s%s.json" % (JSONBASE, dstr))
       if jr.status_code == 200:
@@ -202,16 +235,20 @@ def getPage (opts):
         sys.exit(1)
 
     r = requests.get(URL % (dstr))
+    if r.status_code == 404:
+      r = requests.get(OLDURL % (dstr))
+      old = True
+
     if r.status_code == 200:
       with open(local_path, "w+") as dhtml:
         dhtml.write(r.content)
-      return r.content
+      return (r.content, old)
     else:
       logging.error(r.status_code)
       sys.exit(1)
   else:
     content = open(local_path, "rb").read()
-    return content
+    return (content, old)
 
 if __name__ == '__main__':
   opts = parse_args()

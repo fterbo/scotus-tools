@@ -56,6 +56,7 @@ class DocketStatusInfo(object):
     self.lowercourt_docket = None
     self.lowercourt_decision_date = None
     self.petition_path = None
+    self.oldurl = False
 
     self.related = []
 
@@ -105,7 +106,10 @@ class DocketStatusInfo(object):
 
   @property
   def docketurl (self):
-    return "https://www.supremecourt.gov/search.aspx?filename=/docket/docketfiles/html/public/%s.html" % (self.docketstr)
+    if self.oldurl:
+      return "https://www.supremecourt.gov/search.aspx?filename=/docketfiles/%s.htm" % (self.docketstr)
+    else:
+      return "https://www.supremecourt.gov/search.aspx?filename=/docket/docketfiles/html/public/%s.html" % (self.docketstr)
 
   @property
   def audiodocketstr (self):
@@ -226,6 +230,9 @@ class DocketStatusInfo(object):
       return "UNKNOWN"
 
   def _build (self, docket_obj):
+    if "oldurl" in docket_obj:
+      self.oldurl = docket_obj["oldurl"]
+
     if docket_obj["CaseNumber"].startswith("22O"):
       self.original = True
       self.docket = int(docket_obj["CaseNumber"][3:])
