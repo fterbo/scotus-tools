@@ -15,6 +15,12 @@ table{
 .DENIED{
   background-color: #ffcccc;
 }
+.DISMISSED{
+  background-color: #ffcccc;
+}
+.GVR{
+  background-color: #ccccff;
+}
 .RELISTED{
   background-color: khaki;
 }
