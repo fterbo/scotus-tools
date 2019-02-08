@@ -1,6 +1,6 @@
 div
 {
-    display: inline-block;
+    display:block;
 }
 .text {
   border:1px;

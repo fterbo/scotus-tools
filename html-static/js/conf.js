@@ -1,20 +1,38 @@
-(function ConfDropdowns() {
+(function () {
   'use strict';
   var term = "term";
   var conferences = "confdates";
   var termID = "confyears";
 
-  GetConfData(PopulateTerms);
+
   $(document).ready(function(){
+
+
+//(function() {
+//  'use strict';
+//
+//  ConfTable.PopulateTable($("#"+conferences).find(":selected").val());
+//  $(document).ready(function(){
+//    var table = $('#conf').DataTable({
+//      ordering:true,
+//      paging:false
+//    });
+//  });
+//}());
+
+    var table = $('#conf').DataTable({
+      ordering:true,
+      paging:false
+    });
+    GetConfData(PopulateTerms);
     $("#"+termID).change(
       function(){
         PopulateConferences();
       });
       $("#"+conferences).change(
         function() {
-          PopulateReport();
-        }
-      )
+          PopulateReport(table);
+        });
     }
   );
 
@@ -27,7 +45,7 @@
     )
   }
 
-  function PopulateReport() {
+  function PopulateReport(table) {
     ConfTable.PopulateTable($("#"+conferences).find(":selected").val());
   }
 
@@ -92,11 +110,16 @@ var ConfTable = (function() {
   var caseType = "case-type";
   var currentStatus = "current-status";
   var flags = "flags"
+
+  var table = $('#conf').DataTable();
+  var tableData = []
   return{
      PopulateTable:function(date){
       $.getJSON("data/conf/"+date+".json?_=" + new Date().getTime(),
-      function(data){
+      function(data, tableParam){
+        table.clear().draw();
         GenerateTable(data);
+        table.draw();
       });
     }
   }
@@ -113,38 +136,36 @@ var ConfTable = (function() {
     });
   }
   function GenerateTable(data) {
-
-    $("#conf > tbody").empty();
+  //  table.clear();
     for(var i=0; i<data.dockets.length; i++){
-      var thisCase = data.dockets[i];
-      $("#conf > tbody:last-child").append
-      (
-        "<tr id=\""+thisCase[docketStr]+"\" "+addClass(thisCase[currentStatus])+">"+
-          TdTag(docketStr, docketNumberLink(thisCase)) +
-          TdTag(caseType, translateType(thisCase[caseType])) +
-          TdTag(flags, flagsColumn(thisCase[flags]))+
-          TdTag(lcAbbr,thisCase[lcAbbr], "", thisCase[lcInfo]) +
-          TdTag(
-            caseName+"-td",
-            caseNameTD(thisCase)
-          ) +
-          TdTag(
-            "dist-td",
-            details(
-              thisCase[distCount] + "(" + thisCase[reschCount] + " Resch)",
-              "dist-summary",
-              thisCase[distDetails],
-              distDetails)
-            ) +
-            TdTag(currentStatus, thisCase[currentStatus])+
-        "</tr>"
-      );
+      addRow(data.dockets[i]);
     }
+  //  table.rows.add(tableData);
+  }
+  function addRow(thisCase) {
+    table.row.add(
+      [
+        1,2,3,4,5,6,7
+        //  TdTag(docketStr, docketNumberLink(thisCase)) ,
+        //  TdTag(caseType, translateType(thisCase[caseType])),
+        //  TdTag(flags, flagsColumn(thisCase[flags])),
+        //  TdTag(lcAbbr,thisCase[lcAbbr], "", thisCase[lcInfo]) ,
+        //  TdTag(caseName+"-td", caseNameTD(thisCase),
+        //  TdTag(
+        //    "dist-td",
+        //    details(
+        //      thisCase[distCount] + "(" + thisCase[reschCount] + " Resch)",
+        //      "dist-summary",
+        //      thisCase[distDetails],
+        //      distDetails)
+        //    ),
+        //    TdTag(currentStatus, thisCase[currentStatus])
+        //  )
+      ]
+    );
   }
   function TdTag(id, content, classes, title){
-    return "<td id=\""+ id + "\""
-    + addClass(classes) +" > <div class= \""+id + "\">" + content  + "</div>"
-    + addTitle(title)+ "</td>";
+    return "<div id=\""+ id + "\""+ addClass(classes) + ">" + content  + "</div>"+ addTitle(title);
   }
   function addTitle(title) {
     if (!(typeof title === 'undefined' || title === null )){
@@ -174,7 +195,7 @@ var ConfTable = (function() {
       result += "<i class=\"fas fa-arrows-alt-h\" title=\"Related\"></i>";
     }
     if(thisCaseFlags.cvsg){
-      result += "<i class=\"fas fa-question-circle\" title=\"CVSG\"></i>";
+      result += "<a href=\"/reports/cvsg.html\"><i class=\"fas fa-question-circle\" title=\"CVSG\"></i></a>";
     }
     return result;
   }

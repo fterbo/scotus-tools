@@ -6,36 +6,40 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="http://qtip2.com/v/stable/jquery.qtip.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
     <link rel="stylesheet" href="http://qtip2.com/v/stable/jquery.qtip.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
     <script src="js/conf.js" charset="utf-8"></script>
     <link rel="stylesheet" href="css/conf.css">
   </head>
   <body>
-    <label for="confyears">Term</label>
-      <select class="confyears" name="confyears" id="confyears">
+    <div class="tablerow">
+      <label for="confyears">Term</label>
+        <select class="confyears" name="confyears" id="confyears">
+          <option value="">Select One</option>
+        </select>
+      <label for="confdates"> Conference Date</label>
+      <select class="confdates" name="confdates" id="confdates">
         <option value="">Select One</option>
       </select>
-    <label for="confdates"> Conference Date</label>
-    <select class="confdates" name="confdates" id="confdates">
-      <option value="">Select One</option>
-    </select>
-    <table id="conf">
-      <thead>
-        <tr>
-          <th class="header">Docket</th>
-          <th class="header">Type</th>
-          <th class="header">Tags</th>
-          <th class="header">LC</th>
-          <th class="header">Case</th>
-          <th class="header">Dist</th>
-          <th class="header">Current<br/>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr></tr>
-      </tbody>
-    </table>
+    </div>
+    <div class="tablerow">
+      <table id="conf">
+        <thead>
+          <tr>
+            <th class="header">Docket</th>
+            <th class="header">Type</th>
+            <th class="header">Tags</th>
+            <th class="header">LC</th>
+            <th class="header">Case</th>
+            <th class="header">Dist</th>
+            <th class="header">Current<br/>Status</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
   </body>
 </html>
