@@ -1,30 +1,17 @@
+
+
 (function () {
   'use strict';
   var term = "term";
   var conferences = "confdates";
   var termID = "confyears";
 
-
+  GetConfData(PopulateTerms);
   $(document).ready(function(){
-
-
-//(function() {
-//  'use strict';
-//
-//  ConfTable.PopulateTable($("#"+conferences).find(":selected").val());
-//  $(document).ready(function(){
-//    var table = $('#conf').DataTable({
-//      ordering:true,
-//      paging:false
-//    });
-//  });
-//}());
-
     var table = $('#conf').DataTable({
       ordering:true,
       paging:false
     });
-    GetConfData(PopulateTerms);
     $("#"+termID).change(
       function(){
         PopulateConferences();
