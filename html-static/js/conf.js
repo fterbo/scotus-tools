@@ -10,16 +10,26 @@
   $(document).ready(function(){
     var table = $('#conf').DataTable({
       ordering:true,
-      paging:false
+      paging:false,
+      columns:
+        [
+          {title:"Docket"},
+          {title:"Type"},
+          {title:"Tags"},
+          {title:"LC"},
+          {title:"Case"},
+          {title:"Dist"},
+          {title:"Current<br/>Status"}
+        ]
     });
     $("#"+termID).change(
       function(){
         PopulateConferences();
       });
-      $("#"+conferences).change(
-        function() {
-          PopulateReport(table);
-        });
+    $("#"+conferences).change(
+      function() {
+        PopulateReport(table);
+      });
     }
   );
 
