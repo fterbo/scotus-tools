@@ -40,10 +40,14 @@ def main():
     else:
       lcinfo.append(docket.lowercourt_docket)
 
+    rd = {}
+
     dstrl = []
     dcount = 0
     rdcount = 0
     for (ed, cd, r) in docket.distributed:
+      if cd == cdate:
+        rd["dist-date"] = {"y" : ed.year, "m" : ed.month, "d" : ed.day}
       dcount += 1
       cds = cd.strftime("%Y-%m-%d")
       if r:
@@ -53,7 +57,6 @@ def main():
         dstrl.append(cds)
 
 
-    rd = {}
     rd["docket-url"] = docket.docketurl
     rd["docket-str"] = docket.docketstr
     rd["case-name"] = docket.casename
