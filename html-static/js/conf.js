@@ -91,6 +91,7 @@ var ConfTable = (function() {
   var reschCount = "resch-count";
   var caseType = "case-type";
   var currentStatus = "current-status";
+  var distDate = "dist-date";
   var flags = "flags"
   return{
      PopulateTable:function(date){
@@ -137,6 +138,7 @@ var ConfTable = (function() {
               distDetails)
             ) +
             TdTag(currentStatus, thisCase[currentStatus])+
+            TdTag(distDate, dateColumn(thisCase[distDate]))+
         "</tr>"
       );
     }
@@ -204,6 +206,10 @@ var ConfTable = (function() {
     } else {
       return "";
     }
+  }
+  function dateColumn(dateMap) {
+    var thisDate = new Date(dateMap["y"], dateMap["m"]-1, dateMap["d"]);
+    return thisDate.toLocaleDateString();
   }
   function docketNumberLink(thisCase) {
     return "<a href=\""+thisCase[docketUrl] + "\">"+ thisCase[docketStr] + "</a>";
