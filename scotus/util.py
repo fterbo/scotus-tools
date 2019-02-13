@@ -57,6 +57,8 @@ class DocketStatusInfo(object):
     self.lowercourt_decision_date = None
     self.petition_path = None
     self.oldurl = False
+    self.petitioner_title = None
+    self.respondent_title = None
 
     self.related = []
 
@@ -252,6 +254,11 @@ class DocketStatusInfo(object):
       self.capital = docket_obj["bCapitalCase"]
       self.casename = buildCasename(docket_obj)
       self.casetype = getCaseType(docket_obj)
+
+      if "PetitionerTitle" in docket_obj:
+        self.petitioner_title = docket_obj["PetitionerTitle"]
+      if "RespondentTitle" in docket_obj:
+        self.respondent_title = docket_obj["RespondentTitle"]
 
       if "Petitioner" in docket_obj:
         for info in docket_obj["Petitioner"]:

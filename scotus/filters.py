@@ -284,8 +284,11 @@ class PartyName(object):
 
     docket = docket_ref.info
 
-    dpl = docket.petitioner.lower()
-    drl = docket.respondent.lower()
+    dpl = docket.petitioner_title.lower()
+    if docket.respondent_title:
+      drl = docket.respondent_title.lower()
+    else:
+      drl = ""
 
     if partial:
       if dpl.count(self.partyname) or drl.count(self.partyname):
