@@ -276,7 +276,7 @@ class PartyAttorney(object):
 @SD.inputs("docket-reference")
 class PartyName(object):
   def __init__ (self, name, partial = True):
-    self.partyname = name
+    self.partyname = name.lower()
 
   def include (self, docket_ref):
     if not docket_ref.info:
@@ -284,11 +284,14 @@ class PartyName(object):
 
     docket = docket_ref.info
 
+    dpl = docket.petitioner.lower()
+    drl = docket.respondent.lower()
+
     if partial:
-      if docket.petitioner.count(self.partyname) or docket.respondent.count(self.partyname):
+      if dpl.count(self.partyname) or drl.count(self.partyname):
         return True
     else:
-      if docket.petitioner == self.partyname or docket.respondent == self.partyname:
+      if dpl == self.partyname or drl == self.partyname:
         return True
 
     return False
