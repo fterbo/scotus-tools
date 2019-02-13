@@ -277,6 +277,7 @@ class PartyAttorney(object):
 class PartyName(object):
   def __init__ (self, name, partial = True):
     self.partyname = name.lower()
+    self.partial = partial
 
   def include (self, docket_ref):
     if not docket_ref.info:
@@ -290,7 +291,7 @@ class PartyName(object):
     else:
       drl = ""
 
-    if partial:
+    if self.partial:
       if dpl.count(self.partyname) or drl.count(self.partyname):
         return True
     else:
