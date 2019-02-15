@@ -1,4 +1,4 @@
-# Copyright (c) 2018  Floyd Terbo
+# Copyright (c) 2018-2019  Floyd Terbo
 
 class CourtMatch(object):
   def __init__ (self, *args):
@@ -9,13 +9,14 @@ class CourtMatch(object):
   def __eq__ (self, val):
     if not val:
       return False
-    if val in self.names:
+    val = val.lower()
+    if val in [x.lower() for x in self.names]:
       return True
     if self.start:
       for frag in self.start:
-        if val.startswith(frag):
+        if val.startswith(frag.lower()):
           return True
-    if self.partial and val.count(self.partial):
+    if self.partial and val.count(self.partial.lower()):
       return True
     return False
 
@@ -108,6 +109,7 @@ NAMEMAP = {
   "minCA" : CourtMatch().setStart("Appellate Division, Superior Court of California"),
   "minCO" : CourtMatch().setStart("District Court of Colorado"),
   "minGA" : CourtMatch().setStart("Superior Court of Georgia"),
+  "minIA" : CourtMatch().setStart("District Court of Iowa"),
   "minMD" : CourtMatch().setStart("Circuit Court of Maryland"),
   "minNC" : CourtMatch().setStart("Superior Court of North Carolina"),
   "minSC" : CourtMatch().setStart("Court of Common Pleas of South Carolina"),
