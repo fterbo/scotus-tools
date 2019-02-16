@@ -515,7 +515,10 @@ def buildCasename (docket_obj):
         else:
           casename = pt
       else:
-        petitioner = docket_obj["PetitionerTitle"][:-12]  # Remove ", Petitioner" from metadata
+        if pt.split(",")[-1].count("Petitioner"):
+          petitioner = ",".join(parts[:-1])
+        else:
+          petitioner = pt
         casename = "%s v. %s" % (petitioner, docket_obj["RespondentTitle"])
   except Exception:
     raise exceptions.CasenameError(docket_obj["CaseNumber"].strip())
