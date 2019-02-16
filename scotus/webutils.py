@@ -12,6 +12,7 @@ import requests
 
 import scotus.util
 
+HEADERS = {"User-Agent" : "SCOTUS Webutils Default UA (https://github.com/fterbo/scotus-tools)"}
 
 # We passed around options too much, so mock them here
 class bdsOpts(object):
@@ -22,6 +23,9 @@ class bdsOpts(object):
     self.orig = orig
     self.action = "none"
 
+def GET (url):
+  logging.debug("GET: %s" % (url))
+  return requests.get(url, headers=HEADERS)
 
 def getPage (term, docket_num, root = ".", application = False, force = False):
   opts = bdsOpts(term, docket_num, application)
