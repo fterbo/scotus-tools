@@ -13,6 +13,9 @@ import requests
 import scotus.util
 
 HEADERS = {"User-Agent" : "SCOTUS Webutils Default UA (https://github.com/fterbo/scotus-tools)"}
+JSONBASE = "https://www.supremecourt.gov/rss/cases/JSON/"
+URL = "https://www.supremecourt.gov/search.aspx?filename=/docket/docketfiles/html/public/%s.html"
+OLDURL = "https://www.supremecourt.gov/search.aspx?filename=/docketfiles/%s.htm"
 
 # We passed around options too much, so mock them here
 class bdsOpts(object):
