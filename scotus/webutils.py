@@ -60,6 +60,7 @@ def getPage (term, docket_num, root = ".", application = False, force = False):
     r = requests.get(URL % (dstr))
     if r.status_code == 404 or not r.content.count("Docketed"):
       r = requests.get(OLDURL % (dstr))
+      local_path = oldlocal_path
       old = True
 
     if r.status_code == 200:
@@ -70,5 +71,8 @@ def getPage (term, docket_num, root = ".", application = False, force = False):
       logging.error(r.status_code)
       sys.exit(1)
   else:
-    content = open(local_path, "rb").read()
+    if old:
+      content = open(oldlocal_path, "rb").read()
+    else:
+      content = open(local_path, "rb").read()
     return (content, old)
