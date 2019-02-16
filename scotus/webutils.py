@@ -5,6 +5,10 @@
 # can import it.
 
 import logging
+import os
+import os.path
+
+import requests
 
 import scotus.util
 
