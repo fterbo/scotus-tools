@@ -187,8 +187,14 @@ def parseOldDocket (dom, dobj):
     elif table.text.count("Docketed:"):
       for row in table.findChildren("tr", recursive=False):
         cells = getCells(row)
+        if len(cells) == 1:
+          if cells[0].text.count("Linked with"):
+            dobj["Links"] = cells[0].text
+            continue
+
         if len(cells) != 2:
           continue
+
         if cells[0].text == "Lower Ct:":
           dobj["LowerCourt"] = cells[1].text
         elif cells[0].text.count("No."):
