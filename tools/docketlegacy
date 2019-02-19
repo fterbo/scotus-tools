@@ -273,7 +273,8 @@ def generateDocket (opts):
   dom = BS.BeautifulSoup(content, convertEntities = BS.BeautifulSoup.HTML_ENTITIES)
 
   dstr = scotus.util.buildDocketStr(opts)
-  dobj = {"bCapitalCase" : False, "CaseNumber" : dstr, "Petitioner" : [], "Respondent" : [], "Other" : []}
+  dobj = {"bCapitalCase" : False, "CaseNumber" : dstr, "Petitioner" : [], "Respondent" : [], "Other" : [],
+          "LowerCourt" : ""}
 
   if not old:
     parseModernDocket(dom, dobj)
