@@ -76,7 +76,8 @@ def scan (opts):
         if docket_obj["LowerCourt"] not in LCNAMEMAP.values():
           print("[%s] Unknown Lower Court: %s" % (info.docketstr, docket_obj["LowerCourt"]))
       else:
-        print("[%s] Missing LowerCourt key" % (info.docketstr))
+        if "LowerCourt" not in docket_obj:
+          print("[%s] Missing LowerCourt key" % (info.docketstr))
       continue
       
     if opts.lower:
