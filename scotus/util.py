@@ -310,7 +310,7 @@ class DocketStatusInfo(object):
         if etxt.startswith("DISTRIBUTED"):
           if etxt == "DISTRIBUTED.":
             continue  # Rehearing distribution, probably, not for conference
-          confdate = dateutil.parser.parse(etxt.split()[-1]).date()
+          confdate = dateutil.parser.parse(etxt.split("of")[-1]).date()
           edate = dateutil.parser.parse(einfo["Date"]).date()
           self.distributed.append((edate, confdate, False))
           evtobj.distributed = True
