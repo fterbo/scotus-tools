@@ -173,7 +173,7 @@ def parseOldDocket (dom, dobj):
       elif elem["name"] == "Respondent":
         dobj["RespondentTitle"] = elem["content"]
       elif elem["name"] == "Docketed":
-        dobj["DocketDate"] = elem["content"]
+        dobj["DocketedDate"] = elem["content"]
         metasource = True
     except KeyError:
       continue
