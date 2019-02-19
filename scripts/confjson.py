@@ -70,7 +70,7 @@ def main():
 
     rd["lc-abbr"] = cabbr
     if cabbr != "None":
-      rd["lc-info"] = "<br>".join(lcinfo)
+      rd["lc-info"] = "<br>".join([str(x) for x in lcinfo])
 
     qp = docket.getQPText().strip().decode("utf-8")
     if qp:
