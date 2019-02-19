@@ -100,14 +100,18 @@ def parseModernDocket (dom, dobj):
           dobj["bCapitalCase"] = True
         continue
     else:
-      (lcell, rcell) = row.findAll("td")
-      if lcell.text in TRANS_TABLE:
-        dobj.update(simpleTranslate(lcell.text, rcell.text))
-      else:
-        for k,v in KEYFUNC_MAP.items():
-          if v == lcell.text:
-            dobj.update(k(lcell.text, rcell))
-            break
+      try:
+        (lcell, rcell) = row.findAll("td")
+        if lcell.text in TRANS_TABLE:
+          dobj.update(simpleTranslate(lcell.text, rcell.text))
+        else:
+          for k,v in KEYFUNC_MAP.items():
+            if v == lcell.text:
+              dobj.update(k(lcell.text, rcell))
+              break
+      except ValueError:
+        # Ignore what is likely QP cell
+        logging.warning("[%s] Check for QP cell" % (dobj["CaseNumber"]))
 
   plist = []
   ptable = dom.find("table", {"id" : "proceedings"})
