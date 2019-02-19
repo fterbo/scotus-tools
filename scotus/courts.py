@@ -149,6 +149,7 @@ NAMEMAP = {
   "scNH" : "Supreme Court of New Hampshire",
   "scNJ" : "Supreme Court of New Jersey",
   "scNM" : "Supreme Court of New Mexico",
+  "scNMI" : "Supreme Court of the Commonwealth of the Northern Mariana Islands",
   "scNV" : "Supreme Court of Nevada",
   "scNY" : "Court of Appeals of New York",
   "scOH" : "Supreme Court of Ohio",
