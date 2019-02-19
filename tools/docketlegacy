@@ -178,6 +178,9 @@ def parseOldDocket (dom, dobj):
     except KeyError:
       continue
 
+  if not metasource:
+    raise TypeError("Unknown type / empty docket")
+
   dtables = dom.findAll("table")
   ftables = [x for x in dtables if not x.findParent("table")]
   for table in ftables:
