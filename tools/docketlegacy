@@ -222,8 +222,42 @@ def parseOldDocket (dom, dobj):
         plist.append({"Date" : cells[0].text, "Text" : cells[1].text})
       dobj["ProceedingsandOrder"] = plist
 
+    elif table.text.count("~~Phone"):
+      in_petitioner = in_respondent = in_other = in_atty = False
+      for row in table.findChildren("tr"):
+        cells = getCells(row)
+        ctext = cells[0].text.replace(u'\xa0', ' ')
+        if ctext.count("~~"):
+          continue
+        if len(cells) == 3:
+          if ctext.startswith("Attorneys for Petitioner"):
+            in_petitioner = True
+            in_respondent = in_other = False
+          elif ctext.startswith("Attorneys for Respondent"):
+            in_respondent = True
+            in_petitioner = in_other = False
+          elif ctext.count("Other:"):
+            in_other = True
+            in_respondent = in_petitioner = False
+          elif ctext.count("Counsel of Record"):
+            pd["IsCounselofRecord"] = True
+          elif not ctext.strip():
+            continue
+          else:
+            pd = {"PrisonerId" : None, "IsCounselofRecord" : False}
+            pd["Attorney"] = " ".join(ctext.split())
+        elif len(cells) == 1:
+          if ctext.startswith("Party name:"):
+            pd["PartyName"] = ctext[12:]
+            if in_other:
+              dobj["Other"].append(pd)
+            elif in_petitioner:
+              dobj["Petitioner"].append(pd)
+            elif in_respondent:
+              dobj["Respondent"].append(pd)
+
     else:
-      print table.text
+      continue
 
 
 
