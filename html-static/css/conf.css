@@ -1,6 +1,6 @@
 div
 {
-    display: inline-block;
+    display:block;
 }
 .text {
   border:1px;
@@ -9,25 +9,19 @@ table{
   width: 100%;
   border-collapse: collapse;
 }
-.GRANTED{
-  background-color: #cceecc;
+table.dataTable tbody tr.GRANTED, table.dataTable tbody tr.ARGUED{
+  background-color: #cec;
 }
-.ARGUED{
-  background-color: #cceecc;
+table.dataTable tbody tr.ISSUED{
+  background-color: #65995e;
 }
-.DENIED{
-  background-color: #ffcccc;
+table.dataTable tbody tr.DENIED, table.dataTable tbody tr.DISMISSED, table.dataTable tbody tr.REMOVED{
+  background-color: #fcc;
 }
-.DISMISSED{
-  background-color: #ffcccc;
+table.dataTable tbody tr.GVR{
+  background-color: #ccf;
 }
-.REMOVED{
-  background-color: #ffcccc;
-}
-.GVR{
-  background-color: #ccccff;
-}
-.RELISTED{
+table.dataTable tbody tr.RELISTED{
   background-color: khaki;
 }
 .tooltiptext{
@@ -36,10 +30,9 @@ table{
 .header{
   text-align: left;
 }
-.conf{
+#conf{
   border: 1px;
 }
 table, th, td {
   border: 1px solid black;
 }
-#.PENDING:nth-child(even) {background-color: #f2f2f2;}
