@@ -1,3 +1,20 @@
+var confJSONNames = (function() {
+  'use strict';
+  return {
+  caseName : "case-name",
+  qp: "qp",
+  lcInfo : "lc-info",
+  docketUrl : "docket-url",
+  lcAbbr : "lc-abbr",
+  distCount : "dist-count",
+  docketStr : "docket-str",
+  distDetails : "dist-details",
+  reschCount : "resch-count",
+  caseType : "case-type",
+  currentStatus : "current-status",
+  flags : "flags"
+}
+}());
 
 
 (function () {
@@ -18,14 +35,42 @@
       columns:
         [
           {
-            title:"Docket"
+            title:"Docket",
+            data:confJSONNames.docketStr,
+            render:function ( data, type, row ) {
+            if ( type === "sort" ) {
+                return data.caseNum;
+              } else if (type =="filter") {
+                return data.docketNumber;
+              } else{
+                return "<a href=\""+data.link + "\">"+data.docketNumber + "</a>";
+              }
+            }
           },
-          {title:"Type"},
-          {title:"Tags"},
-          {title:"LC"},
-          {title:"Case"},
-          {title:"Dist"},
-          {title:"Current<br/>Status"}
+          {
+            title:"Type",
+            data:confJSONNames.caseType
+          },
+          {
+            title:"Tags",
+            data:confJSONNames.flags
+          },
+          {
+            title:"LC",
+            data:confJSONNames.lcAbbr
+          },
+          {
+            title:"Case",
+            data:confJSONNames.caseName
+          },
+          {
+            title:"Dist",
+            data:confJSONNames.distCount
+          },
+          {
+            title:"Current<br/>Status",
+            data:confJSONNames.currentStatus
+          }
         ]
     });
     $("#"+termID).change(
@@ -101,23 +146,18 @@
 
 var ConfTable = (function() {
   'use strict';
-  var caseName = "case-name";
-  var qp = "qp";
-  var lcInfo = "lc-info";
-  var docketUrl = "docket-url";
-  var lcAbbr = "lc-abbr";
-  var distCount = "dist-count";
-  var docketStr = "docket-str";
-  var distDetails = "dist-details";
-  var reschCount = "resch-count";
-  var caseType = "case-type";
-  var currentStatus = "current-status";
-  var flags = "flags"
-
-//  function table(){
-//    return;
-//  }
-
+  var caseName = confJSONNames.caseName;
+  var qp = confJSONNames.qp;
+  var lcInfo = confJSONNames.lcInfo;
+  var docketUrl = confJSONNames.docketUrl;
+  var lcAbbr = confJSONNames.lcAbbr;
+  var distCount = confJSONNames.distCount;
+  var docketStr = confJSONNames.docketStr;
+  var distDetails = confJSONNames.distDetails;
+  var reschCount = confJSONNames.reschCount;
+  var caseType = confJSONNames.caseType;
+  var currentStatus = confJSONNames.currentStatus;
+  var flags = confJSONNames.flags;
   var tableData = []
   return{
      PopulateTable:function(date){
@@ -150,22 +190,26 @@ var ConfTable = (function() {
   }
   function addRow(thisCase) {
      $('#conf').DataTable().row.add(
-      [
-        TdTag(docketStr, docketNumberLink(thisCase)) ,
-        TdTag(caseType, translateType(thisCase[caseType])),
-        TdTag(flags, flagsColumn(thisCase[flags])),
-        TdTag(lcAbbr,thisCase[lcAbbr], "", thisCase[lcInfo]) ,
-        TdTag(caseName+"-td", caseNameTD(thisCase)),
-        TdTag(
-          "dist-td",
-          details(
-            thisCase[distCount] + "(" + thisCase[reschCount] + " Resch)",
-            "dist-summary",
-            thisCase[distDetails],
-            distDetails)
-          ),
-         thisCase[currentStatus]
-      ]
+        {
+          [docketStr]: {
+            "docketNumber":thisCase[docketStr],
+            "link":thisCase[docketUrl],
+            "caseNum":getSortableDocketNumber(thisCase[docketStr])
+          } ,
+          [caseType]:TdTag(caseType, translateType(thisCase[caseType])),
+          [flags]:TdTag(flags, flagsColumn(thisCase[flags])),
+          [lcAbbr]:TdTag(lcAbbr,thisCase[lcAbbr], "", thisCase[lcInfo]) ,
+          [caseName]:TdTag(caseName+"-td", caseNameTD(thisCase)),
+          [distCount]:TdTag(
+            "dist-td",
+            details(
+              thisCase[distCount] + "(" + thisCase[reschCount] + " Resch)",
+              "dist-summary",
+              thisCase[distDetails],
+              distDetails)
+            ),
+           [currentStatus]:thisCase[currentStatus]
+         }
     );
   }
   function TdTag(id, content, classes, title){
@@ -230,8 +274,23 @@ var ConfTable = (function() {
       return "";
     }
   }
+
+  function pad(num, size) {
+    var s = num+"";
+    while (s.length < size) s = "0" + s;
+    return s;
+  }
+
+  function getSortableDocketNumber(docketNumber) {
+
+      var caseNumber = docketNumber.split("-");
+      var caseYear = caseNumber[0]
+      var caseID = pad(caseNumber[1], 5)
+      return parseFloat(caseYear + "." + caseID);
+  }
+
   function docketNumberLink(thisCase) {
-    return "<a href=\""+thisCase[docketUrl] + "\">"+ thisCase[docketStr] + "</a>";
+    return "<a href=\""+thisCase[docketUrl] + "\>"+ thisCase[docketStr] + "</a>";
   }
   function caseNameTD(thisCase){
     var caseQp = thisCase[qp];

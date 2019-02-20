@@ -9,25 +9,19 @@ table{
   width: 100%;
   border-collapse: collapse;
 }
-.GRANTED{
+table.dataTable tbody tr.GRANTED, table.dataTable tbody tr.ARGUED{
   background-color: #cec;
 }
-.ARGUED{
-  background-color: #cec;
+table.dataTable tbody tr.ISSUED{
+  background-color: #65995e;
 }
-.DENIED{
+table.dataTable tbody tr.DENIED, table.dataTable tbody tr.DISMISSED, table.dataTable tbody tr.REMOVED{
   background-color: #fcc;
 }
-.DISMISSED{
-  background-color: #fcc;
-}
-.REMOVED{
-  background-color: #fcc;
-}
-.GVR{
+table.dataTable tbody tr.GVR{
   background-color: #ccf;
 }
-.RELISTED{
+table.dataTable tbody tr.RELISTED{
   background-color: khaki;
 }
 .tooltiptext{
