@@ -67,6 +67,8 @@ def main():
     rd["resch-count"] = rdcount
     rd["dist-details"] = "<br>".join(dstrl)
     rd["flags"] = docket.getFlagDict()
+    rd["tags"] = docket.getTagDict()
+    rd["holding"] = docket.getHoldingDict()
 
     rd["lc-abbr"] = cabbr
     if cabbr != "None":

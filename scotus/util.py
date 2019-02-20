@@ -83,6 +83,10 @@ class DocketStatusInfo(object):
     self.remanded = False
     self.abuse = False
 
+    self.vacated = False
+    self.affirmed = False
+    self.reversed = False
+
     self.atty_petitioner_prose = None
     self.attys_petitioner_cor = []
     self.attys_respondent_cor = []
@@ -348,11 +352,13 @@ class DocketStatusInfo(object):
             self.gvr = True
             self.gvr_date = self.grant_date
             self.remanded = True
+            self.reversed = True
             evtobj.remanded = True
           elif etxt.count("VACATED") and etxt.count("REMANDED"):
             self.gvr = True
             self.gvr_date = self.grant_date
             self.remanded = True
+            self.vacated = True
             evtobj.remanded = True
         elif etxt.count("petition for certiorari is granted, the judgment is reversed, and the case is remanded"):
           self.granted = True
@@ -380,10 +386,12 @@ class DocketStatusInfo(object):
           evtobj.issued = True
         elif (etxt.startswith("Adjudged to be AFFIRMED.")
               or etxt.count("judgment is affirmed under 28 U. S. C.")):
+          self.affirmed = True
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.issued = True
         elif etxt.startswith("Judgment REVERSED"):
+          self.reversed = True
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.issued = True
@@ -413,19 +421,29 @@ class DocketStatusInfo(object):
       return False
     return True
 
+  def getTagDict (self):
+    tags = {"cvsg" : False, "related" : False, "capital" : False, "abuse" : False}
+
+    if self.cvsg: tags["cvsg"] = True
+    if self.capital: flags["capital"] = True
+    if self.related: flags["related"] = True
+    if self.abuse: flags["abuse"] = True
+    return tags
+
+  def getHoldingDict (self):
+    hmap = {"vacated" : False, "affirmed" : False, "reversed" : False}
+
+    if self.vacated: hmap["vacated"] = True
+    if self.affirmed: hmap["affirmed"] = True
+    if self.reversed: hmap["reversed"] = True
+    return hmap
+
   def getFlagDict (self):
-    flags = {"capital" : False, "gvr" : False, "granted" : False, "related" : False,
-             "cvsg" : False, "argued" : False, "dismissed" : False, "denied" : False,
+    flags = {"granted" : False, "argued" : False, "dismissed" : False, "denied" : False,
              "removed" : False, "issued" : False, "remanded" : False}
 
-    if self.capital: flags["capital"] = True
-    if self.gvr:
-      flags["gvr"] = True
-    else:
-      if self.granted: flags["granted"] = True
-    if self.related: flags["related"] = True
+    if self.granted: flags["granted"] = True
     if self.remanded: flags["remanded"] = True
-    if self.cvsg: flags["cvsg"] = True
     if self.argued: flags["argued"] = True
     if self.dismissed: flags["dismissed"] = True
     if self.denied: flags["denied"] = True
