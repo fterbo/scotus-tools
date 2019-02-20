@@ -32,6 +32,9 @@ var confJSONNames = (function() {
       createdRow:function( row, data, dataIndex){
         $(row).addClass(data[confJSONNames.currentStatus])
       },
+      search: {
+        "caseInsensitive": false
+      },
       columns:
         [
           {
@@ -45,15 +48,24 @@ var confJSONNames = (function() {
               } else{
                 return "<a href=\""+data.link + "\">"+data.docketNumber + "</a>";
               }
-            }
+            },
+            className:"dt-body-right"
           },
           {
             title:"Type",
-            data:confJSONNames.caseType
+            data:confJSONNames.caseType,
+            render:{
+              "_":"value",
+              "display":"display"
+            }
           },
           {
             title:"Tags",
-            data:confJSONNames.flags
+            data:confJSONNames.flags,
+            render:{
+              "_":"value",
+              "display":"display"
+            }
           },
           {
             title:"LC",
@@ -196,8 +208,14 @@ var ConfTable = (function() {
             "link":thisCase[docketUrl],
             "caseNum":getSortableDocketNumber(thisCase[docketStr])
           } ,
-          [caseType]:TdTag(caseType, translateType(thisCase[caseType])),
-          [flags]:TdTag(flags, flagsColumn(thisCase[flags])),
+          [caseType]:{
+            display: TdTag(caseType, translateType(thisCase[caseType])),
+            value: thisCase[caseType]
+          },
+          [flags]:{
+            display:TdTag(flags, tagsColumn(thisCase[flags],translateTagsToIcons)),
+            value:tagsColumn(thisCase[flags],translateTagsToText)
+          },
           [lcAbbr]:TdTag(lcAbbr,thisCase[lcAbbr], "", thisCase[lcInfo]) ,
           [caseName]:TdTag(caseName+"-td", caseNameTD(thisCase)),
           [distCount]:TdTag(
@@ -234,7 +252,7 @@ var ConfTable = (function() {
       + summary + "</summary> "+
       "<pre id=\""+ preID + "\">" + pre + "</pre> </details>";
   }
-  function translateTags(thisCaseFlags) {
+  function translateTagsToIcons(thisCaseFlags) {
     var result = "";
     if(thisCaseFlags.capital){
       result += "<i class=\"fas fa-exclamation-triangle\" title=\"Capital\"></i>";
@@ -244,6 +262,19 @@ var ConfTable = (function() {
     }
     if(thisCaseFlags.cvsg){
       result += "<a href=\"/reports/cvsg.html\"><i class=\"fas fa-question-circle\" title=\"CVSG\"></i></a>";
+    }
+    return result;
+  }
+  function translateTagsToText(thisCaseFlags) {
+    var result = "";
+    if(thisCaseFlags.capital){
+      result += "capital";
+    }
+    if(thisCaseFlags.related){
+      result += "related";
+    }
+    if(thisCaseFlags.cvsg){
+      result += "cvsg";
     }
     return result;
   }
@@ -264,12 +295,13 @@ var ConfTable = (function() {
     }
     return "<i class=\"" + className + " \" title=\""+thisCaseType+"\"></i>";
   }
-  function flagsExist(thisCaseFlags) {;
+  function tagsExist(thisCaseFlags) {;
     return thisCaseFlags.capital || thisCaseFlags.related || thisCaseFlags.cvsg;
   }
-  function flagsColumn(thisCaseFlags){
-    if(flagsExist(thisCaseFlags)){
-      return translateTags(thisCaseFlags);
+
+  function tagsColumn(thisCaseFlags, action){
+    if(tagsExist(thisCaseFlags)){
+      return action(thisCaseFlags);
     } else {
       return "";
     }
