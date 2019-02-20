@@ -30,7 +30,7 @@ var confJSONNames = (function() {
       paging:false,
       "autoWidth": false,
       createdRow:function( row, data, dataIndex){
-        $(row).addClass(data[currentStatusIndex])
+        $(row).addClass(data[confJSONNames.currentStatus])
       },
       columns:
         [
