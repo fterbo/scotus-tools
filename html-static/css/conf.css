@@ -10,22 +10,22 @@ table{
   border-collapse: collapse;
 }
 .GRANTED{
-  background-color: #cceecc;
+  background-color: #cec;
 }
 .ARGUED{
-  background-color: #cceecc;
+  background-color: #cec;
 }
 .DENIED{
-  background-color: #ffcccc;
+  background-color: #fcc;
 }
 .DISMISSED{
-  background-color: #ffcccc;
+  background-color: #fcc;
 }
 .REMOVED{
-  background-color: #ffcccc;
+  background-color: #fcc;
 }
 .GVR{
-  background-color: #ccccff;
+  background-color: #ccf;
 }
 .RELISTED{
   background-color: khaki;
@@ -36,10 +36,9 @@ table{
 .header{
   text-align: left;
 }
-.conf{
+#conf{
   border: 1px;
 }
 table, th, td {
   border: 1px solid black;
 }
-#.PENDING:nth-child(even) {background-color: #f2f2f2;}

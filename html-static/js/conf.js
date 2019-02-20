@@ -5,15 +5,21 @@
   var term = "term";
   var conferences = "confdates";
   var termID = "confyears";
-
+  var currentStatusIndex = 6;
   GetConfData(PopulateTerms);
   $(document).ready(function(){
     var table = $('#conf').DataTable({
       ordering:true,
       paging:false,
+      "autoWidth": false,
+      createdRow:function( row, data, dataIndex){
+        $(row).addClass(data[currentStatusIndex])
+      },
       columns:
         [
-          {title:"Docket"},
+          {
+            title:"Docket"
+          },
           {title:"Type"},
           {title:"Tags"},
           {title:"LC"},
@@ -108,15 +114,18 @@ var ConfTable = (function() {
   var currentStatus = "current-status";
   var flags = "flags"
 
-  var table = $('#conf').DataTable();
+//  function table(){
+//    return;
+//  }
+
   var tableData = []
   return{
      PopulateTable:function(date){
       $.getJSON("data/conf/"+date+".json?_=" + new Date().getTime(),
       function(data, tableParam){
-        table.clear().draw();
+         $('#conf').DataTable().clear();
         GenerateTable(data);
-        table.draw();
+         $('#conf').DataTable().draw();
       });
     }
   }
@@ -140,24 +149,22 @@ var ConfTable = (function() {
   //  table.rows.add(tableData);
   }
   function addRow(thisCase) {
-    table.row.add(
+     $('#conf').DataTable().row.add(
       [
-        1,2,3,4,5,6,7
-        //  TdTag(docketStr, docketNumberLink(thisCase)) ,
-        //  TdTag(caseType, translateType(thisCase[caseType])),
-        //  TdTag(flags, flagsColumn(thisCase[flags])),
-        //  TdTag(lcAbbr,thisCase[lcAbbr], "", thisCase[lcInfo]) ,
-        //  TdTag(caseName+"-td", caseNameTD(thisCase),
-        //  TdTag(
-        //    "dist-td",
-        //    details(
-        //      thisCase[distCount] + "(" + thisCase[reschCount] + " Resch)",
-        //      "dist-summary",
-        //      thisCase[distDetails],
-        //      distDetails)
-        //    ),
-        //    TdTag(currentStatus, thisCase[currentStatus])
-        //  )
+        TdTag(docketStr, docketNumberLink(thisCase)) ,
+        TdTag(caseType, translateType(thisCase[caseType])),
+        TdTag(flags, flagsColumn(thisCase[flags])),
+        TdTag(lcAbbr,thisCase[lcAbbr], "", thisCase[lcInfo]) ,
+        TdTag(caseName+"-td", caseNameTD(thisCase)),
+        TdTag(
+          "dist-td",
+          details(
+            thisCase[distCount] + "(" + thisCase[reschCount] + " Resch)",
+            "dist-summary",
+            thisCase[distDetails],
+            distDetails)
+          ),
+         thisCase[currentStatus]
       ]
     );
   }
