@@ -351,6 +351,13 @@ class DocketStatusInfo(object):
             self.gvr = True
             self.gvr_date = self.grant_date
             evtobj.remanded = True
+        elif etxt.count("petition for certiorari is granted, the judgment is reversed, and the case is remanded"):
+          self.granted = True
+          self.gvr = True
+          evtobj.remanded = True
+          evtobj.granted = True
+          self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
+          self.gvr_date = self.grant_date
         elif etxt.startswith("Argued."):
           self.argued = True
           self.argued_date = dateutil.parser.parse(einfo["Date"]).date()
