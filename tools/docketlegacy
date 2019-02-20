@@ -12,18 +12,10 @@ import os.path
 import sys
 
 import BeautifulSoup as BS
-import requests
 
 import scotus.util
 
-JSONBASE = "https://www.supremecourt.gov/rss/cases/JSON/"
 HEADERS = {"User-Agent" : "SCOTUS Legacy Docket Builder (https://github.com/fterbo/scotus-tools)"}
-URL = "https://www.supremecourt.gov/search.aspx?filename=/docket/docketfiles/html/public/%s.html"
-OLDURL = "https://www.supremecourt.gov/search.aspx?filename=/docketfiles/%s.htm"
-
-def GET (url):
-  logging.debug("GET: %s" % (url))
-  return requests.get(url, headers=HEADERS)
 
 def parse_args ():
   parser = argparse.ArgumentParser()
@@ -108,14 +100,18 @@ def parseModernDocket (dom, dobj):
           dobj["bCapitalCase"] = True
         continue
     else:
-      (lcell, rcell) = row.findAll("td")
-      if lcell.text in TRANS_TABLE:
-        dobj.update(simpleTranslate(lcell.text, rcell.text))
-      else:
-        for k,v in KEYFUNC_MAP.items():
-          if v == lcell.text:
-            dobj.update(k(lcell.text, rcell))
-            break
+      try:
+        (lcell, rcell) = row.findAll("td")
+        if lcell.text in TRANS_TABLE:
+          dobj.update(simpleTranslate(lcell.text, rcell.text))
+        else:
+          for k,v in KEYFUNC_MAP.items():
+            if v == lcell.text:
+              dobj.update(k(lcell.text, rcell))
+              break
+      except ValueError:
+        # Ignore what is likely QP cell
+        logging.warning("[%s] Check for QP cell" % (dobj["CaseNumber"]))
 
   plist = []
   ptable = dom.find("table", {"id" : "proceedings"})
@@ -165,6 +161,10 @@ def parseModernDocket (dom, dobj):
         dobj["Respondent"].append(pd)
 
 
+def getCells (tr):
+  tdl = [x for x in tr.findChildren("td", recursive=False)]
+  return tdl
+
 def parseOldDocket (dom, dobj):
   dobj["oldurl"] = True
 
@@ -177,13 +177,95 @@ def parseOldDocket (dom, dobj):
       elif elem["name"] == "Respondent":
         dobj["RespondentTitle"] = elem["content"]
       elif elem["name"] == "Docketed":
-        dobj["DocketDate"] = elem["Content"]
+        dobj["DocketedDate"] = elem["content"]
         metasource = True
     except KeyError:
       continue
 
-  maindiv = dom.find("div", {"id" : "pagemaindiv"})
-  dtables = maindiv.findall("table")
+  if not metasource:
+    raise TypeError("Unknown type / empty docket")
+
+  dtables = dom.findAll("table")
+  ftables = [x for x in dtables if not x.findParent("table")]
+  for table in ftables:
+    if table.text.count("ADVANCED SEARCH"):
+      continue
+
+    elif table.text.count("Docketed:"):
+      for row in table.findChildren("tr", recursive=False):
+        cells = getCells(row)
+        if len(cells) == 1:
+          if cells[0].text.count("Linked with"):
+            dobj["Links"] = cells[0].text
+            continue
+
+        if len(cells) != 2:
+          continue
+
+        if cells[0].text == "Lower Ct:":
+          dobj["LowerCourt"] = cells[1].text
+        elif cells[0].text.count("No."):
+          if cells[1].text.count("CAPITAL"):
+            dobj["bCapitalCase"] = True
+
+    elif table.text.count("Case Nos.:"):
+      for row in table.findChildren("tr", recursive=False):
+        cells = getCells(row)
+        if len(cells) != 2:
+          continue
+        if cells[0].text == "Case Nos.:":
+          dobj["LowerCourtCaseNumbers"] = cells[1].text
+        elif cells[0].text == "Decision Date:":
+          dobj["LowerCourtDecision"] = cells[1].text
+
+    elif table.text.count("Proceedings"):
+      plist = []
+      for row in table.findChildren("tr"):
+        cells = getCells(row)
+        if len(cells) != 2:
+          continue
+        if cells[0].text.startswith("~~"):
+          continue
+        plist.append({"Date" : cells[0].text, "Text" : cells[1].text})
+      dobj["ProceedingsandOrder"] = plist
+
+    elif table.text.count("~~Phone"):
+      in_petitioner = in_respondent = in_other = in_atty = False
+      for row in table.findChildren("tr"):
+        cells = getCells(row)
+        ctext = cells[0].text.replace(u'\xa0', ' ')
+        if ctext.count("~~"):
+          continue
+        if len(cells) == 3:
+          if ctext.startswith("Attorneys for Petitioner"):
+            in_petitioner = True
+            in_respondent = in_other = False
+          elif ctext.startswith("Attorneys for Respondent"):
+            in_respondent = True
+            in_petitioner = in_other = False
+          elif ctext.count("Other:"):
+            in_other = True
+            in_respondent = in_petitioner = False
+          elif ctext.count("Counsel of Record"):
+            pd["IsCounselofRecord"] = True
+          elif not ctext.strip():
+            continue
+          else:
+            pd = {"PrisonerId" : None, "IsCounselofRecord" : False}
+            pd["Attorney"] = " ".join(ctext.split())
+        elif len(cells) == 1:
+          if ctext.startswith("Party name:"):
+            pd["PartyName"] = ctext[12:]
+            if in_other:
+              dobj["Other"].append(pd)
+            elif in_petitioner:
+              dobj["Petitioner"].append(pd)
+            elif in_respondent:
+              dobj["Respondent"].append(pd)
+
+    else:
+      continue
+
 
 
 def generateDocket (opts):
@@ -191,7 +273,8 @@ def generateDocket (opts):
   dom = BS.BeautifulSoup(content, convertEntities = BS.BeautifulSoup.HTML_ENTITIES)
 
   dstr = scotus.util.buildDocketStr(opts)
-  dobj = {"bCapitalCase" : False, "CaseNumber" : dstr, "Petitioner" : [], "Respondent" : [], "Other" : []}
+  dobj = {"bCapitalCase" : False, "CaseNumber" : dstr, "Petitioner" : [], "Respondent" : [], "Other" : [],
+          "LowerCourt" : ""}
 
   if not old:
     parseModernDocket(dom, dobj)
@@ -209,46 +292,9 @@ def generateDocket (opts):
 
 
 def getPage (opts):
-  dstr = scotus.util.buildDocketStr(opts)
-
-  if opts.application:
-    droot = "%s/OT-%d/dockets/A/%d" % (opts.root, opts.term, opts.docket_num)
-  else:
-    droot = "%s/OT-%d/dockets/%d" % (opts.root, opts.term, opts.docket_num)
-
-  local_path = "%s/legacy.html" % (droot)
-  if not os.path.exists(droot):
-    os.makedirs(droot)
-
-  old = False
-  oldlocal_path = "%s/oldlegacy.html" % (droot)
-  if os.path.exists(oldlocal_path):
-    old = True
-
-  if (not os.path.exists(local_path) and not os.path.exists(oldlocal_path)) or opts.force:
-    if not opts.force:
-      jr = GET("%s%s.json" % (JSONBASE, dstr))
-      if jr.status_code == 200:
-        logging.error("[%s] Not a legacy docket" % (dstr))
-        with open("%s/docket.json" % (droot), "w+") as jdf:
-          jdf.write(jr.content)
-        sys.exit(1)
-
-    r = requests.get(URL % (dstr))
-    if r.status_code == 404:
-      r = requests.get(OLDURL % (dstr))
-      old = True
-
-    if r.status_code == 200:
-      with open(local_path, "w+") as dhtml:
-        dhtml.write(r.content)
-      return (r.content, old)
-    else:
-      logging.error(r.status_code)
-      sys.exit(1)
-  else:
-    content = open(local_path, "rb").read()
-    return (content, old)
+  import scotus.webutils
+  scotus.webutils.HEADERS = HEADERS
+  return scotus.webutils.getPage(opts.term, opts.docket_num, opts.root, opts.application, opts.force)
 
 if __name__ == '__main__':
   opts = parse_args()

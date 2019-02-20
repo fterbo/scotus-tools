@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2018  Floyd Terbo
+# Copyright (c) 2018-2019  Floyd Terbo
 
 from __future__ import absolute_import, print_function
 
@@ -72,9 +72,12 @@ def scan (opts):
     docket_obj = json.loads(open(jpath, "rb").read())
     info = util.DocketStatusInfo(docket_obj)
     if opts.unknown:
-      if docket_obj["LowerCourt"]:
+      if ("LowerCourt" in docket_obj) and (docket_obj["LowerCourt"]):
         if docket_obj["LowerCourt"] not in LCNAMEMAP.values():
           print("[%s] Unknown Lower Court: %s" % (info.docketstr, docket_obj["LowerCourt"]))
+      else:
+        if "LowerCourt" not in docket_obj:
+          print("[%s] Missing LowerCourt key" % (info.docketstr))
       continue
       
     if opts.lower:

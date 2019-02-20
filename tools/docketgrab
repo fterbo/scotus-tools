@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2018  Floyd Terbo
+# Copyright (c) 2018-2019  Floyd Terbo
 
 import argparse
 import datetime
@@ -236,6 +236,8 @@ def downloadFull (path, opts):
     os.makedirs(newpath)
   except OSError:
     pass
+
+  logging.info("Processing docket %s" % (docketstr))
 
   url = "%s%s.json" % (BASE, docketstr)
   r = GET(url)

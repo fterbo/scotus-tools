@@ -1,4 +1,4 @@
-# Copyright (c) 2018  Floyd Terbo
+# Copyright (c) 2018-2019  Floyd Terbo
 
 class CourtMatch(object):
   def __init__ (self, *args):
@@ -9,13 +9,14 @@ class CourtMatch(object):
   def __eq__ (self, val):
     if not val:
       return False
-    if val in self.names:
+    val = val.lower()
+    if val in [x.lower() for x in self.names]:
       return True
     if self.start:
       for frag in self.start:
-        if val.startswith(frag):
+        if val.startswith(frag.lower()):
           return True
-    if self.partial and val.count(self.partial):
+    if self.partial and val.count(self.partial.lower()):
       return True
     return False
 
@@ -102,15 +103,24 @@ NAMEMAP = {
   "dcMD" : "United States District Court for the District of Maryland",
   "dcMNC" : "United States District Court for the Middle District of North Carolina",
   "dcSCA" : "United States District Court for the Southern District of California",
+  "dcWWI" : "United States District Court for the Western District of Wisconsin",
   "dcWTX" : "United States District Court for the Western District of Texas",
 
   "minAZ" : CourtMatch().setStart("Superior Court of Arizona"),
-  "minCA" : CourtMatch().setStart("Appellate Division, Superior Court of California"),
+  "minCA" : CourtMatch().setPartial("Superior Court of California"),
   "minCO" : CourtMatch().setStart("District Court of Colorado"),
+  "minFL" : CourtMatch().setStart("Circuit Court of Florida"),
   "minGA" : CourtMatch().setStart("Superior Court of Georgia"),
+  "minIA" : CourtMatch().setStart("District Court of Iowa"),
+  "minLA" : CourtMatch().setPartial("Judicial District Court of Louisiana"),
+  "minMA" : CourtMatch().setStart("Superior Court of Massachusetts"),
   "minMD" : CourtMatch().setStart("Circuit Court of Maryland"),
+  "minMI" : CourtMatch().setStart("Circuit Court of Michigan"),
   "minNC" : CourtMatch().setStart("Superior Court of North Carolina"),
+  "minNY" : CourtMatch().setStart("County Court of New York")
+                          .setStart("Supreme Court of New York"),
   "minSC" : CourtMatch().setStart("Court of Common Pleas of South Carolina"),
+  "minTX" : CourtMatch().setPartial("District Court of Texas"),
   "minNM" : CourtMatch().setStart("District Court of New Mexico"),
   "minWV" : CourtMatch().setStart("Circuit Court of West Virginia"),
   "minVA" : CourtMatch().setStart("Circuit Court of Virginia"),
@@ -147,6 +157,7 @@ NAMEMAP = {
   "scNH" : "Supreme Court of New Hampshire",
   "scNJ" : "Supreme Court of New Jersey",
   "scNM" : "Supreme Court of New Mexico",
+  "scNMI" : "Supreme Court of the Commonwealth of the Northern Mariana Islands",
   "scNV" : "Supreme Court of Nevada",
   "scNY" : "Court of Appeals of New York",
   "scOH" : "Supreme Court of Ohio",

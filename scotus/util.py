@@ -57,6 +57,8 @@ class DocketStatusInfo(object):
     self.lowercourt_decision_date = None
     self.petition_path = None
     self.oldurl = False
+    self.petitioner_title = None
+    self.respondent_title = None
 
     self.related = []
 
@@ -253,6 +255,11 @@ class DocketStatusInfo(object):
       self.casename = buildCasename(docket_obj)
       self.casetype = getCaseType(docket_obj)
 
+      if "PetitionerTitle" in docket_obj:
+        self.petitioner_title = docket_obj["PetitionerTitle"]
+      if "RespondentTitle" in docket_obj:
+        self.respondent_title = docket_obj["RespondentTitle"]
+
       if "Petitioner" in docket_obj:
         for info in docket_obj["Petitioner"]:
           if info["IsCounselofRecord"]:
@@ -303,7 +310,7 @@ class DocketStatusInfo(object):
         if etxt.startswith("DISTRIBUTED"):
           if etxt == "DISTRIBUTED.":
             continue  # Rehearing distribution, probably, not for conference
-          confdate = dateutil.parser.parse(etxt.split()[-1]).date()
+          confdate = dateutil.parser.parse(etxt.split("of")[-1]).date()
           edate = dateutil.parser.parse(einfo["Date"]).date()
           self.distributed.append((edate, confdate, False))
           evtobj.distributed = True
@@ -508,7 +515,11 @@ def buildCasename (docket_obj):
         else:
           casename = pt
       else:
-        petitioner = docket_obj["PetitionerTitle"][:-12]  # Remove ", Petitioner" from metadata
+        if pt.split(",")[-1].count("Petitioner"):
+          parts = pt.split(",")
+          petitioner = ",".join(parts[:-1])
+        else:
+          petitioner = pt
         casename = "%s v. %s" % (petitioner, docket_obj["RespondentTitle"])
   except Exception:
     raise exceptions.CasenameError(docket_obj["CaseNumber"].strip())

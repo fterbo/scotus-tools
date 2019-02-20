@@ -272,3 +272,31 @@ class PartyAttorney(object):
           except KeyError:
             continue
 
+@srcfilter("partyname")
+@SD.inputs("docket-reference")
+class PartyName(object):
+  def __init__ (self, name, partial = True):
+    self.partyname = name.lower()
+    self.partial = partial
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    docket = docket_ref.info
+
+    dpl = docket.petitioner_title.lower()
+    if docket.respondent_title:
+      drl = docket.respondent_title.lower()
+    else:
+      drl = ""
+
+    if self.partial:
+      if dpl.count(self.partyname) or drl.count(self.partyname):
+        return True
+    else:
+      if dpl == self.partyname or drl == self.partyname:
+        return True
+
+    return False
+
