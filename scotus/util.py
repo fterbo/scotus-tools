@@ -80,6 +80,7 @@ class DocketStatusInfo(object):
     self.gvr = False
     self.gvr_date = None
     self.removed = False
+    self.remanded = False
     self.abuse = False
 
     self.atty_petitioner_prose = None
@@ -346,18 +347,19 @@ class DocketStatusInfo(object):
             # This is not really a GVR, but we'll throw it in the bucket for now
             self.gvr = True
             self.gvr_date = self.grant_date
+            self.remanded = True
             evtobj.remanded = True
           elif etxt.count("VACATED") and etxt.count("REMANDED"):
             self.gvr = True
             self.gvr_date = self.grant_date
+            self.remanded = True
             evtobj.remanded = True
         elif etxt.count("petition for certiorari is granted, the judgment is reversed, and the case is remanded"):
           self.granted = True
-          self.gvr = True
+          self.remanded = True
           evtobj.remanded = True
           evtobj.granted = True
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
-          self.gvr_date = self.grant_date
         elif etxt.startswith("Argued."):
           self.argued = True
           self.argued_date = dateutil.parser.parse(einfo["Date"]).date()
@@ -414,7 +416,7 @@ class DocketStatusInfo(object):
   def getFlagDict (self):
     flags = {"capital" : False, "gvr" : False, "granted" : False, "related" : False,
              "cvsg" : False, "argued" : False, "dismissed" : False, "denied" : False,
-             "removed" : False, "issued" : False}
+             "removed" : False, "issued" : False, "remanded" : False}
 
     if self.capital: flags["capital"] = True
     if self.gvr:
@@ -422,6 +424,7 @@ class DocketStatusInfo(object):
     else:
       if self.granted: flags["granted"] = True
     if self.related: flags["related"] = True
+    if self.remanded: flags["remanded"] = True
     if self.cvsg: flags["cvsg"] = True
     if self.argued: flags["argued"] = True
     if self.dismissed: flags["dismissed"] = True
@@ -438,6 +441,7 @@ class DocketStatusInfo(object):
     if self.removed: return "REMOVED"
     if self.denied: return "DENIED"
     if self.gvr: return "GVR"
+    if self.remanded: return "REMANDED"
     if self.granted: return "GRANTED"
     return "PENDING"
 
