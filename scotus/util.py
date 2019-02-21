@@ -201,10 +201,19 @@ class DocketStatusInfo(object):
       self._generateQPText()
     return open(qptxtpath, "r").read()
 
-  def getConfAction (self, rcdate):
+  def getConfAction (self, rcdate, clist = None):
+    nextc = None
+    if clist:
+      for idx,cdate in enumerate(clist):
+        if rcdate == cdate:
+          nextc = clist[idx+1]
+          break
+
     for (edate, cdate, resch) in self.distributed:
       if cdate == rcdate and resch:
         return "RESCHEDULED"
+      if nextc and cdate == nextc:
+        return "RELISTED"
 
     # Go through events after the conference date and see if we find
     # something useful
@@ -216,9 +225,7 @@ class DocketStatusInfo(object):
       # We found events after the conference date
       post = True
 
-      if event.distributed:
-        return "RELISTED"
-      elif event.dismissed:
+      if event.dismissed:
         return "DISMISSED"
       elif event.remanded:
         return "REMANDED"

@@ -18,6 +18,13 @@ def main():
     except ValueError as e:
       raise SystemExit(e)
 
+  cdata = json.loads(open("webroot/data/confdates.json", "r").read())
+  dates = []
+  for term in cdata.keys():
+    for lobj in cdata[term]:
+      for cinfo in lobj["confdates"]:
+        dates.append(dateutil.parser.parse("%s-%s-%s" % (cinfo["y"], cinfo["m"], cinfo["d"])).date())
+
   sumdata = obj["output"]
 
   for fname,fargs in obj["arguments"]["filters"]:
@@ -62,7 +69,7 @@ def main():
     rd["case-name"] = docket.casename
     rd["case-type"] = docket.casetype
     rd["current-status"] = docket.current_status
-    rd["conf-action"] = docket.getConfAction(cdate)
+    rd["conf-action"] = docket.getConfAction(cdate, dates)
     rd["dist-count"] = dcount
     rd["resch-count"] = rdcount
     rd["dist-details"] = "<br>".join(dstrl)
