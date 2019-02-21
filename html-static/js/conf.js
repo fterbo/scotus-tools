@@ -63,7 +63,7 @@ var confJSONNames = (function() {
           },
           {
             title:"Tags",
-            data:confJSONNames.flags,
+            data:confJSONNames.tags,
             render:{
               "_":"value",
               "display":"display"
@@ -182,7 +182,7 @@ var ConfTable = (function() {
   var reschCount = confJSONNames.reschCount;
   var caseType = confJSONNames.caseType;
   var currentStatus = confJSONNames.currentStatus;
-  var flags = confJSONNames.flags;
+  var tags = confJSONNames.tags;
   var tableData = []
   return{
      PopulateTable:function(date){
@@ -225,7 +225,7 @@ var ConfTable = (function() {
             display: TdTag(caseType, translateType(thisCase[caseType])),
             value: thisCase[caseType]
           },
-          [flags]:{
+          [tags]:{
             display:TdTag(confJSONNames.tags, tagsColumn(thisCase[confJSONNames.tags],translateTagsToIcons)),
             value:tagsColumn(thisCase[confJSONNames.tags],translateTagsToText)
           },
@@ -244,7 +244,7 @@ var ConfTable = (function() {
            },
            [currentStatus]:{
              display:thisCase[currentStatus],
-             value:translateFlagsToText(thisCase[flags])
+             value:translateFlagsToText(thisCase[confJSONNames.flags])
            }
          }
     );
@@ -323,6 +323,9 @@ var ConfTable = (function() {
     if(thisCaseFlags.cvsg){
       result += "cvsg";
     }
+    if (thisCaseFlags.abuse){
+      result += "abuse"
+    }
     return result;
   }
   function translateType(thisCaseType){
@@ -342,8 +345,9 @@ var ConfTable = (function() {
     }
     return "<i class=\"" + className + " \" title=\""+thisCaseType+"\"></i>";
   }
-  function tagsExist(thisCaseFlags) {;
-    return thisCaseFlags.capital || thisCaseFlags.related || thisCaseFlags.cvsg;
+  function tagsExist(thisCaseFlags) {
+
+    return thisCaseFlags.capital || thisCaseFlags.related || thisCaseFlags.cvsg || thisCaseFlags.abuse;
   }
 
   function tagsColumn(thisCaseFlags, action){
