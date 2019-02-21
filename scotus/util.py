@@ -365,7 +365,8 @@ class DocketStatusInfo(object):
             self.remanded = True
             self.vacated = True
             evtobj.remanded = True
-        elif etxt.count("petition for certiorari is granted, the judgment is reversed, and the case is remanded"):
+        elif (etxt.count("petition for certiorari is granted, the judgment is reversed, and the case is remanded")
+              or etxt.count("the case is remanded for further proceedings")):
           self.granted = True
           self.remanded = True
           evtobj.remanded = True
