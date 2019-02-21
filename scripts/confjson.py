@@ -24,6 +24,7 @@ def main():
     for lobj in cdata[term]:
       for cinfo in lobj["confdates"]:
         dates.append(dateutil.parser.parse("%s-%s-%s" % (cinfo["y"], cinfo["m"], cinfo["d"])).date())
+  dates.sort()
 
   sumdata = obj["output"]
 
