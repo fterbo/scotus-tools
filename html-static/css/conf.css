@@ -1,39 +1,48 @@
-div
-{
-    display:block;
+div {
+  display: block;
 }
+
 .text {
-  border:1px;
+  border: 1px;
 }
-table{
+
+table {
   width: 100%;
   border-collapse: collapse;
 }
-table.dataTable tbody tr.GRANTED, table.dataTable tbody tr.ARGUED{
+
+table.dataTable tbody tr.GRANTED, table.dataTable tbody tr.ARGUED {
   background-color: #fcfc7e;
 }
-table.dataTable tbody tr.ISSUED{
+
+table.dataTable tbody tr.ISSUED {
   background-color: #cec;
 }
-table.dataTable tbody tr.DENIED, table.dataTable tbody tr.DISMISSED, table.dataTable tbody tr.REMOVED{
+
+table.dataTable tbody tr.DENIED, table.dataTable tbody tr.DISMISSED, table.dataTable tbody tr.REMOVED {
   background-color: #fcc;
 }
-table.dataTable tbody tr.GVR, table.dataTable tbody tr.REMANDED{
+
+table.dataTable tbody tr.GVR, table.dataTable tbody tr.REMANDED {
   background-color: #ccf;
 }
 
-table.dataTable tbody tr.RELISTED{
+table.dataTable tbody tr.RELISTED {
   background-color: khaki;
 }
-.tooltiptext{
+
+.tooltiptext {
   display: none;
 }
-.header{
+
+.header {
   text-align: left;
 }
-#conf{
+
+#conf {
   border: 1px;
 }
+
 table, th, td {
   border: 1px solid black;
 }
