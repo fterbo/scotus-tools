@@ -206,7 +206,8 @@ class DocketStatusInfo(object):
     if clist:
       for idx,cdate in enumerate(clist):
         if rcdate == cdate:
-          nextc = clist[idx+1]
+          if idx+1 < len(clist):
+            nextc = clist[idx+1]
           break
 
     for (edate, cdate, resch) in self.distributed:
