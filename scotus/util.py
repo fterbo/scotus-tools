@@ -230,6 +230,10 @@ class DocketStatusInfo(object):
         return "DENIED"
       elif event.cvsg:
         return "CVSG"
+      elif event.ifp_denied:
+        return "IFP DENIED"
+      elif event.response_requested:
+        return "RESPONSE"
 
     if not post:
       return ""
@@ -407,6 +411,10 @@ class DocketStatusInfo(object):
               or etxt == "Case considered closed."):
           self.removed = True
           evtobj.removed = True
+        elif etxt.count("leave to proceed in forma pauperis is denied"):
+          evtobj.ifp_denied = True
+        elif etxt.startswith("Response Requested."):
+          evtobj.response_requested = True
 
         if etxt.count("petitioner has repeatedly abused"):
           self.abuse = True
