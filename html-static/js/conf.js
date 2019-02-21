@@ -12,7 +12,9 @@ var confJSONNames = (function() {
   reschCount : "resch-count",
   caseType : "case-type",
   currentStatus : "current-status",
-  flags : "flags"
+  confAction: "conf-action",
+  flags : "flags",
+  tags : "tags"
 }
 }());
 
@@ -30,10 +32,10 @@ var confJSONNames = (function() {
       paging:false,
       "autoWidth": false,
       createdRow:function( row, data, dataIndex){
-        $(row).addClass(data[confJSONNames.currentStatus])
+        $(row).addClass(data[confJSONNames.currentStatus].display)
       },
       search: {
-        "caseInsensitive": false
+        "caseInsensitive": true
       },
       columns:
         [
@@ -80,8 +82,19 @@ var confJSONNames = (function() {
             data:confJSONNames.distCount
           },
           {
+            title:"Conference<br/>Action",
+            data:confJSONNames.confAction,
+            render:{
+              "_":"value"
+            }
+          },
+          {
             title:"Current<br/>Status",
-            data:confJSONNames.currentStatus
+            data:confJSONNames.currentStatus,
+            render:{
+              "_":"value",
+              "display":"display"
+            }
           }
         ]
     });
@@ -213,8 +226,8 @@ var ConfTable = (function() {
             value: thisCase[caseType]
           },
           [flags]:{
-            display:TdTag(flags, tagsColumn(thisCase[flags],translateTagsToIcons)),
-            value:tagsColumn(thisCase[flags],translateTagsToText)
+            display:TdTag(confJSONNames.tags, tagsColumn(thisCase[confJSONNames.tags],translateTagsToIcons)),
+            value:tagsColumn(thisCase[confJSONNames.tags],translateTagsToText)
           },
           [lcAbbr]:TdTag(lcAbbr,thisCase[lcAbbr], "", thisCase[lcInfo]) ,
           [caseName]:TdTag(caseName+"-td", caseNameTD(thisCase)),
@@ -226,7 +239,13 @@ var ConfTable = (function() {
               thisCase[distDetails],
               distDetails)
             ),
-           [currentStatus]:thisCase[currentStatus]
+           [confJSONNames.confAction]:{
+             value:thisCase[confJSONNames.confAction]
+           },
+           [currentStatus]:{
+             display:thisCase[currentStatus],
+             value:translateFlagsToText(thisCase[flags])
+           }
          }
     );
   }
@@ -262,6 +281,34 @@ var ConfTable = (function() {
     }
     if(thisCaseFlags.cvsg){
       result += "<a href=\"/reports/cvsg.html\"><i class=\"fas fa-question-circle\" title=\"CVSG\"></i></a>";
+    }
+    if (thisCaseFlags.abuse){
+      result += "<i class=\"far fa-angry\" title=\"abuse\"></i>"
+    }
+    return result;
+  }
+  function translateFlagsToText(thisCaseFlags){
+    var result = "";
+    if (thisCaseFlags.issued) {
+      result += "issued"
+    }
+    if (thisCaseFlags.granted) {
+      result += "granted"
+    }
+    if (thisCaseFlags.dismissed) {
+      result += "dismissed"
+    }
+    if (thisCaseFlags.remanded) {
+      result += "remanded"
+    }
+    if (thisCaseFlags.denied) {
+      result += "denied"
+    }
+    if (thisCaseFlags.argued) {
+      result += "argued"
+    }
+    if (thisCaseFlags.removed) {
+      result += "removed"
     }
     return result;
   }
@@ -306,7 +353,6 @@ var ConfTable = (function() {
       return "";
     }
   }
-
   function pad(num, size) {
     var s = num+"";
     while (s.length < size) s = "0" + s;
