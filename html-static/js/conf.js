@@ -46,7 +46,7 @@ var confJSONNames = (function() {
             } else if (type == "filter") {
               return data.docketNumber;
             } else {
-              return "<a href=\"" + data.link + "\">" + data.docketNumber + "</a>";
+              return "<a href=\"" + data.link + "\" target=\"_blank\">" + data.docketNumber + "</a>";
             }
           },
           className: "dt-body-right"
