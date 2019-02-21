@@ -337,6 +337,7 @@ class DocketStatusInfo(object):
         elif etxt.startswith("The Solicitor General is invited to file a brief"):
           self.cvsg = True
           self.cvsg_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.cvsg = True
         elif etxt == "Petition GRANTED.":
           self.granted = True
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
