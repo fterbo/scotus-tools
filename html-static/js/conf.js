@@ -40,6 +40,7 @@ var confJSONNames = (function() {
       columns: [{
           title: "Docket",
           data: confJSONNames.docketStr,
+          width:50,
           render: function(data, type, row) {
             if (type === "sort") {
               return data.caseNum;
@@ -54,6 +55,7 @@ var confJSONNames = (function() {
         {
           title: "Type",
           data: confJSONNames.caseType,
+          width:50,
           render: {
             "_": "value",
             "display": "display"
@@ -62,6 +64,7 @@ var confJSONNames = (function() {
         {
           title: "Tags",
           data: confJSONNames.tags,
+          width:50,
           render: {
             "_": "value",
             "display": "display"
@@ -69,6 +72,7 @@ var confJSONNames = (function() {
         },
         {
           title: "LC",
+          width:50,
           data: confJSONNames.lcAbbr
         },
         {
@@ -77,17 +81,20 @@ var confJSONNames = (function() {
         },
         {
           title: "Dist",
+          width:100,
           data: confJSONNames.distCount
         },
         {
-          title: "Conference<br/>Action",
+          title: "Conference <br/>Action",
           data: confJSONNames.confAction,
+          width:100,
           render: {
             "_": "value"
           }
         },
         {
-          title: "Current<br/>Status",
+          title: "Current <br/>Status",
+          width:100,
           data: confJSONNames.currentStatus,
           render: {
             "_": "value",
@@ -96,6 +103,7 @@ var confJSONNames = (function() {
         }
       ]
     });
+    createSearchBoxes(table);
     $("#" + termID).change(
       function() {
         PopulateConferences();
@@ -106,6 +114,30 @@ var confJSONNames = (function() {
       });
   });
 
+  function createSearchBoxes(table) {
+    $('#conf thead th').each( function () {
+      var title = $(this).text();
+      var width = "50px";
+      var lastColumnsList = ["Dist","Conference Action","Current Status"];
+      if (title == "Case") {
+        width="100%";
+      } else if (lastColumnsList.indexOf(title) >-1 ) {
+        width="85px"
+      }
+      $(this).html( $(this).html() + '<br /> <input type="text" placeholder="Search" style="width:'+width+'"/>' );
+    } );
+    table.columns().every( function () {
+        var that = this;
+
+        $( 'input', this.header() ).on( 'keyup change', function () {
+            if ( that.search() !== this.value ) {
+                that
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );
+  }
 
   function GetConfData(action) {
     $.getJSON("data/confdates.json?_=" + new Date().getTime(),
