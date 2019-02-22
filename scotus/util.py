@@ -223,7 +223,7 @@ class DocketStatusInfo(object):
       if event.date < rcdate:
         continue
 
-      if event.distributed:
+      if event.distributed and (event.date > rcdate):
         return ""
 
       # We found events after the conference date
