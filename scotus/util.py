@@ -355,7 +355,8 @@ class DocketStatusInfo(object):
           evtobj.granted = True
         elif etxt.count("GRANTED"):
           if etxt.count("Motion for leave"): continue
-          if etxt.count("Motion to substitute") : continue
+          if etxt.count("Motion to substitute"): continue
+          if etxt.count("Motion of respondent for leave"): continue
           statements = etxt.split(".")
           gs = [x for x in statements if x.count("GRANTED")][0]
           if gs.count("expedite consideration"):
