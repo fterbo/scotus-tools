@@ -257,10 +257,10 @@ var ConfTable = (function() {
         value: thisCase[caseType]
       },
       [tags]: {
-        display: TdTag(confJSONNames.tags, tagsColumn(thisCase[confJSONNames.tags], translateTagsToIcons)),
-        value: tagsColumn(thisCase[confJSONNames.tags], translateTagsToText)
+        display: TdTag(confJSONNames.tags, tagsColumn(thisCase, translateTagsToIcons)),
+        value: tagsColumn(thisCase, translateTagsToText)
       },
-      [lcAbbr]: TdTag(lcAbbr, thisCase[lcAbbr], "", thisCase[lcInfo]),
+      [lcAbbr]: TdTag(lcAbbr, thisCase[lcAbbr] + " ", "", thisCase[lcInfo]),
       [caseName]: TdTag(caseName + "-td", caseNameTD(thisCase)),
       [distCount]: TdTag(
         "dist-td",
@@ -306,7 +306,7 @@ var ConfTable = (function() {
       "<pre id=\"" + preID + "\">" + pre + "</pre> </details>";
   }
 
-  function translateTagsToIcons(thisCaseFlags) {
+  function translateTagsToIcons(thisCaseFlags, caseNumber) {
     var result = "";
     if (thisCaseFlags.capital) {
       result += "<i class=\"fas fa-exclamation-triangle\" title=\"Capital\"></i>";
@@ -319,6 +319,9 @@ var ConfTable = (function() {
     }
     if (thisCaseFlags.abuse) {
       result += "<i class=\"far fa-angry\" title=\"abuse\"></i>"
+    }
+    if (thisCaseFlags.paid  && caseNumber > 5000){
+      result += "<i class=\"fas fa-dollar-sign\"></i>"
     }
     return result;
   }
@@ -349,19 +352,25 @@ var ConfTable = (function() {
     return result;
   }
 
-  function translateTagsToText(thisCaseFlags) {
+  function translateTagsToText(thisCaseFlags, caseNumber) {
     var result = "";
     if (thisCaseFlags.capital) {
-      result += "capital";
+      result += "capital ";
     }
     if (thisCaseFlags.related) {
-      result += "related";
+      result += "related ";
     }
     if (thisCaseFlags.cvsg) {
-      result += "cvsg";
+      result += "cvsg ";
     }
     if (thisCaseFlags.abuse) {
-      result += "abuse"
+      result += "abuse "
+    }
+    if (thisCaseFlags.paid){
+      result += "paid "
+    }
+    if (thisCaseFlags.ifp){
+      result += "ifp "
     }
     return result;
   }
@@ -386,12 +395,12 @@ var ConfTable = (function() {
 
   function tagsExist(thisCaseFlags) {
 
-    return thisCaseFlags.capital || thisCaseFlags.related || thisCaseFlags.cvsg || thisCaseFlags.abuse;
+    return thisCaseFlags.capital || thisCaseFlags.related || thisCaseFlags.cvsg || thisCaseFlags.abuse||thisCaseFlags.paid||thisCaseFlags.ifp;
   }
 
-  function tagsColumn(thisCaseFlags, action) {
-    if (tagsExist(thisCaseFlags)) {
-      return action(thisCaseFlags);
+  function tagsColumn(thisCase, action) {
+    if (tagsExist(thisCase[confJSONNames.tags])) {
+      return action(thisCase[confJSONNames.tags], getCaseID(thisCase[confJSONNames.docketStr]));
     } else {
       return "";
     }
@@ -402,12 +411,18 @@ var ConfTable = (function() {
     while (s.length < size) s = "0" + s;
     return s;
   }
-
+  function getDocketStrArray(docketStr){
+    return docketStr.split("-");
+  }
+  function getCaseID(docketNumber) {
+     return getDocketStrArray(docketNumber)[1];
+  }
+  function getCaseTermSubmitted(docketNumber){
+     return getDocketStrArray(docketNumber)[0]
+  }
   function getSortableDocketNumber(docketNumber) {
-
-    var caseNumber = docketNumber.split("-");
-    var caseYear = caseNumber[0]
-    var caseID = pad(caseNumber[1], 5)
+    var caseYear = getCaseTermSubmitted(docketNumber)
+    var caseID = pad(getCaseID(docketNumber), 5)
     return parseFloat(caseYear + "." + caseID);
   }
 
