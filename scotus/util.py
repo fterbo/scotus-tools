@@ -444,12 +444,16 @@ class DocketStatusInfo(object):
     return True
 
   def getTagDict (self):
-    tags = {"cvsg" : False, "related" : False, "capital" : False, "abuse" : False}
+    tags = {"cvsg" : False, "related" : False, "capital" : False, "abuse" : False,
+            "ifp" : False, "paid" : False}
 
     if self.cvsg: tags["cvsg"] = True
     if self.capital: tags["capital"] = True
     if self.related: tags["related"] = True
     if self.abuse: tags["abuse"] = True
+    if not self.original and not self.application:
+      if self.docket < 5000: tags["paid"] = True
+      if self.docket > 5000: tags["ifp"] = True
     return tags
 
   def getHoldingDict (self):
