@@ -260,7 +260,7 @@ var ConfTable = (function() {
         display: TdTag(confJSONNames.tags, tagsColumn(thisCase, translateTagsToIcons)),
         value: tagsColumn(thisCase, translateTagsToText)
       },
-      [lcAbbr]: TdTag(lcAbbr, thisCase[lcAbbr] + " ", "", thisCase[lcInfo]),
+      [lcAbbr]: TdTag(lcAbbr, thisCase[lcAbbr], "", thisCase[lcInfo]),
       [caseName]: TdTag(caseName + "-td", caseNameTD(thisCase)),
       [distCount]: TdTag(
         "dist-td",
