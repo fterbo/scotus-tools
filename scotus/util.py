@@ -247,6 +247,8 @@ class DocketStatusInfo(object):
         return "IFP DENIED"
       elif event.response_requested:
         return "RESPONSE"
+      elif event.rehearing_denied:
+        return "DENIED"
 
     if not post:
       return ""
@@ -403,6 +405,8 @@ class DocketStatusInfo(object):
           self.denied = True
           self.deny_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.denied = True
+        elif etxt.startswith("Rehearing DENIED"):
+          evtobj.rehearing_denied = True
         elif etxt == "JUDGMENT ISSUED.":
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
