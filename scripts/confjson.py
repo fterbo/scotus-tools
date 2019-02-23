@@ -53,8 +53,10 @@ def main():
     dstrl = []
     dcount = 0
     rdcount = 0
+    ddate = None
     for (ed, cd, r) in docket.distributed:
       if cd == cdate:
+        ddate = ed
         rd["dist-date"] = {"y" : ed.year, "m" : ed.month, "d" : ed.day}
       dcount += 1
       cds = cd.strftime("%Y-%m-%d")
@@ -63,6 +65,16 @@ def main():
         rdcount += 1
       else:
         dstrl.append(cds)
+
+    skip = False
+    for event in docket.events:
+      if event.date >= ddate and event.date <= cdate:
+        if event.response_requested or event.record_requested:
+          skip = True
+          break
+
+    if skip:
+      continue
 
 
     rd["docket-url"] = docket.docketurl

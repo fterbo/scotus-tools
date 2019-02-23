@@ -231,6 +231,8 @@ class DocketStatusInfo(object):
 
       if event.dismissed:
         return "DISMISSED"
+      elif event.mooted:
+        return "MOOT"
       elif event.remanded:
         return "REMANDED"
       elif event.granted:
@@ -377,13 +379,15 @@ class DocketStatusInfo(object):
             self.remanded = True
             self.vacated = True
             evtobj.remanded = True
-        elif (etxt.count("petition for certiorari is granted, the judgment is reversed, and the case is remanded")
-              or etxt.count("the case is remanded for further proceedings")):
+        elif (etxt.count("petition for certiorari is granted"):
           self.granted = True
-          self.remanded = True
-          evtobj.remanded = True
           evtobj.granted = True
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
+          if etxt.count("to dismiss the case as moot"):
+            evtobj.mooted = True
+          if etxt.count("the case is remanded for further proceedings")):
+            self.remanded = True
+            evtobj.remanded = True
         elif etxt.startswith("Argued."):
           self.argued = True
           self.argued_date = dateutil.parser.parse(einfo["Date"]).date()
