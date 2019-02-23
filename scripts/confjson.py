@@ -3,6 +3,7 @@
 # Copyright (c) 2019  Floyd Terbo
 
 import codecs
+import logging
 import json
 import sys
 
@@ -74,6 +75,7 @@ def main():
           break
 
     if skip:
+      logging.debug("%s: skipping %s" % (cshortstr, docket.docketstr))
       continue
 
 
@@ -104,6 +106,8 @@ def main():
 
   with codecs.open("webroot/data/conf/%s.json" % (cshortstr), "w+", encoding="utf-8") as f:
     f.write(json.dumps(outdict))
+
+  logging.info("%s: %d dockets" % (cshortstr, len(tdata)))
 
 
 if __name__ == '__main__':
