@@ -379,13 +379,13 @@ class DocketStatusInfo(object):
             self.remanded = True
             self.vacated = True
             evtobj.remanded = True
-        elif (etxt.count("petition for certiorari is granted"):
+        elif etxt.count("petition for certiorari is granted"):
           self.granted = True
           evtobj.granted = True
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
           if etxt.count("to dismiss the case as moot"):
             evtobj.mooted = True
-          if etxt.count("the case is remanded for further proceedings")):
+          if etxt.count("the case is remanded for further proceedings"):
             self.remanded = True
             evtobj.remanded = True
         elif etxt.startswith("Argued."):
