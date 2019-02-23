@@ -379,7 +379,8 @@ class DocketStatusInfo(object):
             self.remanded = True
             self.vacated = True
             evtobj.remanded = True
-        elif etxt.count("petition for certiorari is granted"):
+        elif (etxt.count("petition for certiorari is granted") or
+              etxt.count("petition for a writ of certiorari is granted")):
           self.granted = True
           evtobj.granted = True
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
