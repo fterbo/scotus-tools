@@ -520,9 +520,8 @@ class DocketStatusInfo(object):
 
 
 def getCaseType (docket_obj):
-  if ("PetitionerTitle" in docket_obj) and ("RespondentTitle" in docket_obj):
-    # TODO: Yes yes, we'll fix it later
-    return "certiorari"
+  if docket_obj["ProceedingsandOrder"][0].starswith("Statement as to jurisdiction"):
+    return "mandatory"
 
   founditem = None
   for item in docket_obj["ProceedingsandOrder"]:
@@ -541,12 +540,15 @@ def getCaseType (docket_obj):
     except KeyError:
       continue
 
-
   if not founditem:
     for item in docket_obj["ProceedingsandOrder"]:
       if item["Text"].startswith("Application"):
         founditem = item
         break
+
+  if ("PetitionerTitle" in docket_obj) and ("RespondentTitle" in docket_obj):
+    # TODO: Yes yes, we'll fix it later
+    return "certiorari"
 
   if not founditem:
     raise exceptions.CaseTypeError(docket_obj["CaseNumber"].strip())
