@@ -81,7 +81,7 @@ def build (term, root):
       aurl = MP3URL % (info.audiodocketstr)
       fe.id(aurl)
       fe.title("%s: %s" % (info.audiodocketstr, info.casename))
-      fe.description(''.join(x for x in unicode(qptxt, encoding="utf-8") if valid_xml_char(x)))
+      fe.content(''.join(x for x in unicode(qptxt, encoding="utf-8") if valid_xml_char(x)), type = "CDATA")
       fe.link(href = aurl)
       fe.published(build_dt(cells[1].text))
       fe.enclosure(aurl, 0, "audio/mpeg")
