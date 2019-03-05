@@ -70,7 +70,8 @@ def main():
     row.append('<a href="%s">%s</a>' % (docket.docketurl, docket.docketstr))
     row.extend([cvsg_date, cvsg_return_date])
     row.extend([docket.casetype, cabbr, docket.casename])
-    row.append(docket.getFlagString())
+    flagstr = [x for x in docket.getFlagList() if x != "CVSG"]
+    row.append(flagstr)
     tdata.append(tuple(row))
 
   ROWFMT = u"<tr bgcolor=\"%s\"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"

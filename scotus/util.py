@@ -500,6 +500,13 @@ class DocketStatusInfo(object):
     return "PENDING"
 
   def getFlagString (self):
+    flags = self.getFlagList()
+    if flags:
+      return "[%s]" % (", ".join(flags))
+    else:
+      return ""
+
+  def getFlagList (self):
     flags = []
     if self.capital: flags.append("CAPITAL")
     if self.gvr:
@@ -513,10 +520,7 @@ class DocketStatusInfo(object):
     if self.denied: flags.append("DENIED")
     if self.removed: flags.append("REMOVED")
     if self.judgment_issued: flags.append("ISSUED")
-    if flags:
-      return "[%s]" % (", ".join(flags))
-    else:
-      return ""
+    return flags
 
 
 def getCaseType (docket_obj):
