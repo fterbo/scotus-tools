@@ -301,6 +301,7 @@ class PartyName(object):
 
     if self.use_all:
       for name in docket.petitioner_parties:
+        name = name.lower()
         if self.partial:
           if name.count(self.partyname):
             return True
@@ -309,6 +310,7 @@ class PartyName(object):
             return True
 
       for name in docket.respondent_parties:
+        name = name.lower()
         if self.partial:
           if name.count(self.partyname):
             return True
