@@ -278,6 +278,7 @@ class PartyName(object):
   def __init__ (self, name, partial = True, use_all = False):
     self.partyname = name.lower()
     self.partial = partial
+    self.use_all = use_all
 
   def include (self, docket_ref):
     if not docket_ref.info:
@@ -298,7 +299,7 @@ class PartyName(object):
       if dpl == self.partyname or drl == self.partyname:
         return True
 
-    if use_all:
+    if self.use_all:
       for name in docket.petitioner_parties:
         if self.partial:
           if name.count(self.partyname):
