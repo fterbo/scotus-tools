@@ -201,9 +201,14 @@ def scanApplications (path, opts):
     except OSError:
       pass # Should check errno, but probably already exists
 
-    docket_obj = r.json()
-    with open("%s/docket.json" % (newpath), "w+") as f:
-      f.write(json.dumps(r.json()))
+    try:
+      docket_obj = r.json()
+      with open("%s/docket.json" % (newpath), "w+") as f:
+        f.write(json.dumps(r.json()))
+    except ValueError:
+      logging.error("Invalid JSON for %s" % (docketstr))
+      nextnum += 1
+      continue
 
     founditem = None
     for item in docket_obj["ProceedingsandOrder"]:
