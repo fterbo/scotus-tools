@@ -180,12 +180,12 @@ class DocketStatusInfo(object):
     for line in sout.split("\n"):
       if not capture:
         for term in START_TERMS:
-          if line.strip().startswith(term):
+          if line.strip().count(term):
             capture = True
             continue
       else:
         for term in END_TERMS:
-          if line.strip().startswith(term):
+          if line.strip().count(term):
             done = True
             break
         if done:
