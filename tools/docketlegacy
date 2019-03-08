@@ -218,7 +218,7 @@ def parseOldDocket (dom, dobj):
         elif cells[0].text == "Decision Date:":
           dobj["LowerCourtDecision"] = cells[1].text
 
-    elif table.text.count("Proceedings"):
+    elif table.text.count("~Proceedings"):
       plist = []
       for row in table.findChildren("tr"):
         cells = getCells(row)
