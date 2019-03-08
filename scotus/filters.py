@@ -275,7 +275,7 @@ class PartyAttorney(object):
 @srcfilter("partyname")
 @SD.inputs("docket-reference")
 class PartyName(object):
-  def __init__ (self, name, partial = True):
+  def __init__ (self, name, partial = True, use_all = False):
     self.partyname = name.lower()
     self.partial = partial
 
@@ -297,6 +297,23 @@ class PartyName(object):
     else:
       if dpl == self.partyname or drl == self.partyname:
         return True
+
+    if use_all:
+      for name in docket.petitioner_parties:
+        if self.partial:
+          if name.count(self.partyname):
+            return True
+        else:
+          if name == self.partyname:
+            return True
+
+      for name in docket.respondent_parties:
+        if self.partial:
+          if name.count(self.partyname):
+            return True
+        else:
+          if name == self.partyname:
+            return True
 
     return False
 
