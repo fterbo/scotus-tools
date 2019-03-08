@@ -60,6 +60,9 @@ class DocketStatusInfo(object):
     self.petitioner_title = None
     self.respondent_title = None
 
+    self.petitioner_parties = []
+    self.respondent_parties = []
+
     self.related = []
 
     self.events = []
@@ -291,12 +294,14 @@ class DocketStatusInfo(object):
           if (info["Attorney"] == info["PartyName"]) or info["PrisonerId"]:
             self.atty_petitioner_prose = info["Attorney"]
           self.attys_petitioner.append(info["Attorney"])
+          self.petitioner_parties.append(info["PartyName"])
 
       if "Respondent" in docket_obj:
         for info in docket_obj["Respondent"]:
           self.attys_respondent.append(info["Attorney"])
           if info["IsCounselofRecord"]:
             self.attys_respondent_cor.append(info["Attorney"])
+          self.respondent_parties.append(info["PartyName"])
 
       if "Other" in docket_obj:
         for info in docket_obj["Other"]:
