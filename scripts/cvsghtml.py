@@ -13,6 +13,7 @@ import scotus.util
 
 PAGE = """<html>
 <head>
+  <meta charset="UTF-8">
   <title>CVSG Report</title>
         <style>
         table {
