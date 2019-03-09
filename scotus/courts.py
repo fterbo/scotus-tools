@@ -119,6 +119,7 @@ NAMEMAP = {
   "minNC" : CourtMatch().setStart("Superior Court of North Carolina"),
   "minNY" : CourtMatch().setStart("County Court of New York")
                           .setStart("Supreme Court of New York"),
+  "minPA" : CourtMatch().setStart("Court of Common Pleas of Pennsylvania"),
   "minSC" : CourtMatch().setStart("Court of Common Pleas of South Carolina"),
   "minTX" : CourtMatch().setPartial("District Court of Texas"),
   "minNM" : CourtMatch().setStart("District Court of New Mexico"),

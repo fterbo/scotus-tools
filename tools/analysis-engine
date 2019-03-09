@@ -124,6 +124,12 @@ if __name__ == '__main__':
   else:
     logging.basicConfig(level=logging.INFO)
 
+  global PROCESSES
+  if os.getenv("SCOTUSTHREADS"):
+    PROCESSES = int(os.getenv("SCOTUSTHREADS"))
+
+  logging.info("Using %d jobs" % (PROCESSES))
+
   kwargs = json.loads(sys.argv[1])
   out = engine(**kwargs)
   d = {"v" : 1, "arguments" : kwargs, "output" : out}
