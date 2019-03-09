@@ -4,7 +4,7 @@ class CourtMatch(object):
   def __init__ (self, *args):
     self.names = args
     self.start = []
-    self.partial = None
+    self.partial = []
 
   def __eq__ (self, val):
     if not val:
@@ -14,21 +14,23 @@ class CourtMatch(object):
       return True
     if self.start:
       for frag in self.start:
-        if val.startswith(frag.lower()):
+        if val.startswith(frag):
           return True
-    if self.partial and val.count(self.partial.lower()):
-      return True
+    if self.partial:
+      for part in self.partial:
+        if val.count(part):
+          return True
     return False
 
   def __ne__ (self, val):
     return not self == val
 
   def setStart (self, val):
-    self.start.append(val)
+    self.start.append(val.lower())
     return self
 
   def setPartial (self, val):
-    self.partial = val
+    self.partial.append(val.lower())
     return self
 
 
@@ -81,7 +83,8 @@ NAMEMAP = {
   "caNJ" : "Superior Court of New Jersey, Appellate Division",
   "caNM" : "Court of Appeals of New Mexico",
   "caNV" : "Court of Appeals of Nevada",
-  "caNY" : CourtMatch().setStart("Appellate Division, Supreme Court of New York"),
+  "caNY" : CourtMatch().setStart("Appellate Division, Supreme Court of New York")
+                          .setStart("Appellate Term of the Supreme Court of New York"),
   "caOH" : CourtMatch().setStart("Court of Appeals of Ohio"),
   "caOK" : CourtMatch().setStart("Court of Civil Appeals of Oklahoma")
                             .setStart("Court of Criminal Appeals of Oklahoma"),
@@ -112,16 +115,19 @@ NAMEMAP = {
   "minFL" : CourtMatch().setStart("Circuit Court of Florida"),
   "minGA" : CourtMatch().setStart("Superior Court of Georgia"),
   "minIA" : CourtMatch().setStart("District Court of Iowa"),
-  "minLA" : CourtMatch().setPartial("Judicial District Court of Louisiana"),
+  "minLA" : CourtMatch().setPartial("Judicial District Court of Louisiana")
+                          .setStart("District Court of Louisiana"),
   "minMA" : CourtMatch().setStart("Superior Court of Massachusetts"),
   "minMD" : CourtMatch().setStart("Circuit Court of Maryland"),
   "minMI" : CourtMatch().setStart("Circuit Court of Michigan"),
   "minNC" : CourtMatch().setStart("Superior Court of North Carolina"),
+  "minNH" : CourtMatch().setStart("Superior Court of New Hampshire"),
   "minNY" : CourtMatch().setStart("County Court of New York")
                           .setStart("Supreme Court of New York"),
   "minPA" : CourtMatch().setStart("Court of Common Pleas of Pennsylvania"),
   "minSC" : CourtMatch().setStart("Court of Common Pleas of South Carolina"),
-  "minTX" : CourtMatch().setPartial("District Court of Texas"),
+  "minTX" : CourtMatch().setPartial("District Court of Texas")
+                          .setPartial("County, Texas"),
   "minNM" : CourtMatch().setStart("District Court of New Mexico"),
   "minWV" : CourtMatch().setStart("Circuit Court of West Virginia"),
   "minVA" : CourtMatch().setStart("Circuit Court of Virginia"),
