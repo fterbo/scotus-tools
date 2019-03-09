@@ -76,7 +76,7 @@ def main():
     tdata.append(tuple(row))
 
   ROWFMT = u"<tr bgcolor=\"%s\"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
-  out = PAGE % (u"\n".join([ROWFMT % x for x in tdata]))
+  out = PAGE % (u"\n".join([ROWFMT % x for x in tdata][::-1]))
 
   with codecs.open("webroot/reports/cvsg.html", "w+", encoding="utf-8") as f:
     f.write(out)
