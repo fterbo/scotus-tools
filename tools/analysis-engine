@@ -119,12 +119,13 @@ def engine (sources, output, filters = [], queries = [], rejects = []):
     
 
 if __name__ == '__main__':
+  global PROCESSES
+
   if os.getenv("SCOTUSDEBUG"):
     logging.basicConfig(level=logging.DEBUG)
   else:
     logging.basicConfig(level=logging.INFO)
 
-  global PROCESSES
   if os.getenv("SCOTUSTHREADS"):
     PROCESSES = int(os.getenv("SCOTUSTHREADS"))
 
