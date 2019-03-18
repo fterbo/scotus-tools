@@ -99,6 +99,7 @@ NAMEMAP = {
   "caWI" : CourtMatch().setStart("Court of Appeals of Wisconsin"),
   "caWY" : CourtMatch().setStart("District Court of Wyoming"),
 
+  "dcAZ" : "United States District Court for the District of Arizona",
   "dcDC" : "United States District Court for the District of Columbia",
   "dcEAK" : "United States District Court for the Eastern District of Arkansas",
   "dcEPA" : "United States District Court for the Eastern District of Pennsylvania",
