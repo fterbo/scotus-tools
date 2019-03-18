@@ -442,7 +442,7 @@ class DocketStatusInfo(object):
           evtobj.removed = True
         elif etxt.count("leave to proceed in forma pauperis is denied"):
           evtobj.ifp_denied = True
-        elif etxt.startswith("Response Requested."):
+        elif etxt.startswith("Response Requested"):
           evtobj.response_requested = True
 
         if etxt.count("petitioner has repeatedly abused"):
