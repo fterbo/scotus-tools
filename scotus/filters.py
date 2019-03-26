@@ -285,7 +285,7 @@ class AttorneyEmail(object):
 
     for email in docket_ref.info.atty_email:
       email = email.lower()
-      if partial:
+      if self.partial:
         if email.count(self.email):
           return True
       else:
