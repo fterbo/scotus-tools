@@ -85,6 +85,7 @@ class DocketStatusInfo(object):
     self.removed = False
     self.remanded = False
     self.abuse = False
+    self.ifp_paid = False
 
     self.vacated = False
     self.affirmed = False
@@ -454,7 +455,14 @@ class DocketStatusInfo(object):
           evtobj.ifp_denied = True
         elif etxt.startswith("Response Requested"):
           evtobj.response_requested = True
-
+        elif etxt.startswith("Petitioner compiled with order of"):
+          odate = dateutil.parser.parse(etxt.split("of")[-1]).date()
+          for evt in self.events:
+            if evt.date == odate and evt.ifp_denied:
+              self.ifp_paid = True
+              break
+            if evt.date > odate:
+              break
         if etxt.count("petitioner has repeatedly abused"):
           self.abuse = True
 
@@ -479,6 +487,8 @@ class DocketStatusInfo(object):
     if not self.original and not self.application:
       if self.docket < 5000: tags["paid"] = True
       if self.docket > 5000: tags["ifp"] = True
+      if self.ifp_paid: tags["paid"] = True
+
     return tags
 
   def getHoldingDict (self):
