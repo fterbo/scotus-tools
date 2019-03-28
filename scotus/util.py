@@ -455,7 +455,7 @@ class DocketStatusInfo(object):
           evtobj.ifp_denied = True
         elif etxt.startswith("Response Requested"):
           evtobj.response_requested = True
-        elif etxt.startswith("Petitioner compiled with order of"):
+        elif etxt.startswith("Petitioner complied with order of"):
           odate = dateutil.parser.parse(etxt.split("of")[-1]).date()
           for evt in self.events:
             if evt.date == odate and evt.ifp_denied:
