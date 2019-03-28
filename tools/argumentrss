@@ -52,6 +52,7 @@ def build (term, root):
 
   fg = FeedGenerator()
   fg.load_extension("podcast")
+  fg.id("https://s3-us-west-2.amazonaws.com/scotus.terbo/OT-%d.xml" % (term))
   fg.title("Oral Arguments for OT-%d" % (term))
   fg.description("RSS Feed for Supreme Court Oral Arguments")
   fg.logo("https://s3-us-west-2.amazonaws.com/scotus.terbo/OT-%d.jpg" % (term))
@@ -81,7 +82,8 @@ def build (term, root):
       aurl = MP3URL % (info.audiodocketstr)
       fe.id(aurl)
       fe.title("%s: %s" % (info.audiodocketstr, info.casename))
-      fe.description(''.join(x for x in unicode(qptxt, encoding="utf-8") if valid_xml_char(x)))
+      data = ''.join(x for x in unicode(qptxt, encoding="utf-8") if valid_xml_char(x))
+      fe.content(data, type = "CDATA")
       fe.link(href = aurl)
       fe.published(build_dt(cells[1].text))
       fe.enclosure(aurl, 0, "audio/mpeg")

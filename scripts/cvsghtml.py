@@ -13,6 +13,7 @@ import scotus.util
 
 PAGE = """<html>
 <head>
+  <meta charset="UTF-8">
   <title>CVSG Report</title>
         <style>
         table {
@@ -70,11 +71,12 @@ def main():
     row.append('<a href="%s">%s</a>' % (docket.docketurl, docket.docketstr))
     row.extend([cvsg_date, cvsg_return_date])
     row.extend([docket.casetype, cabbr, docket.casename])
-    row.append(docket.getFlagString())
+    flagstr = ", ".join([x for x in docket.getFlagList() if x != "CVSG"])
+    row.append(flagstr)
     tdata.append(tuple(row))
 
   ROWFMT = u"<tr bgcolor=\"%s\"><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
-  out = PAGE % (u"\n".join([ROWFMT % x for x in tdata]))
+  out = PAGE % (u"\n".join([ROWFMT % x for x in tdata][::-1]))
 
   with codecs.open("webroot/reports/cvsg.html", "w+", encoding="utf-8") as f:
     f.write(out)

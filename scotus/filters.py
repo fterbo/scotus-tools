@@ -272,12 +272,38 @@ class PartyAttorney(object):
           except KeyError:
             continue
 
+@srcfilter("attyemail")
+@SD.inputs("docket-reference")
+class AttorneyEmail(object):
+  def __init__ (self, email, partial = True):
+    self.partial = partial
+    self.email = email.lower()
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    for email in docket_ref.info.atty_email:
+      if not email:
+        continue
+      email = email.lower()
+      if self.partial:
+        if email.count(self.email):
+          return True
+      else:
+        if email == self.email:
+          return True
+
+    return False
+
+
 @srcfilter("partyname")
 @SD.inputs("docket-reference")
 class PartyName(object):
-  def __init__ (self, name, partial = True):
+  def __init__ (self, name, partial = True, use_all = False):
     self.partyname = name.lower()
     self.partial = partial
+    self.use_all = use_all
 
   def include (self, docket_ref):
     if not docket_ref.info:
@@ -297,6 +323,25 @@ class PartyName(object):
     else:
       if dpl == self.partyname or drl == self.partyname:
         return True
+
+    if self.use_all:
+      for name in docket.petitioner_parties:
+        name = name.lower()
+        if self.partial:
+          if name.count(self.partyname):
+            return True
+        else:
+          if name == self.partyname:
+            return True
+
+      for name in docket.respondent_parties:
+        name = name.lower()
+        if self.partial:
+          if name.count(self.partyname):
+            return True
+        else:
+          if name == self.partyname:
+            return True
 
     return False
 

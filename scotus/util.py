@@ -60,6 +60,9 @@ class DocketStatusInfo(object):
     self.petitioner_title = None
     self.respondent_title = None
 
+    self.petitioner_parties = []
+    self.respondent_parties = []
+
     self.related = []
 
     self.events = []
@@ -80,13 +83,20 @@ class DocketStatusInfo(object):
     self.gvr = False
     self.gvr_date = None
     self.removed = False
+    self.remanded = False
     self.abuse = False
+    self.ifp_paid = False
+
+    self.vacated = False
+    self.affirmed = False
+    self.reversed = False
 
     self.atty_petitioner_prose = None
     self.attys_petitioner_cor = []
     self.attys_respondent_cor = []
     self.attys_petitioner = []
     self.attys_respondent = []
+    self.atty_email = []
 
     self.attys_amici = []
     self.cert_amici = []
@@ -175,12 +185,12 @@ class DocketStatusInfo(object):
     for line in sout.split("\n"):
       if not capture:
         for term in START_TERMS:
-          if line.strip().startswith(term):
+          if line.strip().count(term):
             capture = True
             continue
       else:
         for term in END_TERMS:
-          if line.strip().startswith(term):
+          if line.strip().count(term):
             done = True
             break
         if done:
@@ -196,10 +206,20 @@ class DocketStatusInfo(object):
       self._generateQPText()
     return open(qptxtpath, "r").read()
 
-  def getConfAction (self, rcdate):
+  def getConfAction (self, rcdate, clist = None):
+    nextc = None
+    if clist:
+      for idx,cdate in enumerate(clist):
+        if rcdate == cdate:
+          if idx+1 < len(clist):
+            nextc = clist[idx+1]
+          break
+
     for (edate, cdate, resch) in self.distributed:
       if cdate == rcdate and resch:
         return "RESCHEDULED"
+      if nextc and cdate == nextc:
+        return "RELISTED"
 
     # Go through events after the conference date and see if we find
     # something useful
@@ -208,13 +228,16 @@ class DocketStatusInfo(object):
       if event.date < rcdate:
         continue
 
+      if event.distributed and (event.date > rcdate):
+        return ""
+
       # We found events after the conference date
       post = True
 
-      if event.distributed:
-        return "RELISTED"
-      elif event.dismissed:
+      if event.dismissed:
         return "DISMISSED"
+      elif event.mooted:
+        return "MOOT"
       elif event.remanded:
         return "REMANDED"
       elif event.granted:
@@ -225,6 +248,12 @@ class DocketStatusInfo(object):
         return "DENIED"
       elif event.cvsg:
         return "CVSG"
+      elif event.ifp_denied:
+        return "IFP DENIED"
+      elif event.response_requested:
+        return "RESPONSE"
+      elif event.rehearing_denied:
+        return "DENIED"
 
     if not post:
       return ""
@@ -267,16 +296,24 @@ class DocketStatusInfo(object):
           if (info["Attorney"] == info["PartyName"]) or info["PrisonerId"]:
             self.atty_petitioner_prose = info["Attorney"]
           self.attys_petitioner.append(info["Attorney"])
+          self.petitioner_parties.append(info["PartyName"])
+          if "Email" in info:
+            self.atty_email.append(info["Email"])
 
       if "Respondent" in docket_obj:
         for info in docket_obj["Respondent"]:
           self.attys_respondent.append(info["Attorney"])
           if info["IsCounselofRecord"]:
             self.attys_respondent_cor.append(info["Attorney"])
+          self.respondent_parties.append(info["PartyName"])
+          if "Email" in info:
+            self.atty_email.append(info["Email"])
 
       if "Other" in docket_obj:
         for info in docket_obj["Other"]:
           self.attys_amici.append(info["Attorney"])
+          if "Email" in info:
+            self.atty_email.append(info["Email"])
 
       if "RelatedCaseNumber" in docket_obj:
         for rc in docket_obj["RelatedCaseNumber"]:
@@ -310,7 +347,10 @@ class DocketStatusInfo(object):
         if etxt.startswith("DISTRIBUTED"):
           if etxt == "DISTRIBUTED.":
             continue  # Rehearing distribution, probably, not for conference
-          confdate = dateutil.parser.parse(etxt.split("of")[-1]).date()
+          if etxt.startswith("DISTRIBUTED."): # Old Event
+            confdate = dateutil.parser.parse(etxt.split(".")[-1]).date()
+          else:
+            confdate = dateutil.parser.parse(etxt.split("of")[-1]).date()
           edate = dateutil.parser.parse(einfo["Date"]).date()
           self.distributed.append((edate, confdate, False))
           evtobj.distributed = True
@@ -328,13 +368,15 @@ class DocketStatusInfo(object):
         elif etxt.startswith("The Solicitor General is invited to file a brief"):
           self.cvsg = True
           self.cvsg_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.cvsg = True
         elif etxt == "Petition GRANTED.":
           self.granted = True
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.granted = True
         elif etxt.count("GRANTED"):
           if etxt.count("Motion for leave"): continue
-          if etxt.count("Motion to substitute") : continue
+          if etxt.count("Motion to substitute"): continue
+          if etxt.count("Motion of respondent for leave"): continue
           statements = etxt.split(".")
           gs = [x for x in statements if x.count("GRANTED")][0]
           if gs.count("expedite consideration"):
@@ -346,10 +388,24 @@ class DocketStatusInfo(object):
             # This is not really a GVR, but we'll throw it in the bucket for now
             self.gvr = True
             self.gvr_date = self.grant_date
+            self.remanded = True
+            self.reversed = True
             evtobj.remanded = True
           elif etxt.count("VACATED") and etxt.count("REMANDED"):
             self.gvr = True
             self.gvr_date = self.grant_date
+            self.remanded = True
+            self.vacated = True
+            evtobj.remanded = True
+        elif (etxt.count("petition for certiorari is granted") or
+              etxt.count("petition for a writ of certiorari is granted")):
+          self.granted = True
+          evtobj.granted = True
+          self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
+          if etxt.count("to dismiss the case as moot"):
+            evtobj.mooted = True
+          if etxt.count("the case is remanded for further proceedings"):
+            self.remanded = True
             evtobj.remanded = True
         elif etxt.startswith("Argued."):
           self.argued = True
@@ -365,16 +421,21 @@ class DocketStatusInfo(object):
           self.denied = True
           self.deny_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.denied = True
+        elif (etxt.startswith("Rehearing DENIED") or
+              etxt.startswith("Motion for leave to file a petition for rehearing DENIED")):
+          evtobj.rehearing_denied = True
         elif etxt == "JUDGMENT ISSUED.":
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.issued = True
         elif (etxt.startswith("Adjudged to be AFFIRMED.")
               or etxt.count("judgment is affirmed under 28 U. S. C.")):
+          self.affirmed = True
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.issued = True
         elif etxt.startswith("Judgment REVERSED"):
+          self.reversed = True
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.issued = True
@@ -390,7 +451,18 @@ class DocketStatusInfo(object):
               or etxt == "Case considered closed."):
           self.removed = True
           evtobj.removed = True
-
+        elif etxt.count("leave to proceed in forma pauperis is denied"):
+          evtobj.ifp_denied = True
+        elif etxt.startswith("Response Requested"):
+          evtobj.response_requested = True
+        elif etxt.startswith("Petitioner complied with order of"):
+          odate = dateutil.parser.parse(etxt.split("of")[-1]).date()
+          for evt in self.events:
+            if evt.date == odate and evt.ifp_denied:
+              self.ifp_paid = True
+              break
+            if evt.date > odate:
+              break
         if etxt.count("petitioner has repeatedly abused"):
           self.abuse = True
 
@@ -404,18 +476,35 @@ class DocketStatusInfo(object):
       return False
     return True
 
-  def getFlagDict (self):
-    flags = {"capital" : False, "gvr" : False, "granted" : False, "related" : False,
-             "cvsg" : False, "argued" : False, "dismissed" : False, "denied" : False,
-             "removed" : False, "issued" : False}
+  def getTagDict (self):
+    tags = {"cvsg" : False, "related" : False, "capital" : False, "abuse" : False,
+            "ifp" : False, "paid" : False}
 
-    if self.capital: flags["capital"] = True
-    if self.gvr:
-      flags["gvr"] = True
-    else:
-      if self.granted: flags["granted"] = True
-    if self.related: flags["related"] = True
-    if self.cvsg: flags["cvsg"] = True
+    if self.cvsg: tags["cvsg"] = True
+    if self.capital: tags["capital"] = True
+    if self.related: tags["related"] = True
+    if self.abuse: tags["abuse"] = True
+    if not self.original and not self.application:
+      if self.docket < 5000: tags["paid"] = True
+      if self.docket > 5000: tags["ifp"] = True
+      if self.ifp_paid: tags["paid"] = True
+
+    return tags
+
+  def getHoldingDict (self):
+    hmap = {"vacated" : False, "affirmed" : False, "reversed" : False}
+
+    if self.vacated: hmap["vacated"] = True
+    if self.affirmed: hmap["affirmed"] = True
+    if self.reversed: hmap["reversed"] = True
+    return hmap
+
+  def getFlagDict (self):
+    flags = {"granted" : False, "argued" : False, "dismissed" : False, "denied" : False,
+             "removed" : False, "issued" : False, "remanded" : False}
+
+    if self.granted: flags["granted"] = True
+    if self.remanded: flags["remanded"] = True
     if self.argued: flags["argued"] = True
     if self.dismissed: flags["dismissed"] = True
     if self.denied: flags["denied"] = True
@@ -431,10 +520,18 @@ class DocketStatusInfo(object):
     if self.removed: return "REMOVED"
     if self.denied: return "DENIED"
     if self.gvr: return "GVR"
+    if self.remanded: return "REMANDED"
     if self.granted: return "GRANTED"
     return "PENDING"
 
   def getFlagString (self):
+    flags = self.getFlagList()
+    if flags:
+      return "[%s]" % (", ".join(flags))
+    else:
+      return ""
+
+  def getFlagList (self):
     flags = []
     if self.capital: flags.append("CAPITAL")
     if self.gvr:
@@ -448,16 +545,12 @@ class DocketStatusInfo(object):
     if self.denied: flags.append("DENIED")
     if self.removed: flags.append("REMOVED")
     if self.judgment_issued: flags.append("ISSUED")
-    if flags:
-      return "[%s]" % (", ".join(flags))
-    else:
-      return ""
+    return flags
 
 
 def getCaseType (docket_obj):
-  if ("PetitionerTitle" in docket_obj) and ("RespondentTitle" in docket_obj):
-    # TODO: Yes yes, we'll fix it later
-    return "certiorari"
+  if docket_obj["ProceedingsandOrder"][0]["Text"].startswith("Statement as to jurisdiction"):
+    return "mandatory"
 
   founditem = None
   for item in docket_obj["ProceedingsandOrder"]:
@@ -476,12 +569,15 @@ def getCaseType (docket_obj):
     except KeyError:
       continue
 
-
   if not founditem:
     for item in docket_obj["ProceedingsandOrder"]:
       if item["Text"].startswith("Application"):
         founditem = item
         break
+
+  if ("PetitionerTitle" in docket_obj) and ("RespondentTitle" in docket_obj):
+    # TODO: Yes yes, we'll fix it later
+    return "certiorari"
 
   if not founditem:
     raise exceptions.CaseTypeError(docket_obj["CaseNumber"].strip())
