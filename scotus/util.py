@@ -252,8 +252,10 @@ class DocketStatusInfo(object):
         return "IFP DENIED"
       elif event.response_requested:
         return "RESPONSE"
+      elif event.record_requested:
+        return "RECORD"
       elif event.rehearing_denied:
-        return "DENIED"
+        return "RH DENIED"
 
     if not post:
       return ""
@@ -455,6 +457,8 @@ class DocketStatusInfo(object):
           evtobj.ifp_denied = True
         elif etxt.startswith("Response Requested"):
           evtobj.response_requested = True
+        elif etxt.startswith("Record Requested"):
+          evtobj.record_requested = True
         elif etxt.startswith("Petitioner complied with order of"):
           odate = dateutil.parser.parse(etxt.split("of")[-1]).date()
           for evt in self.events:
