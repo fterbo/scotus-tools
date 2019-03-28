@@ -37,6 +37,7 @@ var confJSONNames = (function() {
       search: {
         "caseInsensitive": true
       },
+      responsive:true,
       columns: [{
           title: "Docket",
           data: confJSONNames.docketStr,
@@ -258,7 +259,7 @@ var ConfTable = (function() {
       },
       [tags]: {
         display: TdTag(confJSONNames.tags, tagsColumn(thisCase, translateTagsToIcons)),
-        value: tagsColumn(thisCase, translateTagsToText)
+        value: translateTagsToText(thisCase[confJSONNames.tags])
       },
       [lcAbbr]: TdTag(lcAbbr, thisCase[lcAbbr], "", thisCase[lcInfo]),
       [caseName]: TdTag(caseName + "-td", caseNameTD(thisCase)),
@@ -318,10 +319,10 @@ var ConfTable = (function() {
       result += "<a href=\"/reports/cvsg.html\"><i class=\"fas fa-question-circle\" title=\"CVSG\"></i></a>";
     }
     if (thisCaseFlags.abuse) {
-      result += "<i class=\"far fa-angry\" title=\"abuse\"></i>"
+      result += "<i class=\"far fa-angry\" title=\"Abuse\"></i>"
     }
     if (thisCaseFlags.paid  && caseNumber > 5000){
-      result += "<i class=\"fas fa-dollar-sign\"></i>"
+      result += "<i class=\"fas fa-dollar-sign\" title=\"Paid IFP\"></i>"
     }
     return result;
   }
@@ -352,7 +353,7 @@ var ConfTable = (function() {
     return result;
   }
 
-  function translateTagsToText(thisCaseFlags, caseNumber) {
+  function translateTagsToText(thisCaseFlags) {
     var result = "";
     if (thisCaseFlags.capital) {
       result += "capital ";
@@ -387,6 +388,8 @@ var ConfTable = (function() {
       className = "fas fa-ban";
     } else if (thisCaseType == "mandamus") {
       className = "fas fa-hand-point-right";
+    } else if (thisCaseType == "mandatory"){
+      className = "fas fa book-open"
     } else {
       className = "fas fa-question";
     }
