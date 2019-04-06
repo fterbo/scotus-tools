@@ -200,11 +200,12 @@ class DocketStatusInfo(object):
     with open("%s/qp.txt" % (self.docketdir), "w+") as qpf:
       qpf.write("\n".join(qp_lines))
 
-  def getQPText (self):
+  def getQPText (self, generate_only = False):
     qptxtpath = "%s/qp.txt" % (self.docketdir)
     if not os.path.exists(qptxtpath):
       self._generateQPText()
-    return open(qptxtpath, "r").read()
+    if not generate_only:
+      return open(qptxtpath, "r").read()
 
   def getConfAction (self, rcdate, clist = None):
     nextc = None
