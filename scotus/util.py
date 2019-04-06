@@ -413,7 +413,9 @@ class DocketStatusInfo(object):
           self.argued = True
           self.argued_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.argued = True
-        elif etxt.startswith("Petition Dismissed"):
+        elif (etxt.startswith("Petition Dismissed") or
+              etxt.startswith("Petition DISMISSED") or
+              etxt.startswith("Appeal dismissed")):
           self.dismissed = True
           self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.dismissed = True
