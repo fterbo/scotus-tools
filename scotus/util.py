@@ -447,6 +447,7 @@ class DocketStatusInfo(object):
         elif (etxt.count("petition for a writ of certiorari is dismissed")
               or etxt.count("petition for a writ of mandamus/prohibition is dismissed")
               or etxt.count("petition for a writ of habeas corpus is dismissed")
+              or etxt.count("petition for a writ of prohibition is dismissed")
               or etxt.count("petition for a writ of mandamus is dismissed")
               or etxt.count("petition for a writ of mandamus and/or prohibition is dismissed")):
           self.dismissed = True
