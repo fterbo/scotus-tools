@@ -170,6 +170,8 @@ _attys = [
     .setFirm("gonzalez-olivieri", date(2015, 11, 20), None),
   Attorney("Benjamin Noah Gutman")
     .setSG("or", date(2016, 1, 1), None),
+  Attorney("Fadwa A. Hammoud")
+    .setSG("mi", date(2019, 1, 15), None),
   Attorney("Toby Jay Heytens")
     .setSG("va", date(2018, 1, 9), None)
     .setSG("us.assistant", date(2007, 1, 1), date(2010, 12, 31)),
@@ -185,7 +187,8 @@ _attys = [
   Attorney("John M. Klawikofsky")
     .setAG("fl.unknown", date(2005, 3, 14), None),
   Attorney("Aaron David Lindstrom", "Aaron D. Lindstrom Jr.")
-    .setSG("mi", date(2013, 12, 1), None)
+    .setFirm("barnes-thornburg", date(2019, 3, 1), None)
+    .setSG("mi", date(2013, 12, 1), date(2019, 1, 15))
     .setSG("mi.assistant", date(2012, 10, 1), date(2013, 11, 30))
     .setFirm("warner-norcross-judd", date(2009, 5, 1), date(2012, 9, 30))
     .setFirm("gibson-dunn-crutcher", date(2005, 10, 1), date(2009, 4, 30)),
