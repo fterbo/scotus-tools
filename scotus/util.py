@@ -557,8 +557,9 @@ class DocketStatusInfo(object):
 
 
 def getCaseType (docket_obj):
-  if docket_obj["ProceedingsandOrder"][0]["Text"].startswith("Statement as to jurisdiction"):
-    return "mandatory"
+  if docket_obj["ProceedingsandOrder"]:
+    if docket_obj["ProceedingsandOrder"][0]["Text"].startswith("Statement as to jurisdiction"):
+      return "mandatory"
 
   founditem = None
   for item in docket_obj["ProceedingsandOrder"]:
