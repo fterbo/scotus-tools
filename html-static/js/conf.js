@@ -321,7 +321,7 @@ var ConfTable = (function() {
       result += "<i class=\"far fa-angry\" title=\"abuse\"></i>"
     }
     if (thisCaseFlags.paid  && caseNumber > 5000){
-      result += "<i class=\"fas fa-dollar-sign\"></i>"
+      result += "<i class=\"fas fa-dollar-sign\" title=\"paid\"></i>"
     }
     return result;
   }
