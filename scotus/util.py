@@ -429,7 +429,7 @@ class DocketStatusInfo(object):
         elif (etxt.startswith("Rehearing DENIED") or
               etxt.startswith("Motion for leave to file a petition for rehearing DENIED")):
           evtobj.rehearing_denied = True
-        elif (etxt.startswith("JUDGMENT ISSUED") or etxt.startswith("MANDATE ISSUED")):
+        elif (etxt.lower().startswith("judgment issued") or etxt.lower().startswith("mandate issued")):
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.issued = True
