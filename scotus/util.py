@@ -259,6 +259,8 @@ class DocketStatusInfo(object):
         return "RH DENIED"
       elif event.affirmed:
         return "AFFIRMED"
+      elif event.inquorate:
+        return "INQUORATE"
 
     if not post:
       return ""
@@ -416,6 +418,12 @@ class DocketStatusInfo(object):
           self.argued = True
           self.argued_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.argued = True
+        elif etxt.count("REMANDED"):
+          self.remanded = True
+          evtobj.remanded = True
+        elif etxt.count("lacks a quorum"):
+          self.inquorate = True
+          evtobj.inquorate = True
         elif (etxt.startswith("Petition Dismissed") or
               etxt.startswith("Petition DISMISSED") or
               etxt.startswith("Appeal dismissed") or

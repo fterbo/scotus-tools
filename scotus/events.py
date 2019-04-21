@@ -26,6 +26,7 @@ class DocketEvent(object):
     self.mooted = False
     self.rehearing_denied = False
     self.affirmed = False
+    self.inquorate = False
 
   def _build (self):
     self.date = dateutil.parser.parse(self._e_dict["Date"]).date()
