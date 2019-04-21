@@ -104,12 +104,14 @@ NAMEMAP = {
   "dcEAK" : "United States District Court for the Eastern District of Arkansas",
   "dcEPA" : "United States District Court for the Eastern District of Pennsylvania",
   "dcEVA" : "United States District Court for the Eastern District of Virginia",
+  "dcHI" : "United States District Court for the District of Hawaii",
   "dcMD" : "United States District Court for the District of Maryland",
+  "dcMAL" : "United States District Court for the Middle District of Alabama",
   "dcMNC" : "United States District Court for the Middle District of North Carolina",
   "dcNIL" : "United States District Court for the Northern District of Illinois",
   "dcNMS" : "United States District Court for the Northern District of Mississippi",
   "dcNTX" : "United States District Court for the Northern District of Texas",
-  "dcSC" : "United States District Court for the Distrct of South Carolina",
+  "dcSC" : "United States District Court for the District of South Carolina",
   "dcSCA" : "United States District Court for the Southern District of California",
   "dcSGA" : "United States District Court for the Southern District of Georgia",
   "dcSMS" : "United States District Court for the Southern District of Mississippi",
@@ -123,6 +125,7 @@ NAMEMAP = {
   "minFL" : CourtMatch().setStart("Circuit Court of Florida"),
   "minGA" : CourtMatch().setStart("Superior Court of Georgia"),
   "minIA" : CourtMatch().setStart("District Court of Iowa"),
+  "minKY" : CourtMatch().setStart("Circuit Court of Kentucky"),
   "minLA" : CourtMatch().setPartial("Judicial District Court of Louisiana")
                           .setStart("District Court of Louisiana")
                           .setPartial("Criminal District Court of Louisiana"),
@@ -132,10 +135,12 @@ NAMEMAP = {
   "minMS" : CourtMatch().setStart("Circuit Court of Mississippi"),
   "minNC" : CourtMatch().setStart("Superior Court of North Carolina"),
   "minNH" : CourtMatch().setStart("Superior Court of New Hampshire"),
+  "minNV" : CourtMatch().setStart("District Court of Nevada"),
   "minNY" : CourtMatch().setStart("County Court of New York")
                           .setStart("Supreme Court of New York")
                           .setPartial("Judicial District of New York")
                           .setPartial("City of New York"),
+  "minOR" : CourtMatch().setStart("Circuit Court of Oregon"),
   "minPA" : CourtMatch().setStart("Court of Common Pleas of Pennsylvania"),
   "minSC" : CourtMatch().setStart("Court of Common Pleas of South Carolina"),
   "minTX" : CourtMatch().setPartial("District Court of Texas")
