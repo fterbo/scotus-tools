@@ -106,10 +106,14 @@ NAMEMAP = {
   "dcEVA" : "United States District Court for the Eastern District of Virginia",
   "dcMD" : "United States District Court for the District of Maryland",
   "dcMNC" : "United States District Court for the Middle District of North Carolina",
-  "dcNMI" : "United States District Court for the Northern District of Mississippi",
+  "dcNIL" : "United States District Court for the Northern District of Illinois",
+  "dcNMS" : "United States District Court for the Northern District of Mississippi",
   "dcNTX" : "United States District Court for the Northern District of Texas",
+  "dcSC" : "United States District Court for the Distrct of South Carolina",
   "dcSCA" : "United States District Court for the Southern District of California",
   "dcSGA" : "United States District Court for the Southern District of Georgia",
+  "dcSMS" : "United States District Court for the Southern District of Mississippi",
+  "dcSWV" : "United States District Court for the Southern District of West Virginia",
   "dcWWI" : "United States District Court for the Western District of Wisconsin",
   "dcWTX" : "United States District Court for the Western District of Texas",
 
@@ -125,11 +129,13 @@ NAMEMAP = {
   "minMA" : CourtMatch().setStart("Superior Court of Massachusetts"),
   "minMD" : CourtMatch().setStart("Circuit Court of Maryland"),
   "minMI" : CourtMatch().setStart("Circuit Court of Michigan"),
+  "minMS" : CourtMatch().setStart("Circuit Court of Mississippi"),
   "minNC" : CourtMatch().setStart("Superior Court of North Carolina"),
   "minNH" : CourtMatch().setStart("Superior Court of New Hampshire"),
   "minNY" : CourtMatch().setStart("County Court of New York")
                           .setStart("Supreme Court of New York")
-                          .setPartial("Judicial District of New York"),
+                          .setPartial("Judicial District of New York")
+                          .setPartial("City of New York"),
   "minPA" : CourtMatch().setStart("Court of Common Pleas of Pennsylvania"),
   "minSC" : CourtMatch().setStart("Court of Common Pleas of South Carolina"),
   "minTX" : CourtMatch().setPartial("District Court of Texas")
