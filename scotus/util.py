@@ -257,6 +257,8 @@ class DocketStatusInfo(object):
         return "RECORD"
       elif event.rehearing_denied:
         return "RH DENIED"
+      elif event.affirmed:
+        return "AFFIRMED"
 
     if not post:
       return ""
@@ -416,7 +418,8 @@ class DocketStatusInfo(object):
           evtobj.argued = True
         elif (etxt.startswith("Petition Dismissed") or
               etxt.startswith("Petition DISMISSED") or
-              etxt.startswith("Appeal dismissed")):
+              etxt.startswith("Appeal dismissed") or
+              etxt.count("petition for a writ of certiorari is DISMISSED")):
           self.dismissed = True
           self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.dismissed = True
@@ -438,6 +441,7 @@ class DocketStatusInfo(object):
           self.affirmed = True
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.affirmed = True
           evtobj.issued = True
         elif etxt.startswith("Judgment REVERSED"):
           self.reversed = True
