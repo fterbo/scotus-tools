@@ -261,6 +261,8 @@ class DocketStatusInfo(object):
         return "AFFIRMED"
       elif event.inquorate:
         return "INQUORATE"
+      elif event.motion_denied:
+        return "MOTION DENY"
 
     if not post:
       return ""
@@ -418,7 +420,7 @@ class DocketStatusInfo(object):
           self.argued = True
           self.argued_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.argued = True
-        elif etxt.count("REMANDED"):
+        elif etxt.lower().count("remanded"):
           self.remanded = True
           evtobj.remanded = True
         elif etxt.count("lacks a quorum"):
@@ -438,14 +440,18 @@ class DocketStatusInfo(object):
           self.deny_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.denied = True
         elif (etxt.startswith("Rehearing DENIED") or
-              etxt.startswith("Motion for leave to file a petition for rehearing DENIED")):
+              (etxt.startswith("Motion for leave to file a petition for rehearing")
+               and etxt.count("DENIED")):
           evtobj.rehearing_denied = True
+        elif (etxt.startswith("Motion for reconsideration") and etxt.count("DENIED")):
+          evtobj.motion_denied = True
         elif (etxt.lower().startswith("judgment issued") or etxt.lower().startswith("mandate issued")):
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.issued = True
         elif (etxt.startswith("Adjudged to be AFFIRMED.")
-              or etxt.count("judgment is affirmed under 28 U. S. C.")):
+              or etxt.count("judgment is affirmed under 28 U. S. C.")
+              or etxt.count("Judgment AFFIRMED")):
           self.affirmed = True
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
@@ -456,6 +462,8 @@ class DocketStatusInfo(object):
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.issued = True
+          if etxt.lower().count("remanded"):
+            evtobj.remanded = True
         elif (etxt.count("petition for a writ of certiorari is dismissed")
               or etxt.count("petition for a writ of mandamus/prohibition is dismissed")
               or etxt.count("petition for a writ of habeas corpus is dismissed")
