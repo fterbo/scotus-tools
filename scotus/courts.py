@@ -106,7 +106,10 @@ NAMEMAP = {
   "dcEVA" : "United States District Court for the Eastern District of Virginia",
   "dcMD" : "United States District Court for the District of Maryland",
   "dcMNC" : "United States District Court for the Middle District of North Carolina",
+  "dcNMI" : "United States District Court for the Northern District of Mississippi",
+  "dcNTX" : "United States District Court for the Northern District of Texas",
   "dcSCA" : "United States District Court for the Southern District of California",
+  "dcSGA" : "United States District Court for the Southern District of Georgia",
   "dcWWI" : "United States District Court for the Western District of Wisconsin",
   "dcWTX" : "United States District Court for the Western District of Texas",
 
@@ -117,14 +120,16 @@ NAMEMAP = {
   "minGA" : CourtMatch().setStart("Superior Court of Georgia"),
   "minIA" : CourtMatch().setStart("District Court of Iowa"),
   "minLA" : CourtMatch().setPartial("Judicial District Court of Louisiana")
-                          .setStart("District Court of Louisiana"),
+                          .setStart("District Court of Louisiana")
+                          .setPartial("Criminal District Court of Louisiana"),
   "minMA" : CourtMatch().setStart("Superior Court of Massachusetts"),
   "minMD" : CourtMatch().setStart("Circuit Court of Maryland"),
   "minMI" : CourtMatch().setStart("Circuit Court of Michigan"),
   "minNC" : CourtMatch().setStart("Superior Court of North Carolina"),
   "minNH" : CourtMatch().setStart("Superior Court of New Hampshire"),
   "minNY" : CourtMatch().setStart("County Court of New York")
-                          .setStart("Supreme Court of New York"),
+                          .setStart("Supreme Court of New York")
+                          .setPartial("Judicial District of New York"),
   "minPA" : CourtMatch().setStart("Court of Common Pleas of Pennsylvania"),
   "minSC" : CourtMatch().setStart("Court of Common Pleas of South Carolina"),
   "minTX" : CourtMatch().setPartial("District Court of Texas")
@@ -132,6 +137,7 @@ NAMEMAP = {
   "minNM" : CourtMatch().setStart("District Court of New Mexico"),
   "minWV" : CourtMatch().setStart("Circuit Court of West Virginia"),
   "minVA" : CourtMatch().setStart("Circuit Court of Virginia"),
+  "minWA" : CourtMatch().setStart("Superior Court of Washington"),
 
   "scAK" : "Supreme Court of Alaska",
   "scAL" : "Supreme Court of Alabama",
