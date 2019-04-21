@@ -441,7 +441,7 @@ class DocketStatusInfo(object):
           evtobj.denied = True
         elif (etxt.startswith("Rehearing DENIED") or
               (etxt.startswith("Motion for leave to file a petition for rehearing")
-               and etxt.count("DENIED")):
+               and etxt.count("DENIED"))):
           evtobj.rehearing_denied = True
         elif (etxt.startswith("Motion for reconsideration") and etxt.count("DENIED")):
           evtobj.motion_denied = True
