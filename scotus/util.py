@@ -406,6 +406,8 @@ class DocketStatusInfo(object):
             self.remanded = True
             self.vacated = True
             evtobj.remanded = True
+        elif etxt.lower().count("is dismissed as moot"):
+          evtobj.mooted = True
         elif (etxt.count("petition for certiorari is granted") or
               etxt.count("petition for a writ of certiorari is granted")):
           self.granted = True
