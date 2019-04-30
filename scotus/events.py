@@ -36,7 +36,7 @@ class DocketEvent(object):
 
   def __str__ (self):
     sl = []
-    for k,v in self.__dict__:
+    for k,v in self.__dict__.items():
       if v == True:
         sl.append(k)
     return "(%s) %s [%s]" % (self.date.strftime("%Y-%m-%d"), self.text, ", ".join(sl))
