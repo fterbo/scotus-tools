@@ -263,6 +263,8 @@ class DocketStatusInfo(object):
         return "INQUORATE"
       elif event.motion_denied:
         return "MOTION DENY"
+      elif event.counsel_granted:
+        return "COUNSEL"
 
     if not post:
       return ""
@@ -386,6 +388,9 @@ class DocketStatusInfo(object):
           if etxt.count("Motion for leave"): continue
           if etxt.count("Motion to substitute"): continue
           if etxt.count("Motion of respondent for leave"): continue
+          if etxt.count("Motion to appoint counsel"):
+            evtobj.counsel_granted = True
+            continue
           statements = etxt.split(".")
           gs = [x for x in statements if x.count("GRANTED")][0]
           if gs.count("expedite consideration"):
