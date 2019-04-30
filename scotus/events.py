@@ -35,7 +35,11 @@ class DocketEvent(object):
     self.text = self._e_dict["Text"]
 
   def __str__ (self):
-    return "(%s) %s" % (self.date.strftime("%Y-%m-%d"), self.text)
+    sl = []
+    for k,v in self.__dict__:
+      if v == True:
+        sl.append(k)
+    return "(%s) %s [%s]" % (self.date.strftime("%Y-%m-%d"), self.text, ", ".join(sl))
 
     
 
