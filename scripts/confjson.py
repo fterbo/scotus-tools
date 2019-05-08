@@ -95,7 +95,7 @@ def main():
 
       rd["lc-abbr"] = cabbr
       if cabbr != "None":
-        rd["lc-info"] = "<br>".join([x.decode("utf-8") for x in lcinfo])
+        rd["lc-info"] = u"<br>".join([x.decode("utf-8") for x in lcinfo])
 
       qp = docket.getQPText().strip().decode("utf-8")
       if qp:
