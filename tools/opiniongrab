@@ -58,10 +58,7 @@ def scanOpinions (path, opts):
         os.makedirs(opath)
 
       odata["date"] = time.mktime(datetime.datetime.strptime(cells[1].text, "%m/%d/%y").timetuple())
-      try:
-        odata["docket"] = int(cells[2].text.split("-")[1])
-      except IndexError:
-        odata["docket"] = int(cells[2].text.split(",")[0])
+      odata["docket"] = cells[2].text
 
       aelem = cells[3].find("a")
       fname = aelem["href"].split("/")[-1]
