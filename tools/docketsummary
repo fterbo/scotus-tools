@@ -37,6 +37,7 @@ def parse_args ():
   parser.add_argument("--relists", dest="relists", action="store_true")
   parser.add_argument("--unknown", dest="unknown", action="store_true")
   parser.add_argument("--root", dest="root", type=str, default=".")
+  parser.add_argument("--sum-evt", dest="sum_evt", action="store_true")
   args = parser.parse_args()
   return args
 
@@ -232,9 +233,16 @@ def summarize (opts):
       lines.append("  - Cert Amici")
       for amicus in info.cert_amici:
         lines.append("      %s" % (amicus))
-    last_order = docket_obj["ProceedingsandOrder"][-1]
-    lines.append("  - Last Order")
-    lines.append("     %s - %s" % (last_order["Date"], last_order["Text"]))
+    if opts.sum_evt:
+      lines.append("  - Notable Events")
+      for event in info.events:
+        if event.brief:
+          continue
+        lines.append("    %s" % (unicode(event)))
+    else:
+      last_order = docket_obj["ProceedingsandOrder"][-1]
+      lines.append("  - Last Order")
+      lines.append("     %s - %s" % (last_order["Date"], last_order["Text"]))
     if info.petition_path:
 #    qp = scotus.parse.getQP("%s/%s" % (opts.root, info.petition_path))
 #    if qp:
