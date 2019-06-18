@@ -481,6 +481,20 @@ class DocketStatusInfo(object):
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.affirmed = True
           evtobj.issued = True
+        elif etxt.startswith("Adjudged to be AFFIRMED IN PART, REVERSED IN PART"):
+          self.affirmed = True
+          self.reversed = True
+          self.judgment_issued = True
+          self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.affirmed = True
+          evtobj.reversed = True
+          evtobj.issued = True
+        elif etxt.startswith("Adjudged to be VACATED IN PART"):
+          self.vacated = True
+          self.judgment_issued = True
+          self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.vacated = True
+          evtobj.issued = True
         elif etxt.startswith("Judgment REVERSED"):
           self.reversed = True
           self.judgment_issued = True
