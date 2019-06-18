@@ -686,7 +686,7 @@ def loadDocket (term, number, root = "."):
     if number[0] == "A":
       jd = json.loads(open("%s/OT-%d/dockets/A/%s/docket.json" % (root, term, number[1:]), "rb").read())
     elif number[0:2] == "22O":
-      jd = json.loads(open("%s/OT-%d/dockets/Orig/%s/docket.json" % (root, term, number[3:]), "rb").read())
+      jd = json.loads(open("%s/Orig/dockets/%s/docket.json" % (root, number[3:]), "rb").read())
   else:
     jd = json.loads(open("%s/OT-%d/dockets/%d/docket.json" % (root, term, number), "rb").read())
 
