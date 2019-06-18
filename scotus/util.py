@@ -369,13 +369,18 @@ class DocketStatusInfo(object):
           last_dist = self.distributed[-1]
           self.distributed[-1] = (last_dist[0], last_dist[1], True)
         elif etxt.startswith("Brief amici curiae of") or etxt.startswith("Brief amicus curiae of"):
-          evtobj.brief = True
+          evtobj.amicus_brief = True
           if not self.granted:
             self.cert_amici.append(" ".join(etxt.split()[4:-1]))
           if self.cvsg:
             if (etxt.startswith("Brief amicus curiae of United States filed") or
                etxt.startswith("Brief amicus curiae of United States of America filed")):
               self.cvsg_return_date = dateutil.parser.parse(einfo["Date"]).date()
+        elif (etxt.startswith("Supplemental brief of")
+              or etxt.startswith("Brief of respondent")
+              or etxt.startswith("Brief of petitioner")
+              or etxt.startswith("Reply of petitioner")):
+          evtobj.brief = True
         elif etxt.startswith("The Solicitor General is invited to file a brief"):
           self.cvsg = True
           self.cvsg_date = dateutil.parser.parse(einfo["Date"]).date()
@@ -499,6 +504,8 @@ class DocketStatusInfo(object):
         elif etxt.lower().count("remanded"):
           self.remanded = True
           evtobj.remanded = True
+        elif etxt.count("time to file"):
+          evtobj.time_to_file = True
         if etxt.count("petitioner has repeatedly abused"):
           self.abuse = True
 

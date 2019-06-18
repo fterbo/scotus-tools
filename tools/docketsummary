@@ -236,7 +236,7 @@ def summarize (opts):
     if opts.sum_evt:
       lines.append("  - Notable Events")
       for event in info.events:
-        if event.brief:
+        if event.amicus_brief or event.distributed or event.time_to_file:
           continue
         lines.append("    %s" % (unicode(event)))
     else:
