@@ -455,6 +455,7 @@ class DocketStatusInfo(object):
           evtobj.issued = True
         elif (etxt.startswith("Adjudged to be AFFIRMED.")
               or etxt.count("judgment is affirmed under 28 U. S. C.")
+              or etxt.count("Judgment is affirmed")
               or etxt.count("Judgment AFFIRMED")):
           self.affirmed = True
           self.judgment_issued = True
