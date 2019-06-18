@@ -517,7 +517,7 @@ class DocketStatusInfo(object):
           evtobj.ifp_denied = True
         elif etxt.startswith("Response Requested"):
           evtobj.response_requested = True
-        elif etxt.startswith("Record Requested"):
+        elif etxt.lower().startswith("record requested"):
           evtobj.record_requested = True
         elif etxt.startswith("Petitioner complied with order of"):
           odate = dateutil.parser.parse(etxt.split("of")[-1]).date()
@@ -536,6 +536,11 @@ class DocketStatusInfo(object):
         if etxt.lower().count("remanded"):
           self.remanded = True
           evtobj.remanded = True
+
+        if etxt.lower().count("vacated as moot"):
+          self.vacated = True
+          evtobj.vacated = True
+          evtobj.mooted = True
 
         if etxt.count("petitioner has repeatedly abused"):
           self.abuse = True
