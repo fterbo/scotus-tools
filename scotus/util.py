@@ -410,11 +410,12 @@ class DocketStatusInfo(object):
             self.remanded = True
             self.reversed = True
             evtobj.remanded = True
-          elif etxt.count("VACATED") and etxt.count("REMANDED"):
+          elif etxt.lower().count("vacated") and etxt.lower().count("remanded"):
             self.gvr = True
             self.gvr_date = self.grant_date
             self.remanded = True
             self.vacated = True
+            evtobj.vacated = True
             evtobj.remanded = True
         elif etxt.lower().count("is dismissed as moot"):
           evtobj.mooted = True
