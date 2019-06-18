@@ -390,7 +390,7 @@ class DocketStatusInfo(object):
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.granted = True
         elif etxt.count("GRANTED"):
-          if etxt.count("Motion for leave"): continue
+          if etxt.count("for leave to file"): continue
           if etxt.count("Motion to substitute"): continue
           if etxt.count("Motion of respondent for leave"): continue
           if etxt.count("Motion to appoint counsel"):
