@@ -18,6 +18,7 @@ class DocketEvent(object):
     self.argued = False
     self.removed = False
     self.remanded = False
+    self.vacated = False
     self.cvsg = False
     self.argued = False
     self.issued = False

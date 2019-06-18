@@ -472,8 +472,6 @@ class DocketStatusInfo(object):
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.issued = True
-          if etxt.lower().count("remanded"):
-            evtobj.remanded = True
         elif (etxt.count("petition for a writ of certiorari is dismissed")
               or etxt.count("petition for a writ of mandamus/prohibition is dismissed")
               or etxt.count("petition for a writ of habeas corpus is dismissed")
@@ -501,11 +499,16 @@ class DocketStatusInfo(object):
               break
             if evt.date > odate:
               break
-        elif etxt.lower().count("remanded"):
-          self.remanded = True
-          evtobj.remanded = True
         elif etxt.count("time to file"):
           evtobj.time_to_file = True
+        elif etxt.count("Judgment VACATED"):
+          evtobj.vacated = True
+          self.vacated = True
+
+        if etxt.lower().count("remanded"):
+          self.remanded = True
+          evtobj.remanded = True
+
         if etxt.count("petitioner has repeatedly abused"):
           self.abuse = True
 
