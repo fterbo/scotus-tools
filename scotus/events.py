@@ -25,6 +25,7 @@ class DocketEvent(object):
     self.ifp_denied = False
     self.response_requested = False
     self.record_requested = False
+    self.record_received = False
     self.mooted = False
     self.rehearing_denied = False
     self.affirmed = False
@@ -32,6 +33,10 @@ class DocketEvent(object):
     self.motion_denied = False
     self.counsel_granted = False
     self.time_to_file = False
+    self.circulated = False
+    self.set_for_argument = False
+    self.sg_motion_divided_argument = False
+    self.sg_grant_divided_argument = False
 
   def _build (self):
     self.date = dateutil.parser.parse(self._e_dict["Date"]).date()

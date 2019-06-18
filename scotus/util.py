@@ -389,6 +389,19 @@ class DocketStatusInfo(object):
           self.granted = True
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.granted = True
+        elif etxt == "CIRCULATED":
+          evtobj.circulated = True
+        elif etxt.startswith("SET FOR ARGUMENT"):
+          evtobj.set_for_argument = True
+        elif (etxt.startswith("Record received from")
+              or etxt.startswith("Record") and etxt.count("is electronic")):
+          evtobj.record_received = True
+        elif (etxt.startswith("Motion of the Solicitor General for leave to participate in oral argument")
+              and etxt.count("divided argument")):
+          if etxt.count("filed"):
+            evtobj.sg_motion_divided_argument = True
+          elif etxt.count("GRANTED"):
+            evtobj.sg_grant_divided_argument = True
         elif etxt.count("GRANTED"):
           if etxt.count("for leave to file"): continue
           if etxt.count("Motion to substitute"): continue
