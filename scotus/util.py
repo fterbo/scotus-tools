@@ -427,9 +427,6 @@ class DocketStatusInfo(object):
           self.argued = True
           self.argued_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.argued = True
-        elif etxt.lower().count("remanded"):
-          self.remanded = True
-          evtobj.remanded = True
         elif etxt.count("lacks a quorum"):
           self.inquorate = True
           evtobj.inquorate = True
@@ -498,6 +495,9 @@ class DocketStatusInfo(object):
               break
             if evt.date > odate:
               break
+        elif etxt.lower().count("remanded"):
+          self.remanded = True
+          evtobj.remanded = True
         if etxt.count("petitioner has repeatedly abused"):
           self.abuse = True
 
