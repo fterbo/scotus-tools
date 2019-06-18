@@ -647,8 +647,8 @@ def buildCasename (docket_obj):
         else:
           casename = pt
       else:
-        if pt.split(",")[-1].count("Petitioner"):
-          parts = pt.split(",")
+        parts = pt.split(",")
+        if parts[-1].count("Petitioner") or parts[-1].count("Plaintiff"):
           petitioner = ",".join(parts[:-1])
         else:
           petitioner = pt
