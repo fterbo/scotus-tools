@@ -37,7 +37,8 @@ def parse_args ():
   parser.add_argument("--relists", dest="relists", action="store_true")
   parser.add_argument("--unknown", dest="unknown", action="store_true")
   parser.add_argument("--root", dest="root", type=str, default=".")
-  parser.add_argument("--sum-evt", dest="sum_evt", action="store_true")
+  parser.add_argument("--evt-sum", dest="sum_evt", action="store_true")
+  parser.add_argument("--evt-all", dest="all_evt", action="store_true")
   args = parser.parse_args()
   return args
 
@@ -238,6 +239,10 @@ def summarize (opts):
       for event in info.events:
         if event.amicus_brief or event.distributed or event.time_to_file:
           continue
+        lines.append("    %s" % (unicode(event)))
+    elif opts.all_evt:
+      lines.append("  - Events")
+      for event in info.events:
         lines.append("    %s" % (unicode(event)))
     else:
       last_order = docket_obj["ProceedingsandOrder"][-1]
