@@ -59,10 +59,11 @@ QTYPES = {
 @SD.inputs("docket-reference")
 @SD.returns("docket-reference")
 class EventTextQuery(object):
-  def __init__ (self, query_term, qtype = "contains", case_sensitive = False):
+  def __init__ (self, query_term, qtype = "contains", case_sensitive = False, min_count = 1):
     self.query_type = QTYPES[qtype]
     self.query_term = query_term
     self.case_sensitive = case_sensitive
+    self.min_count = min_count
 
     if not self.case_sensitive:
       self.query_term = self.query_term.lower()
@@ -80,7 +81,7 @@ class EventTextQuery(object):
         etxt = etxt.lower()
 
       if self.query_type == 0:
-        if etxt.count(self.query_term):
+        if etxt.count(self.query_term) >= self.min_count:
           return (docket_ref, {})
 
     return False
