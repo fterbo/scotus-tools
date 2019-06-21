@@ -355,6 +355,10 @@ class DocketStatusInfo(object):
         self.events.append(evtobj)
 
         etxt = einfo["Text"]
+        estxt = etxt
+        if etxt[-6:] == "VIDED.":
+          estxt = etxt[:-6]
+
         if etxt.startswith("DISTRIBUTED"):
           if etxt == "DISTRIBUTED.":
             continue  # Rehearing distribution, probably, not for conference
@@ -371,7 +375,7 @@ class DocketStatusInfo(object):
         elif etxt.startswith("Brief amici curiae of") or etxt.startswith("Brief amicus curiae of"):
           evtobj.amicus_brief = True
           if not self.granted:
-            self.cert_amici.append(" ".join(etxt.split()[4:-1]))
+            self.cert_amici.append(" ".join(estxt.split()[4:-1]))
           if self.cvsg:
             if (etxt.startswith("Brief amicus curiae of United States filed") or
                etxt.startswith("Brief amicus curiae of United States of America filed")):
@@ -381,7 +385,7 @@ class DocketStatusInfo(object):
               or etxt.startswith("Brief of petitioner")
               or etxt.startswith("Reply of petitioner")
               or etxt.startswith("Reply of respondent")
-              or (etxt.startswith("Brief of") and etxt[-6:] == "filed.")
+              or (etxt.startswith("Brief of") and estxt[-6:] == "filed.")
               or (etxt.count("letter brief") and etxt.count("filed."))):
           evtobj.brief = True
         elif etxt.startswith("The Solicitor General is invited to file a brief"):
@@ -546,6 +550,7 @@ class DocketStatusInfo(object):
           self.vacated = True
         elif (etxt.count("Letter of petitioner")
               or etxt.count("Letter of respondent")
+              or etxt.startswith("Letter from the Solicitor General")
               or etxt.count("Letter in reply")):
           evtobj.letter = True
         elif etxt.lower().startswith("joint motion"):
