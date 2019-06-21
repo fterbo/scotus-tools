@@ -358,6 +358,8 @@ class DocketStatusInfo(object):
         estxt = etxt
         if etxt[-6:] == "VIDED.":
           estxt = etxt[:-6]
+        elif etxt[-5:] == "VIDED":
+          estxt = etxt[:-5]
 
         if etxt.startswith("DISTRIBUTED"):
           if etxt == "DISTRIBUTED.":
