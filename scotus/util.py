@@ -380,6 +380,7 @@ class DocketStatusInfo(object):
               or etxt.startswith("Brief of respondent")
               or etxt.startswith("Brief of petitioner")
               or etxt.startswith("Reply of petitioner")
+              or (etxt.startswith("Brief of") and etxt[-6:] == "filed.")
               or (etxt.count("letter brief") and etxt.count("filed."))):
           evtobj.brief = True
         elif etxt.startswith("The Solicitor General is invited to file a brief"):
