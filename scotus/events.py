@@ -44,6 +44,9 @@ class DocketEvent(object):
     self.joint_appendix = False
     self.petitioner_blanket_consent = False
     self.respondent_blanket_consent = False
+    self.motion_divided_argument = False
+    self.motion_divided_denied = False
+    self.motion_divided_granted = False
 
   def _build (self):
     self.date = dateutil.parser.parse(self._e_dict["Date"]).date()
