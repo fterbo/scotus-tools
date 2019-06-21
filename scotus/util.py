@@ -379,7 +379,8 @@ class DocketStatusInfo(object):
         elif (etxt.startswith("Supplemental brief of")
               or etxt.startswith("Brief of respondent")
               or etxt.startswith("Brief of petitioner")
-              or etxt.startswith("Reply of petitioner")):
+              or etxt.startswith("Reply of petitioner")
+              or (etxt.count("letter brief") and etxt.count("filed."))):
           evtobj.brief = True
         elif etxt.startswith("The Solicitor General is invited to file a brief"):
           self.cvsg = True
@@ -393,6 +394,8 @@ class DocketStatusInfo(object):
           evtobj.circulated = True
         elif etxt.startswith("SET FOR ARGUMENT"):
           evtobj.set_for_argument = True
+        elif etxt.startswith("SET FOR REARGUMENT"):
+          evtobj.set_for_reargument = True
         elif (etxt.startswith("Record received from")
               or etxt.startswith("Record") and etxt.count("is electronic")):
           evtobj.record_received = True

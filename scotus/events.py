@@ -35,6 +35,7 @@ class DocketEvent(object):
     self.time_to_file = False
     self.circulated = False
     self.set_for_argument = False
+    self.set_for_reargument = False
     self.sg_motion_divided_argument = False
     self.sg_grant_divided_argument = False
 
