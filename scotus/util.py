@@ -535,6 +535,18 @@ class DocketStatusInfo(object):
         elif etxt.count("Judgment VACATED"):
           evtobj.vacated = True
           self.vacated = True
+        elif (etxt.count("Letter of petitioner")
+              or etxt.count("Letter of respondent")
+              or etxt.count("Letter in reply")):
+          evtobj.letter = True
+        elif etxt.lower().startswith("joint motion"):
+          evtobj.joint_motion = True
+        elif etxt.lower().startswith("joint appendix filed"):
+          evtobj.joint_appendix = True
+        elif etxt.lower().startswith("blanket consent filed by petitioner"):
+          evtobj.petitioner_blanket_consent = True
+        elif etxt.lower().startswith("blanket consent filed by respondent"):
+          evtobj.respondent_blanket_consent = True
 
         if etxt.lower().count("remanded"):
           self.remanded = True
@@ -544,6 +556,9 @@ class DocketStatusInfo(object):
           self.vacated = True
           evtobj.vacated = True
           evtobj.mooted = True
+
+        if etxt.count("not accepted for filing."):
+          evtobj.not_accepted = True
 
         if etxt.count("petitioner has repeatedly abused"):
           self.abuse = True

@@ -38,6 +38,12 @@ class DocketEvent(object):
     self.set_for_reargument = False
     self.sg_motion_divided_argument = False
     self.sg_grant_divided_argument = False
+    self.not_accepted = False
+    self.letter = False
+    self.joint_motion = False
+    self.joint_appendix = False
+    self.petitioner_blanket_consent = False
+    self.respondent_blanket_consent = False
 
   def _build (self):
     self.date = dateutil.parser.parse(self._e_dict["Date"]).date()
