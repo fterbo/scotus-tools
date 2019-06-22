@@ -67,6 +67,25 @@ class CaseStatus(object):
 
     return True
 
+@srcfilter("docket-attribute")
+@SD.inputs("docket-reference")
+class DocketAttribute(object):
+  def __init__ (self, **kwargs):
+    self.attrs = kwargs
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    di = docket_ref.info
+
+    for k,v in self.attrs.items():
+      if getattr(di, k) != v:
+        return False
+
+    return True
+
+
 @srcfilter("distribution")
 @SD.inputs("docket-reference")
 class Distribution(object):
@@ -113,6 +132,12 @@ class Distribution(object):
 
     return True
 
+
+@srcfilter("event-tag")
+@SD.inputs("docket-reference")
+class EventTag(object):
+  def __init__ (self, **kwargs):
+    pass
 
 
 @srcfilter("case-type")
