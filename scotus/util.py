@@ -85,6 +85,7 @@ class DocketStatusInfo(object):
     self.removed = False
     self.remanded = False
     self.abuse = False
+    self.ifp_denied = False
     self.ifp_paid = False
 
     self.vacated = False
@@ -531,6 +532,7 @@ class DocketStatusInfo(object):
           evtobj.removed = True
         elif etxt.count("leave to proceed in forma pauperis is denied"):
           evtobj.ifp_denied = True
+          self.ifp_denied = True
         elif etxt.startswith("Response Requested"):
           evtobj.response_requested = True
         elif etxt.lower().startswith("record requested"):
