@@ -30,6 +30,3 @@ class NoPetitionForApplicationError(SCOTUSError):
     self.docket = docket
   def __str__ (self):
     return "Application docket (%s) does not contain cert petition" % (self.docket)
-
-
-

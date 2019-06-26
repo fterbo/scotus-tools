@@ -73,7 +73,7 @@ class EventTextQuery(object):
 
   def query (self, docket_ref):
     if not docket_ref.info:
-      return None
+      return False
 
     for event in docket_ref.info.events:
       etxt = event.text
