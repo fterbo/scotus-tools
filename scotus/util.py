@@ -673,7 +673,7 @@ def getCaseType (docket_obj):
     if docket_obj["ProceedingsandOrder"][0]["Text"].startswith("Statement as to jurisdiction"):
       return "mandatory"
 
-  founditem = None
+  founditem = application = None
   for item in docket_obj["ProceedingsandOrder"]:
     try:
       if item["Text"].startswith("Petition"):
@@ -693,6 +693,7 @@ def getCaseType (docket_obj):
   if not founditem:
     for item in docket_obj["ProceedingsandOrder"]:
       if item["Text"].startswith("Application"):
+        application = True
         founditem = item
         break
 
@@ -705,6 +706,8 @@ def getCaseType (docket_obj):
 
   match = list(set(founditem["Text"].replace(",", "").split()) & PETITION_TYPES)
   if not match:
+    if application:
+      return "application"
     raise exceptions.CaseTypeError(docket_obj["CaseNumber"].strip())
 
   return match[0]
@@ -737,7 +740,10 @@ def buildCasename (docket_obj):
           petitioner = ",".join(parts[:-1])
         else:
           petitioner = pt
-        casename = "%s v. %s" % (petitioner, docket_obj["RespondentTitle"])
+        if casetype == "application":
+          casename = "(unrelated-application) %s" % (petitioner)
+        else:
+          casename = "%s v. %s" % (petitioner, docket_obj["RespondentTitle"])
   except Exception:
     raise exceptions.CasenameError(docket_obj["CaseNumber"].strip())
 
