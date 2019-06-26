@@ -6,6 +6,7 @@ import json
 import os
 
 from . import decorators as SD
+from . import exceptions
 from . import parse
 from . import util
 
@@ -53,7 +54,7 @@ class DocketReference(object):
           self._info = util.DocketStatusInfo(docket_obj)
         except IOError:
           self._info = False
-    except scotus.exceptions.Exception:
+    except exceptions.SCOTUSError:
       logging.exception("Path %s" % (self._path))
       self._info = False
     return self._info
