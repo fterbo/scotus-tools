@@ -412,13 +412,21 @@ class DocketStatusInfo(object):
             evtobj.sg_motion_divided_argument = True
           elif etxt.count("GRANTED"):
             evtobj.sg_grant_divided_argument = True
+        elif etxt.startswith("Motion for divided argument filed"):
+          if etxt.count("by the Solicitor General"):
+            if etxt[-7:] == "DENIED.":
+              evtobj.sg_motion_divided_denied = True
+            elif etxt[-8:] == "GRANTED.":
+              evtobj.sg_motion_divided_granted = True
+            else:
+              evtobj.sg_motion_divided_argument = True
+          else:
+            if etxt[-7:] == "DENIED.":
+              evtobj.motion_divided_denied = True
+            elif etxt[-8:] == "GRANTED.":
+              evtobj.motion_divided_granted = True
         elif (etxt.startswith("Motion") and etxt.count("divided argument filed.")):
           evtobj.motion_divided_argument = True
-        elif etxt.startswith("Motion for divided argument filed"):
-          if etxt[-7:] == "DENIED.":
-            evtobj.motion_divided_denied = True
-          elif etxt[-8:] == "GRANTED.":
-            evtobj.motion_divided_granted = True
         elif etxt.count("GRANTED"):
           if etxt.count("for leave to file"): continue
           if etxt.count("Motion to substitute"): continue
