@@ -56,7 +56,7 @@ class DocketReference(object):
         except IOError:
           self._info = False
     except exceptions.SCOTUSError:
-      logging.exception("Path %s" % (self._path))
+      logging.exception("Path %s" % (self.path))
       self._info = False
     return self._info
 
