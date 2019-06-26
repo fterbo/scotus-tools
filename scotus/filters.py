@@ -143,7 +143,7 @@ class EventTag(object):
     if not docket_ref.info:
       return False
 
-    for evt in docket_ref.events:
+    for evt in docket_ref.info.events:
       for k,v in self._tags.items():
         if v and getattr(evt, k) == v:
           return True
