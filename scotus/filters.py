@@ -137,7 +137,18 @@ class Distribution(object):
 @SD.inputs("docket-reference")
 class EventTag(object):
   def __init__ (self, **kwargs):
-    pass
+    self._tags = kwargs
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    for evt in docket_ref.events:
+      for k,v in self._tags.items():
+        if v and getattr(evt, k) == v:
+          return True
+
+    return False
 
 
 @srcfilter("case-type")
