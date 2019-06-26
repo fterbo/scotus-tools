@@ -23,6 +23,7 @@ class DocketEvent(object):
     self.argued = False
     self.issued = False
     self.ifp_denied = False
+    self.ifp_paid = False
     self.response_requested = False
     self.record_requested = False
     self.record_received = False

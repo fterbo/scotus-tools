@@ -542,6 +542,7 @@ class DocketStatusInfo(object):
           for evt in self.events:
             if evt.date == odate and evt.ifp_denied:
               self.ifp_paid = True
+              evtobj.ifp_paid = True
               break
             if evt.date > odate:
               break
