@@ -48,6 +48,7 @@ class DocketEvent(object):
     self.motion_divided_argument = False
     self.motion_divided_denied = False
     self.motion_divided_granted = False
+    self.amici_court_appointed = False
 
   def _build (self):
     self.date = dateutil.parser.parse(self._e_dict["Date"]).date()
