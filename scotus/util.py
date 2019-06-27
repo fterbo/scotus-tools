@@ -375,7 +375,7 @@ class DocketStatusInfo(object):
           self.distributed[-1] = (last_dist[0], last_dist[1], True)
         elif etxt.startswith("Brief amici curiae of") or etxt.startswith("Brief amicus curiae of"):
           evtobj.amicus_brief = True
-          if etxt.counnt("Court-appointed"):
+          if etxt.count("Court-appointed"):
             evtobj.court_appointed = True
           if not self.granted:
             self.cert_amici.append(" ".join(estxt.split()[4:-1]))
