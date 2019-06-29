@@ -382,7 +382,6 @@ class DocketStatusInfo(object):
           if self.cvsg:
             if (etxt.lower().startswith("brief amicus curiae of united states filed") or
                 etxt.lower().startswith("brief amicus curiae of the united states filed") or
-                etxt.lower().startswith("brief of federal respondents in opposition filed") or
                 etxt.startswith("Brief amicus curiae of United States of America filed")):
               self.cvsg_return_date = dateutil.parser.parse(einfo["Date"]).date()
               evtobj.cvsg_return = True
@@ -393,7 +392,12 @@ class DocketStatusInfo(object):
               or etxt.startswith("Reply of respondent")
               or (etxt.startswith("Brief of") and estxt[-6:] == "filed.")
               or (etxt.count("letter brief") and etxt.count("filed."))):
-          evtobj.brief = True
+          if self.cvsg and etxt.lower().startswith("brief of federal respondents in opposition filed"):
+            self.cvsg_return_date = dateutil.parser.parse(einfo["Date"]).date()
+            evtobj.cvsg_return = True
+            evtobj.amicus_brief = True
+          else:
+            evtobj.brief = True
         elif etxt.startswith("The Solicitor General is invited to file a brief"):
           self.cvsg = True
           self.cvsg_date = dateutil.parser.parse(einfo["Date"]).date()
