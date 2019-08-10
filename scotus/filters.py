@@ -353,13 +353,6 @@ class PartyName(object):
     else:
       drl = ""
 
-    if self.partial:
-      if dpl.count(self.partyname) or drl.count(self.partyname):
-        return True
-    else:
-      if dpl == self.partyname or drl == self.partyname:
-        return True
-
     if self.use_all:
       for name in docket.petitioner_parties:
         name = name.lower()
@@ -378,6 +371,13 @@ class PartyName(object):
         else:
           if name == self.partyname:
             return True
+
+    if self.partial:
+      if dpl.count(self.partyname) or drl.count(self.partyname):
+        return True
+    else:
+      if dpl == self.partyname or drl == self.partyname:
+        return True
 
     return False
 
