@@ -396,7 +396,7 @@ class AmiciName(object):
 
     docket = docket_ref.info
 
-    if cert_only:
+    if self.cert_only:
       if self.partial:
         for amici in docket.cert_amici:
           if amici.lower().count(self.amicusname):
