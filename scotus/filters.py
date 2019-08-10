@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import
 
+import itertools
 import logging
 
 import dateutil.parser
@@ -407,11 +408,11 @@ class AmiciName(object):
 
     else: # !cert_only
       if self.partial:
-        for amici in zip(docket.cert_amici, docket.merits_amici):
+        for amici in itertools.chain(docket.cert_amici, docket.merits_amici):
           if amici.lower().count(self.amicusname):
             return True
       else:
-        for amici in zip(docket.cert_amici, docket.merits_amici):
+        for amici in itertools.chain(docket.cert_amici, docket.merits_amici):
           if amici.lower() == self.amicusname:
             return True
         
