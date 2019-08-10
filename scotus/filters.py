@@ -381,3 +381,39 @@ class PartyName(object):
 
     return False
 
+@srcfilter("amici")
+@SD.inputs("docket-reference")
+class AmiciName(object):
+  def __init__ (self, name, partial = True, cert_only = False):
+    self.amicusname = name.lower()
+    self.partial = partial
+    self.cert_only = cert_only
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    docket = docket_ref.info
+
+    if cert_only:
+      if self.partial:
+        for amici in docket.cert_amici:
+          if amici.lower().count(self.amicusname):
+            return True
+      else:
+        for amici in docket.cert_amici:
+          if amici.lower() == self.amicusname:
+            return True
+
+    else: # !cert_only
+      if self.partial:
+        for amici in zip(docket.cert_amici, docket.merits_amici):
+          if amici.lower().count(self.amicusname):
+            return True
+      else:
+        for amici in zip(docket.cert_amici, docket.merits_amici):
+          if amici.lower() == self.amicusname:
+            return True
+        
+    return False
+

@@ -101,6 +101,7 @@ class DocketStatusInfo(object):
 
     self.attys_amici = []
     self.cert_amici = []
+    self.merits_amici = []
 
     self._errors = []
 
@@ -379,6 +380,8 @@ class DocketStatusInfo(object):
             evtobj.court_appointed = True
           if not self.granted:
             self.cert_amici.append(" ".join(estxt.split()[4:-1]))
+          else:
+            self.merits_amici.append(" ".join(estxt.split()[4:-1]))
           if self.cvsg:
             if (etxt.lower().startswith("brief amicus curiae of united states filed") or
                 etxt.lower().startswith("brief amicus curiae of the united states filed") or
