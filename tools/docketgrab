@@ -148,7 +148,7 @@ def scanPetitions (path, opts):
     match = list(set(founditem["Text"].split()) & scotus.util.PETITION_TYPES)
     try:
       casename = scotus.util.buildCasename(docket_obj)
-    except scotus.util.SCOTUSError as e:
+    except scotus.exceptions.SCOTUSError as e:
       logging.exception(str(e))
 
     if len(match) == 0:
