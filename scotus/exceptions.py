@@ -11,6 +11,7 @@ class NoDocketError(SCOTUSError):
 
 
 class CasenameError(SCOTUSError):
+  IGNORE = False
   def __init__ (self, docket):
     self.docket = docket
   def __str__ (self):

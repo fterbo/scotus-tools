@@ -10,6 +10,7 @@ import os.path
 import pprint
 import sys
 
+import scotus.exceptions
 import scotus.util
 from scotus.attorneys import ATTYMAP, Attorney
 from scotus.courts import NAMEMAP as LCNAMEMAP
@@ -180,4 +181,5 @@ if __name__ == '__main__':
   opts = parse_args()
   path = "%s/OT-%d/dockets" % (opts.root, opts.term)
 
+  scotus.exceptions.CasenameError.IGNORE = True
   build_stats(opts, path)

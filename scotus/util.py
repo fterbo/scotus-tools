@@ -294,7 +294,13 @@ class DocketStatusInfo(object):
       if docket_obj["DocketedDate"].strip():
         self.docket_date = dateutil.parser.parse(docket_obj["DocketedDate"]).date()
       self.capital = docket_obj["bCapitalCase"]
-      self.casename = buildCasename(docket_obj)
+
+      try:
+        self.casename = buildCasename(docket_obj)
+      except exceptions.CasenameError:
+        if not exceptions.CasenameError.IGNORE:
+          raise
+
       self.casetype = getCaseType(docket_obj)
 
       if "PetitionerTitle" in docket_obj:
