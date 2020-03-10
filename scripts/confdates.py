@@ -6,7 +6,10 @@ import datetime
 import json
 import sys
 
+import scotus.exceptions
 import scotus.util
+
+scotus.exceptions.CasenameError.IGNORE = True
 
 BOUNDS = {
   10 : (datetime.date(2010, 9, 20), datetime.date(2011, 7, 20)),
