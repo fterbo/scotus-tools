@@ -152,6 +152,23 @@ class EventTag(object):
     return False
 
 
+@srcfilter("event-date")
+@SD.inputs("docket-reference")
+class EventDate(object):
+  def __init__ (self, datestr):
+    self._date = dateutil.parser.parse(datestr).date()
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    for evt in docket_ref.info.events:
+      if evt.date == self._date:
+        return True
+
+    return False
+
+
 @srcfilter("case-type")
 @SD.inputs("docket-reference")
 class CaseType(object):
