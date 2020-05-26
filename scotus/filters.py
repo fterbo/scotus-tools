@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2019  Floyd Terbo
+# Copyright (c) 2018-2020  Floyd Terbo
 
 from __future__ import absolute_import
 
