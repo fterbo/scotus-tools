@@ -640,7 +640,7 @@ class DocketStatusInfo(object):
 
     for evt in self.events:
       if evt.rehearing_requested:
-        self.rh_requested = True
+        tags["rh_requested"] = True
         break
 
     return tags
