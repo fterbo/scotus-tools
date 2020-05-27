@@ -510,6 +510,8 @@ class DocketStatusInfo(object):
               (etxt.startswith("Motion for leave to file a petition for rehearing")
                and etxt.count("DENIED"))):
           evtobj.rehearing_denied = True
+        elif (etxt.lower().count("petition for rehearing filed")):
+          evtobj.rehearing_requested = True
         elif (etxt.startswith("Motion for reconsideration") and etxt.count("DENIED")):
           evtobj.motion_denied = True
         elif (etxt.lower().startswith("judgment issued") or etxt.lower().startswith("mandate issued")):
@@ -625,7 +627,7 @@ class DocketStatusInfo(object):
 
   def getTagDict (self):
     tags = {"cvsg" : False, "related" : False, "capital" : False, "abuse" : False,
-            "ifp" : False, "paid" : False}
+            "ifp" : False, "paid" : False, "rh_requested" : False}
 
     if self.cvsg: tags["cvsg"] = True
     if self.capital: tags["capital"] = True
@@ -635,6 +637,11 @@ class DocketStatusInfo(object):
       if self.docket < 5000: tags["paid"] = True
       if self.docket > 5000: tags["ifp"] = True
       if self.ifp_paid: tags["paid"] = True
+
+    for evt in self.events:
+      if evt.rehearing_requested:
+        self.rh_requested = True
+        break
 
     return tags
 

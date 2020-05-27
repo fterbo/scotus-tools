@@ -23,6 +23,7 @@ class DocketEvent(object):
     self.distributed = False
     self.granted = False
     self.ifp_denied = False
+    self.ifp_granted = False
     self.ifp_paid = False
     self.inquorate = False
     self.issued = False
@@ -38,6 +39,7 @@ class DocketEvent(object):
     self.petitioner_blanket_consent = False
     self.record_received = False
     self.record_requested = False
+    self.rehearing_requested = False
     self.rehearing_denied = False
     self.removed = False
     self.remanded = False
