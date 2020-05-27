@@ -3,9 +3,11 @@
 from __future__ import absolute_import
 
 import json
+import logging
 import os
 
 from . import decorators as SD
+from . import exceptions
 from . import parse
 from . import util
 
@@ -44,14 +46,18 @@ class DocketReference(object):
 
   @property
   def info (self):
-    if self._info is None:
-      try:
-        with open("%s/docket.json" % (self.path), "rb") as df:
-          docket_obj = json.loads(df.read())
+    try:
+      if self._info is None:
+        try:
+          with open("%s/docket.json" % (self.path), "rb") as df:
+            docket_obj = json.loads(df.read())
 
-        self._info = util.DocketStatusInfo(docket_obj)
-      except IOError:
-        self._info = False
+          self._info = util.DocketStatusInfo(docket_obj)
+        except IOError:
+          self._info = False
+    except exceptions.SCOTUSError:
+      logging.exception("Path %s" % (self.path))
+      self._info = False
     return self._info
 
   @property

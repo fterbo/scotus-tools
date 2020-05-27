@@ -1,4 +1,6 @@
-# Copyright (c) 2018  Floyd Terbo
+# Copyright (c) 2018-2019  Floyd Terbo
+
+from __future__ import absolute_import
 
 import json
 import logging
@@ -8,6 +10,7 @@ import sys
 import time
 import unicodedata
 
+import scotus.util
 import PyPDF2
 
 JUSTICES = { 17 : set([u"ROBERTS,", u"GINSBURG,", u"KENNEDY,", u"THOMAS,", u"ALITO,",
@@ -116,6 +119,11 @@ def getPdfWords (path, translate = getPuncFilter):
 
 def indexDir (path, force_pdf = False):
   logging.info("Indexing %s" % (path))
+
+  jd = json.loads(open("%s/docket.json" % (path), "rb").read())
+  dobj = scotus.util.DocketStatusInfo(jd)
+  dobj.getQPText(generate_only = True)
+
   fnames = [x for x in os.listdir(path) if x[-4:] == ".pdf"]
   tt = getPuncFilter()
 

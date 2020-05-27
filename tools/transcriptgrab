@@ -11,6 +11,7 @@ import os.path
 import sys
 import time
 import urllib
+import urlparse
 
 import BeautifulSoup as BS
 import requests
@@ -54,8 +55,9 @@ def download (year, path):
         logging.debug("Skipping cached transcript: %s" % (href))
         continue
 
-      logging.info("Downloading: %s" % (href))
-      order = GET("%s%s" % (BASE, href))
+      turl = urlparse.urljoin(r.url, href)
+      logging.info("Downloading: %s" % (turl))
+      order = GET(turl)
       with open(outpath, "w+") as f:
         f.write(order.content)
 

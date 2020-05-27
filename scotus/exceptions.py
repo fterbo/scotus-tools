@@ -11,6 +11,7 @@ class NoDocketError(SCOTUSError):
 
 
 class CasenameError(SCOTUSError):
+  IGNORE = False
   def __init__ (self, docket):
     self.docket = docket
   def __str__ (self):
@@ -30,6 +31,3 @@ class NoPetitionForApplicationError(SCOTUSError):
     self.docket = docket
   def __str__ (self):
     return "Application docket (%s) does not contain cert petition" % (self.docket)
-
-
-

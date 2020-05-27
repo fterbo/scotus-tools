@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2018-2019  Floyd Terbo
+# Copyright (c) 2018-2020  Floyd Terbo
 
 from __future__ import absolute_import, print_function
 
 import argparse
 import datetime
-import dateutil.parser
 import json
 import logging
 import os
 import os.path
 import pprint
 import sys
+
+import dateutil.parser
 
 from scotus import util
 from scotus.courts import NAMEMAP as LCNAMEMAP
@@ -37,6 +38,9 @@ def parse_args ():
   parser.add_argument("--relists", dest="relists", action="store_true")
   parser.add_argument("--unknown", dest="unknown", action="store_true")
   parser.add_argument("--root", dest="root", type=str, default=".")
+  parser.add_argument("--evt-sum", dest="sum_evt", action="store_true")
+  parser.add_argument("--evt-all", dest="all_evt", action="store_true")
+  parser.add_argument("--no-qp", dest="no_qp", action="store_true")
   args = parser.parse_args()
   return args
 
@@ -232,10 +236,21 @@ def summarize (opts):
       lines.append("  - Cert Amici")
       for amicus in info.cert_amici:
         lines.append("      %s" % (amicus))
-    last_order = docket_obj["ProceedingsandOrder"][-1]
-    lines.append("  - Last Order")
-    lines.append("     %s - %s" % (last_order["Date"], last_order["Text"]))
-    if info.petition_path:
+    if opts.sum_evt:
+      lines.append("  - Notable Events")
+      for event in info.events:
+        if event.amicus_brief or event.distributed or event.time_to_file:
+          continue
+        lines.append("    %s" % (unicode(event)))
+    elif opts.all_evt:
+      lines.append("  - Events")
+      for event in info.events:
+        lines.append("    %s" % (unicode(event)))
+    else:
+      last_order = docket_obj["ProceedingsandOrder"][-1]
+      lines.append("  - Last Order")
+      lines.append("     %s - %s" % (last_order["Date"], last_order["Text"]))
+    if info.petition_path and not opts.no_qp:
 #    qp = scotus.parse.getQP("%s/%s" % (opts.root, info.petition_path))
 #    if qp:
 #      print("  - QP(1)")

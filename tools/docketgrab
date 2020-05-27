@@ -148,7 +148,7 @@ def scanPetitions (path, opts):
     match = list(set(founditem["Text"].split()) & scotus.util.PETITION_TYPES)
     try:
       casename = scotus.util.buildCasename(docket_obj)
-    except scotus.util.SCOTUSError as e:
+    except scotus.exceptions.SCOTUSError as e:
       logging.exception(str(e))
 
     if len(match) == 0:
@@ -267,8 +267,14 @@ def downloadFull (path, opts):
         continue
       logging.info("[%s] Downloading %s" % (docketstr, fname))
       dl = GET(link["DocumentUrl"])
+      if dl.status_code == 403:
+        logging.warning("[%s] Waiting 5 seconds" % (docketstr))
+        time.sleep(5)
+        dl = GET(link["DocumentUrl"])
       if dl.status_code != 200:
         logging.error("[%s] FAILED: %d" % (docketstr, dl.status_code))
+        if dl.status_code == 403:
+          sys.exit()
         continue
       with open(outpath, "w+") as f:
         f.write(dl.content)

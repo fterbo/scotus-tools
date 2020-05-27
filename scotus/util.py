@@ -85,6 +85,7 @@ class DocketStatusInfo(object):
     self.removed = False
     self.remanded = False
     self.abuse = False
+    self.ifp_denied = False
     self.ifp_paid = False
 
     self.vacated = False
@@ -100,6 +101,7 @@ class DocketStatusInfo(object):
 
     self.attys_amici = []
     self.cert_amici = []
+    self.merits_amici = []
 
     self._errors = []
 
@@ -200,11 +202,12 @@ class DocketStatusInfo(object):
     with open("%s/qp.txt" % (self.docketdir), "w+") as qpf:
       qpf.write("\n".join(qp_lines))
 
-  def getQPText (self):
+  def getQPText (self, generate_only = False):
     qptxtpath = "%s/qp.txt" % (self.docketdir)
     if not os.path.exists(qptxtpath):
       self._generateQPText()
-    return open(qptxtpath, "r").read()
+    if not generate_only:
+      return open(qptxtpath, "r").read()
 
   def getConfAction (self, rcdate, clist = None):
     nextc = None
@@ -252,8 +255,18 @@ class DocketStatusInfo(object):
         return "IFP DENIED"
       elif event.response_requested:
         return "RESPONSE"
+      elif event.record_requested:
+        return "RECORD"
       elif event.rehearing_denied:
-        return "DENIED"
+        return "RH DENIED"
+      elif event.affirmed:
+        return "AFFIRMED"
+      elif event.inquorate:
+        return "INQUORATE"
+      elif event.motion_denied:
+        return "MOTION DENY"
+      elif event.counsel_granted:
+        return "COUNSEL"
 
     if not post:
       return ""
@@ -281,7 +294,13 @@ class DocketStatusInfo(object):
       if docket_obj["DocketedDate"].strip():
         self.docket_date = dateutil.parser.parse(docket_obj["DocketedDate"]).date()
       self.capital = docket_obj["bCapitalCase"]
-      self.casename = buildCasename(docket_obj)
+
+      try:
+        self.casename = buildCasename(docket_obj)
+      except exceptions.CasenameError:
+        if not exceptions.CasenameError.IGNORE:
+          raise
+
       self.casetype = getCaseType(docket_obj)
 
       if "PetitionerTitle" in docket_obj:
@@ -344,6 +363,10 @@ class DocketStatusInfo(object):
         self.events.append(evtobj)
 
         etxt = einfo["Text"]
+        estxt = etxt
+        if etxt[-6:] == "VIDED." or etxt[-5:] == "VIDED":
+          estxt = " ".join(etxt.split()[:-1])
+
         if etxt.startswith("DISTRIBUTED"):
           if etxt == "DISTRIBUTED.":
             continue  # Rehearing distribution, probably, not for conference
@@ -358,13 +381,32 @@ class DocketStatusInfo(object):
           last_dist = self.distributed[-1]
           self.distributed[-1] = (last_dist[0], last_dist[1], True)
         elif etxt.startswith("Brief amici curiae of") or etxt.startswith("Brief amicus curiae of"):
-          evtobj.brief = True
+          evtobj.amicus_brief = True
+          if etxt.count("Court-appointed"):
+            evtobj.court_appointed = True
           if not self.granted:
-            self.cert_amici.append(" ".join(etxt.split()[4:-1]))
+            self.cert_amici.append(" ".join(estxt.split()[4:-1]))
+          else:
+            self.merits_amici.append(" ".join(estxt.split()[4:-1]))
           if self.cvsg:
-            if (etxt.startswith("Brief amicus curiae of United States filed") or
-               etxt.startswith("Brief amicus curiae of United States of America filed")):
+            if (etxt.lower().startswith("brief amicus curiae of united states filed") or
+                etxt.lower().startswith("brief amicus curiae of the united states filed") or
+                etxt.startswith("Brief amicus curiae of United States of America filed")):
               self.cvsg_return_date = dateutil.parser.parse(einfo["Date"]).date()
+              evtobj.cvsg_return = True
+        elif (etxt.startswith("Supplemental brief of")
+              or etxt.startswith("Brief of respondent")
+              or etxt.startswith("Brief of petitioner")
+              or etxt.startswith("Reply of petitioner")
+              or etxt.startswith("Reply of respondent")
+              or (etxt.startswith("Brief of") and estxt[-6:] == "filed.")
+              or (etxt.count("letter brief") and etxt.count("filed."))):
+          if self.cvsg and etxt.lower().startswith("brief of federal respondents in opposition filed"):
+            self.cvsg_return_date = dateutil.parser.parse(einfo["Date"]).date()
+            evtobj.cvsg_return = True
+            evtobj.amicus_brief = True
+          else:
+            evtobj.brief = True
         elif etxt.startswith("The Solicitor General is invited to file a brief"):
           self.cvsg = True
           self.cvsg_date = dateutil.parser.parse(einfo["Date"]).date()
@@ -373,10 +415,44 @@ class DocketStatusInfo(object):
           self.granted = True
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.granted = True
+        elif etxt == "CIRCULATED":
+          evtobj.circulated = True
+        elif etxt.startswith("SET FOR ARGUMENT"):
+          evtobj.set_for_argument = True
+        elif etxt.startswith("SET FOR REARGUMENT"):
+          evtobj.set_for_reargument = True
+        elif (etxt.startswith("Record received from")
+              or etxt.startswith("Record") and etxt.count("is electronic")):
+          evtobj.record_received = True
+        elif (etxt.startswith("Motion of the Solicitor General for leave to participate in oral argument")
+              and etxt.count("divided argument")):
+          if etxt.count("filed"):
+            evtobj.sg_motion_divided_argument = True
+          elif etxt.count("GRANTED"):
+            evtobj.sg_grant_divided_argument = True
+        elif etxt.startswith("Motion for divided argument filed"):
+          if (etxt.count("by the Solicitor General") or
+              etxt.lower().count("by federal respondents")):
+            if etxt[-7:] == "DENIED.":
+              evtobj.sg_motion_divided_denied = True
+            elif etxt[-8:] == "GRANTED.":
+              evtobj.sg_motion_divided_granted = True
+            else:
+              evtobj.sg_motion_divided_argument = True
+          else:
+            if etxt[-7:] == "DENIED.":
+              evtobj.motion_divided_denied = True
+            elif etxt[-8:] == "GRANTED.":
+              evtobj.motion_divided_granted = True
+        elif (etxt.startswith("Motion") and etxt.count("divided argument filed.")):
+          evtobj.motion_divided_argument = True
         elif etxt.count("GRANTED"):
-          if etxt.count("Motion for leave"): continue
+          if etxt.count("for leave to file"): continue
           if etxt.count("Motion to substitute"): continue
           if etxt.count("Motion of respondent for leave"): continue
+          if etxt.count("Motion to appoint counsel"):
+            evtobj.counsel_granted = True
+            continue
           statements = etxt.split(".")
           gs = [x for x in statements if x.count("GRANTED")][0]
           if gs.count("expedite consideration"):
@@ -391,12 +467,15 @@ class DocketStatusInfo(object):
             self.remanded = True
             self.reversed = True
             evtobj.remanded = True
-          elif etxt.count("VACATED") and etxt.count("REMANDED"):
+          elif etxt.lower().count("vacated") and etxt.lower().count("remanded"):
             self.gvr = True
             self.gvr_date = self.grant_date
             self.remanded = True
             self.vacated = True
+            evtobj.vacated = True
             evtobj.remanded = True
+        elif etxt.lower().count("is dismissed as moot"):
+          evtobj.mooted = True
         elif (etxt.count("petition for certiorari is granted") or
               etxt.count("petition for a writ of certiorari is granted")):
           self.granted = True
@@ -411,7 +490,13 @@ class DocketStatusInfo(object):
           self.argued = True
           self.argued_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.argued = True
-        elif etxt.startswith("Petition Dismissed"):
+        elif etxt.count("lacks a quorum"):
+          self.inquorate = True
+          evtobj.inquorate = True
+        elif (etxt.startswith("Petition Dismissed") or
+              etxt.startswith("Petition DISMISSED") or
+              etxt.startswith("Appeal dismissed") or
+              etxt.count("petition for a writ of certiorari is DISMISSED")):
           self.dismissed = True
           self.dismiss_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.dismissed = True
@@ -422,17 +507,39 @@ class DocketStatusInfo(object):
           self.deny_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.denied = True
         elif (etxt.startswith("Rehearing DENIED") or
-              etxt.startswith("Motion for leave to file a petition for rehearing DENIED")):
+              (etxt.startswith("Motion for leave to file a petition for rehearing")
+               and etxt.count("DENIED"))):
           evtobj.rehearing_denied = True
-        elif etxt == "JUDGMENT ISSUED.":
+        elif (etxt.lower().count("petition for rehearing filed")):
+          evtobj.rehearing_requested = True
+        elif (etxt.startswith("Motion for reconsideration") and etxt.count("DENIED")):
+          evtobj.motion_denied = True
+        elif (etxt.lower().startswith("judgment issued") or etxt.lower().startswith("mandate issued")):
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.issued = True
         elif (etxt.startswith("Adjudged to be AFFIRMED.")
-              or etxt.count("judgment is affirmed under 28 U. S. C.")):
+              or etxt.count("judgment is affirmed under 28 U. S. C.")
+              or etxt.count("Judgment is affirmed")
+              or etxt.count("Judgment AFFIRMED")):
           self.affirmed = True
           self.judgment_issued = True
           self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.affirmed = True
+          evtobj.issued = True
+        elif etxt.startswith("Adjudged to be AFFIRMED IN PART, REVERSED IN PART"):
+          self.affirmed = True
+          self.reversed = True
+          self.judgment_issued = True
+          self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.affirmed = True
+          evtobj.reversed = True
+          evtobj.issued = True
+        elif etxt.startswith("Adjudged to be VACATED IN PART"):
+          self.vacated = True
+          self.judgment_issued = True
+          self.judgment_date = dateutil.parser.parse(einfo["Date"]).date()
+          evtobj.vacated = True
           evtobj.issued = True
         elif etxt.startswith("Judgment REVERSED"):
           self.reversed = True
@@ -442,6 +549,7 @@ class DocketStatusInfo(object):
         elif (etxt.count("petition for a writ of certiorari is dismissed")
               or etxt.count("petition for a writ of mandamus/prohibition is dismissed")
               or etxt.count("petition for a writ of habeas corpus is dismissed")
+              or etxt.count("petition for a writ of prohibition is dismissed")
               or etxt.count("petition for a writ of mandamus is dismissed")
               or etxt.count("petition for a writ of mandamus and/or prohibition is dismissed")):
           self.dismissed = True
@@ -453,16 +561,57 @@ class DocketStatusInfo(object):
           evtobj.removed = True
         elif etxt.count("leave to proceed in forma pauperis is denied"):
           evtobj.ifp_denied = True
+          self.ifp_denied = True
         elif etxt.startswith("Response Requested"):
           evtobj.response_requested = True
+        elif etxt.lower().startswith("record requested"):
+          evtobj.record_requested = True
         elif etxt.startswith("Petitioner complied with order of"):
           odate = dateutil.parser.parse(etxt.split("of")[-1]).date()
           for evt in self.events:
             if evt.date == odate and evt.ifp_denied:
               self.ifp_paid = True
+              evtobj.ifp_paid = True
               break
             if evt.date > odate:
               break
+        elif etxt.count("time to file"):
+          evtobj.time_to_file = True
+        elif etxt.count("Judgment VACATED"):
+          evtobj.vacated = True
+          self.vacated = True
+        elif (etxt.count("Letter of petitioner")
+              or etxt.count("Letter of respondent")
+              or etxt.startswith("Letter from the Solicitor General")
+              or etxt.count("Letter in reply")):
+          evtobj.letter = True
+        elif etxt.lower().startswith("joint motion"):
+          evtobj.joint_motion = True
+        elif etxt.lower().startswith("joint appendix filed"):
+          evtobj.joint_appendix = True
+        elif etxt.lower().startswith("blanket consent filed by petitioner"):
+          evtobj.petitioner_blanket_consent = True
+        elif etxt.lower().startswith("blanket consent filed by respondent"):
+          evtobj.respondent_blanket_consent = True
+        elif etxt.startswith("Consent to the filing of amicus curiae briefs"):
+          if etxt.count(" either party") and etxt.count("neither party"):
+            if etxt.count("received from counsel for petitioner"):
+              evtobj.petitioner_blanket_consent = True
+            elif etxt.count("received from counsel for respondent"):
+              evtobj.respondent_blanket_consent = True
+
+        if etxt.lower().count("remanded"):
+          self.remanded = True
+          evtobj.remanded = True
+
+        if etxt.lower().count("vacated as moot"):
+          self.vacated = True
+          evtobj.vacated = True
+          evtobj.mooted = True
+
+        if etxt.count("not accepted for filing."):
+          evtobj.not_accepted = True
+
         if etxt.count("petitioner has repeatedly abused"):
           self.abuse = True
 
@@ -478,7 +627,7 @@ class DocketStatusInfo(object):
 
   def getTagDict (self):
     tags = {"cvsg" : False, "related" : False, "capital" : False, "abuse" : False,
-            "ifp" : False, "paid" : False}
+            "ifp" : False, "paid" : False, "rh_requested" : False}
 
     if self.cvsg: tags["cvsg"] = True
     if self.capital: tags["capital"] = True
@@ -488,6 +637,11 @@ class DocketStatusInfo(object):
       if self.docket < 5000: tags["paid"] = True
       if self.docket > 5000: tags["ifp"] = True
       if self.ifp_paid: tags["paid"] = True
+
+    for evt in self.events:
+      if evt.rehearing_requested:
+        self.rh_requested = True
+        break
 
     return tags
 
@@ -549,10 +703,11 @@ class DocketStatusInfo(object):
 
 
 def getCaseType (docket_obj):
-  if docket_obj["ProceedingsandOrder"][0]["Text"].startswith("Statement as to jurisdiction"):
-    return "mandatory"
+  if docket_obj["ProceedingsandOrder"]:
+    if docket_obj["ProceedingsandOrder"][0]["Text"].startswith("Statement as to jurisdiction"):
+      return "mandatory"
 
-  founditem = None
+  founditem = application = None
   for item in docket_obj["ProceedingsandOrder"]:
     try:
       if item["Text"].startswith("Petition"):
@@ -611,12 +766,15 @@ def buildCasename (docket_obj):
         else:
           casename = pt
       else:
-        if pt.split(",")[-1].count("Petitioner"):
-          parts = pt.split(",")
+        parts = pt.split(",")
+        if parts[-1].count("Petitioner") or parts[-1].count("Plaintiff"):
           petitioner = ",".join(parts[:-1])
         else:
           petitioner = pt
-        casename = "%s v. %s" % (petitioner, docket_obj["RespondentTitle"])
+        if casetype == "excess":
+          casename = "(unrelated-application) %s" % (petitioner)
+        else:
+          casename = "%s v. %s" % (petitioner, docket_obj["RespondentTitle"])
   except Exception:
     raise exceptions.CasenameError(docket_obj["CaseNumber"].strip())
 
@@ -649,8 +807,8 @@ def loadDocket (term, number, root = "."):
   if isinstance(number, (str, unicode)):
     if number[0] == "A":
       jd = json.loads(open("%s/OT-%d/dockets/A/%s/docket.json" % (root, term, number[1:]), "rb").read())
-    elif number[0:2] == "22O":
-      jd = json.loads(open("%s/OT-%d/dockets/Orig/%s/docket.json" % (root, term, number[3:]), "rb").read())
+    elif number[0:3] == "22O":
+      jd = json.loads(open("%s/Orig/dockets/%s/docket.json" % (root, number[3:]), "rb").read())
   else:
     jd = json.loads(open("%s/OT-%d/dockets/%d/docket.json" % (root, term, number), "rb").read())
 

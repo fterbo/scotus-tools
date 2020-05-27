@@ -316,13 +316,13 @@ var ConfTable = (function() {
       result += "<i class=\"fas fa-arrows-alt-h\" title=\"Related\"></i>";
     }
     if (thisCaseFlags.cvsg) {
-      result += "<a href=\"/reports/cvsg.html\"><i class=\"fas fa-question-circle\" title=\"CVSG\"></i></a>";
+      result += "<a href=\"/reports/cvsg.html\" target=\"_blank=\"><i class=\"fas fa-question-circle\" title=\"CVSG\"></i></a>";
     }
     if (thisCaseFlags.abuse) {
       result += "<i class=\"far fa-angry\" title=\"Abuse\"></i>"
     }
     if (thisCaseFlags.paid  && caseNumber > 5000){
-      result += "<i class=\"fas fa-dollar-sign\" title=\"Paid IFP\"></i>"
+      result += "<i class=\"fas fa-dollar-sign\" title=\"Paid IFP\"></i>";
     }
     return result;
   }

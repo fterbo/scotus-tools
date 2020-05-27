@@ -1,7 +1,8 @@
-# Copyright (c) 2018-2019  Floyd Terbo
+# Copyright (c) 2018-2020  Floyd Terbo
 
 from __future__ import absolute_import
 
+import itertools
 import logging
 
 import dateutil.parser
@@ -67,6 +68,25 @@ class CaseStatus(object):
 
     return True
 
+@srcfilter("docket-attribute")
+@SD.inputs("docket-reference")
+class DocketAttribute(object):
+  def __init__ (self, **kwargs):
+    self.attrs = kwargs
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    di = docket_ref.info
+
+    for k,v in self.attrs.items():
+      if getattr(di, k) != v:
+        return False
+
+    return True
+
+
 @srcfilter("distribution")
 @SD.inputs("docket-reference")
 class Distribution(object):
@@ -113,6 +133,40 @@ class Distribution(object):
 
     return True
 
+
+@srcfilter("event-tag")
+@SD.inputs("docket-reference")
+class EventTag(object):
+  def __init__ (self, **kwargs):
+    self._tags = kwargs
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    for evt in docket_ref.info.events:
+      for k,v in self._tags.items():
+        if v and getattr(evt, k) == v:
+          return True
+
+    return False
+
+
+@srcfilter("event-date")
+@SD.inputs("docket-reference")
+class EventDate(object):
+  def __init__ (self, datestr):
+    self._date = dateutil.parser.parse(datestr).date()
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    for evt in docket_ref.info.events:
+      if evt.date == self._date:
+        return True
+
+    return False
 
 
 @srcfilter("case-type")
@@ -317,13 +371,6 @@ class PartyName(object):
     else:
       drl = ""
 
-    if self.partial:
-      if dpl.count(self.partyname) or drl.count(self.partyname):
-        return True
-    else:
-      if dpl == self.partyname or drl == self.partyname:
-        return True
-
     if self.use_all:
       for name in docket.petitioner_parties:
         name = name.lower()
@@ -343,5 +390,48 @@ class PartyName(object):
           if name == self.partyname:
             return True
 
+    if self.partial:
+      if dpl.count(self.partyname) or drl.count(self.partyname):
+        return True
+    else:
+      if dpl == self.partyname or drl == self.partyname:
+        return True
+
+    return False
+
+@srcfilter("amici")
+@SD.inputs("docket-reference")
+class AmiciName(object):
+  def __init__ (self, name, partial = True, cert_only = False):
+    self.amicusname = name.lower()
+    self.partial = partial
+    self.cert_only = cert_only
+
+  def include (self, docket_ref):
+    if not docket_ref.info:
+      return False
+
+    docket = docket_ref.info
+
+    if self.cert_only:
+      if self.partial:
+        for amici in docket.cert_amici:
+          if amici.lower().count(self.amicusname):
+            return True
+      else:
+        for amici in docket.cert_amici:
+          if amici.lower() == self.amicusname:
+            return True
+
+    else: # !cert_only
+      if self.partial:
+        for amici in itertools.chain(docket.cert_amici, docket.merits_amici):
+          if amici.lower().count(self.amicusname):
+            return True
+      else:
+        for amici in itertools.chain(docket.cert_amici, docket.merits_amici):
+          if amici.lower() == self.amicusname:
+            return True
+        
     return False
 
