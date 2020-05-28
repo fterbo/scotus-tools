@@ -36,10 +36,12 @@ class DocketEvent(object):
     self.motion_divided_argument = False
     self.motion_divided_denied = False
     self.motion_divided_granted = False
+    self.motion_time_enlargement = False
     self.not_accepted = False
     self.petitioner_blanket_consent = False
     self.record_received = False
     self.record_requested = False
+    self.record_returned = False
     self.rehearing_requested = False
     self.rehearing_denied = False
     self.removed = False

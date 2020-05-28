@@ -434,13 +434,15 @@ class DocketStatusInfo(object):
         elif (etxt.startswith("Record received from")
               or etxt.startswith("Record") and etxt.count("is electronic")):
           evtobj.record_received = True
+        elif (etxt.startswith("Record returned")
+          evtobj.record_returned = True
         elif (etxt.startswith("Motion of the Solicitor General for leave to participate in oral argument")
               and etxt.count("divided argument")):
           if etxt.count("filed"):
             evtobj.sg_motion_divided_argument = True
           elif etxt.count("GRANTED"):
             evtobj.sg_grant_divided_argument = True
-        elif etxt.startswith("Motion for divided argument filed"):
+        elif etxt.startswith("Motion for divided argument"):
           if (etxt.count("by the Solicitor General") or
               etxt.lower().count("by federal respondents")):
             if etxt[-7:] == "DENIED.":
@@ -454,8 +456,10 @@ class DocketStatusInfo(object):
               evtobj.motion_divided_denied = True
             elif etxt[-8:] == "GRANTED.":
               evtobj.motion_divided_granted = True
-        elif (etxt.startswith("Motion") and etxt.count("divided argument filed.")):
+        elif (etxt.startswith("Motion") and etxt.count("divided argument")):
           evtobj.motion_divided_argument = True
+          if etxt.count("enlargement of time"):
+            evtobj.motion_time_enlargement = True
         elif etxt.count("GRANTED"):
           if etxt.count("for leave to file"): continue
           if etxt.count("Motion to substitute"): continue
@@ -585,13 +589,14 @@ class DocketStatusInfo(object):
               break
             if evt.date > odate:
               break
-        elif etxt.count("time to file"):
+        elif etxt.count("time to file") or etxt.count("extend further the time"):
           evtobj.time_to_file = True
         elif etxt.count("Judgment VACATED"):
           evtobj.vacated = True
           self.vacated = True
         elif (etxt.count("Letter of petitioner")
               or etxt.count("Letter of respondent")
+              or etxt.count("Letter from counsel")
               or etxt.startswith("Letter from the Solicitor General")
               or etxt.count("Letter in reply")):
           evtobj.letter = True
