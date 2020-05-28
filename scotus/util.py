@@ -601,10 +601,11 @@ class DocketStatusInfo(object):
         elif (etxt.startswith("Consent to the filing of amicus curiae briefs") or
               etxt.startswith("Consent to the filing of amicus briefs")):
           if etxt.count(" either party") and etxt.count("neither party"):
-            if etxt.count("received from counsel for petitioner"):
-              evtobj.petitioner_blanket_consent = True
-            elif etxt.count("received from counsel for respondent"):
-              evtobj.respondent_blanket_consent = True
+            if etxt.count("received from counsel"):
+              if etxt.count("petitioner"):
+                evtobj.petitioner_blanket_consent = True
+              elif etxt.count("respondent"):
+                evtobj.respondent_blanket_consent = True
 
         if etxt.lower().count("remanded"):
           self.remanded = True
