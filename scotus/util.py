@@ -436,7 +436,8 @@ class DocketStatusInfo(object):
           evtobj.record_received = True
         elif etxt.startswith("Record returned"):
           evtobj.record_returned = True
-        elif (etxt.startswith("Motion of the Solicitor General for leave to participate in oral argument")
+        elif ((etxt.startswith("Motion of the Solicitor General for leave to participate in oral argument")
+               or etxt.startswith("Motion of the Acting Solicitor General for leave the participate in oral argument"))
               and etxt.count("divided argument")):
           if etxt.count("filed"):
             evtobj.sg_motion_divided_argument = True
@@ -444,6 +445,7 @@ class DocketStatusInfo(object):
             evtobj.sg_grant_divided_argument = True
         elif etxt.startswith("Motion for divided argument"):
           if (etxt.count("by the Solicitor General") or
+              etxt.count("by the Acting Solicitor General") or
               etxt.lower().count("by federal respondents")):
             if etxt[-7:] == "DENIED.":
               evtobj.sg_motion_divided_denied = True
