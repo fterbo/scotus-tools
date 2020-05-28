@@ -7,20 +7,20 @@
 # to the date of the event and not the term of the docket
 
 TERMS = {
-  "91" : {"chief" : "Rehnquist"}.
-  "92" : {"chief" : "Rehnquist"}.
-  "93" : {"chief" : "Rehnquist"}.
-  "94" : {"chief" : "Rehnquist"}.
-  "95" : {"chief" : "Rehnquist"}.
-  "96" : {"chief" : "Rehnquist"}.
-  "97" : {"chief" : "Rehnquist"}.
-  "98" : {"chief" : "Rehnquist"}.
-  "99" : {"chief" : "Rehnquist"}.
-  "00" : {"chief" : "Rehnquist"}.
-  "01" : {"chief" : "Rehnquist"}.
-  "02" : {"chief" : "Rehnquist"}.
-  "03" : {"chief" : "Rehnquist"}.
-  "04" : {"chief" : "Rehnquist"}.
+  "91" : {"chief" : "Rehnquist"},
+  "92" : {"chief" : "Rehnquist"},
+  "93" : {"chief" : "Rehnquist"},
+  "94" : {"chief" : "Rehnquist"},
+  "95" : {"chief" : "Rehnquist"},
+  "96" : {"chief" : "Rehnquist"},
+  "97" : {"chief" : "Rehnquist"},
+  "98" : {"chief" : "Rehnquist"},
+  "99" : {"chief" : "Rehnquist"},
+  "00" : {"chief" : "Rehnquist"},
+  "01" : {"chief" : "Rehnquist"},
+  "02" : {"chief" : "Rehnquist"},
+  "03" : {"chief" : "Rehnquist"},
+  "04" : {"chief" : "Rehnquist"},
   "05" : {"chief" : "Roberts"},
   "06" : {"chief" : "Roberts"},
   "07" : {"chief" : "Roberts"},
