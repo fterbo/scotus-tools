@@ -67,15 +67,13 @@ def scan (opts):
       return
 
     if opts.application:
-      jpath = "%s/OT-%d/dockets/A/%d/docket.json" % (opts.root, opts.term, ddir)
+      dnum = "A%d" % (ddir)
     else:
-      jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, ddir)
-    if not os.path.exists(jpath):
-      continue
-#      raise NoDocketError(docket_str)
+      dnum = ddir
 
-    docket_obj = json.loads(open(jpath, "rb").read())
-    info = util.DocketStatusInfo(docket_obj)
+    info = util.loadDocket(opts.term, dnum)
+
+    docket_obj = info._docket_data
     if opts.unknown:
       if ("LowerCourt" in docket_obj) and (docket_obj["LowerCourt"]):
         if docket_obj["LowerCourt"] not in LCNAMEMAP.values():
