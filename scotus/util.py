@@ -105,6 +105,8 @@ class DocketStatusInfo(object):
 
     self._errors = []
 
+    self._docket_data = docket_obj
+
     self._build(docket_obj)
 
   def __hash__ (self):

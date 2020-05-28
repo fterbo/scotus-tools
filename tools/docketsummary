@@ -245,7 +245,7 @@ def summarize (opts):
       for event in info.events:
         lines.append("    %s" % (unicode(event)))
     else:
-      last_order = docket_obj["ProceedingsandOrder"][-1]
+      last_order = info._docket_data["ProceedingsandOrder"][-1]
       lines.append("  - Last Order")
       lines.append("     %s - %s" % (last_order["Date"], last_order["Text"]))
     if info.petition_path and not opts.no_qp:
