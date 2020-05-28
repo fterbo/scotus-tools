@@ -16,6 +16,7 @@ import requests
 
 from . import events
 from . import exceptions
+from . import justices
 
 HEADERS = {"User-Agent" : "SCOTUS Docket Utility (https://github.com/fterbo/scotus-tools)"}
 QPURL = "https://www.supremecourt.gov/qp/%d-%05dqp.pdf"
@@ -623,7 +624,10 @@ class DocketStatusInfo(object):
           wlist = etxt.split()
           for idx,word in enumerate(wlist):
             if word == "Justice":
-              self.recusals.add(wlist[idx+1])
+              if wlist[idx-1] == "Chief":
+                self.recusals.add(TERMS["%02d" % (self.term)]["chief"])
+              else:
+                self.recusals.add(wlist[idx+1])
 
     except Exception:
       print "Exception in case: %s" % (docket_obj["CaseNumber"])
