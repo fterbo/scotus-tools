@@ -103,7 +103,7 @@ class DocketStatusInfo(object):
     self.cert_amici = []
     self.merits_amici = []
 
-    self.recusals = []
+    self.recusals = set([])
 
     self._errors = []
 
@@ -623,7 +623,7 @@ class DocketStatusInfo(object):
           wlist = etxt.split()
           for idx,word in enumerate(wlist):
             if word == "Justice":
-              self.recusals.append(wlist[idx+1])
+              self.recusals.add(wlist[idx+1])
 
     except Exception:
       print "Exception in case: %s" % (docket_obj["CaseNumber"])
