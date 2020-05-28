@@ -139,7 +139,7 @@ NAMEMAP = {
   "minNB" : CourtMatch().setStart("District Court of Nebraska"),
   "minNC" : CourtMatch().setStart("Superior Court of North Carolina"),
   "minNH" : CourtMatch().setStart("Superior Court of New Hampshire"),
-  "minNJ" : CourtMatch().setStart("Supreior Court of New Jersey"),
+  "minNJ" : CourtMatch().setStart("Superior Court of New Jersey"),
   "minNV" : CourtMatch().setStart("District Court of Nevada"),
   "minNY" : CourtMatch().setStart("County Court of New York")
                           .setStart("Supreme Court of New York")
