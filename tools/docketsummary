@@ -210,7 +210,7 @@ def getCommonHeader (info):
     else:
       hdr.append("  - CVSG: %s" % (info.cvsg_date.strftime("%Y-%m-%d")))
   if info.recusals:
-    hdr.append("  - Recusals: %s" % (", ".join(info.recusals)))
+    hdr.append("  - Recusals: %s" % (", ".join(sorted(list(info.recusals)))))
   return hdr
     
 
