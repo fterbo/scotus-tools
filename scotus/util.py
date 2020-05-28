@@ -598,7 +598,8 @@ class DocketStatusInfo(object):
           evtobj.petitioner_blanket_consent = True
         elif etxt.lower().startswith("blanket consent filed by respondent"):
           evtobj.respondent_blanket_consent = True
-        elif etxt.startswith("Consent to the filing of amicus curiae briefs"):
+        elif (etxt.startswith("Consent to the filing of amicus curiae briefs") or
+              etxt.startswith("Consent to the filing of amicus briefs")):
           if etxt.count(" either party") and etxt.count("neither party"):
             if etxt.count("received from counsel for petitioner"):
               evtobj.petitioner_blanket_consent = True
