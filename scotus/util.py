@@ -416,6 +416,11 @@ class DocketStatusInfo(object):
           self.cvsg = True
           self.cvsg_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.cvsg = True
+        elif etxt.startswith("Motion for leave to proceed in forma pauperis filed by respondent"):
+          if etxt.count("GRANTED"):
+            evtobj.ifp_granted = True
+          else:
+            evtobj.ifp_respondent = True
         elif etxt == "Petition GRANTED.":
           self.granted = True
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()

@@ -25,6 +25,7 @@ class DocketEvent(object):
     self.ifp_denied = False
     self.ifp_granted = False
     self.ifp_paid = False
+    self.ifp_respondent = False
     self.inquorate = False
     self.issued = False
     self.joint_appendix = False
