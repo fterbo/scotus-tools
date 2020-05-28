@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2019  Floyd Terbo
+# Copyright (c) 2018-2020  Floyd Terbo
 
 class CourtMatch(object):
   def __init__ (self, *args):
@@ -102,6 +102,7 @@ NAMEMAP = {
   "dcAZ" : "United States District Court for the District of Arizona",
   "dcDC" : "United States District Court for the District of Columbia",
   "dcEAK" : "United States District Court for the Eastern District of Arkansas",
+  "dcEMI" : "United States District Court for the Eastern District of Michigan",
   "dcEPA" : "United States District Court for the Eastern District of Pennsylvania",
   "dcEVA" : "United States District Court for the Eastern District of Virginia",
   "dcHI" : "United States District Court for the District of Hawaii",
@@ -115,6 +116,7 @@ NAMEMAP = {
   "dcSCA" : "United States District Court for the Southern District of California",
   "dcSGA" : "United States District Court for the Southern District of Georgia",
   "dcSMS" : "United States District Court for the Southern District of Mississippi",
+  "dcSOH" : "United States District Court for the Southern District of Ohio",
   "dcSWV" : "United States District Court for the Southern District of West Virginia",
   "dcWWI" : "United States District Court for the Western District of Wisconsin",
   "dcWTX" : "United States District Court for the Western District of Texas",
@@ -122,6 +124,7 @@ NAMEMAP = {
   "minAZ" : CourtMatch().setStart("Superior Court of Arizona"),
   "minCA" : CourtMatch().setPartial("Superior Court of California"),
   "minCO" : CourtMatch().setStart("District Court of Colorado"),
+  "minDE" : "Superior Court of Delaware",
   "minFL" : CourtMatch().setStart("Circuit Court of Florida"),
   "minGA" : CourtMatch().setStart("Superior Court of Georgia"),
   "minIA" : CourtMatch().setStart("District Court of Iowa"),
@@ -133,8 +136,10 @@ NAMEMAP = {
   "minMD" : CourtMatch().setStart("Circuit Court of Maryland"),
   "minMI" : CourtMatch().setStart("Circuit Court of Michigan"),
   "minMS" : CourtMatch().setStart("Circuit Court of Mississippi"),
+  "minNB" : CourtMatch().setStart("District Court of Nebraska"),
   "minNC" : CourtMatch().setStart("Superior Court of North Carolina"),
   "minNH" : CourtMatch().setStart("Superior Court of New Hampshire"),
+  "minNJ" : CourtMatch().setStart("Supreior Court of New Jersey"),
   "minNV" : CourtMatch().setStart("District Court of Nevada"),
   "minNY" : CourtMatch().setStart("County Court of New York")
                           .setStart("Supreme Court of New York")
