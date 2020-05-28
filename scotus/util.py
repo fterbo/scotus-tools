@@ -103,6 +103,8 @@ class DocketStatusInfo(object):
     self.cert_amici = []
     self.merits_amici = []
 
+    self.recusals = []
+
     self._errors = []
 
     self._docket_data = docket_obj
@@ -616,6 +618,12 @@ class DocketStatusInfo(object):
 
         if etxt.count("petitioner has repeatedly abused"):
           self.abuse = True
+
+        if etxt.count("took no part in the consideration"):
+          wlist = etxt.lower().split()
+          for idx,word in enumerate(wlist):
+            if word == "justice":
+              self.recusals.append(wlist[idx+1])
 
     except Exception:
       print "Exception in case: %s" % (docket_obj["CaseNumber"])
