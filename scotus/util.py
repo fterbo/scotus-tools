@@ -620,9 +620,9 @@ class DocketStatusInfo(object):
           self.abuse = True
 
         if etxt.count("took no part in the consideration"):
-          wlist = etxt.lower().split()
+          wlist = etxt.split()
           for idx,word in enumerate(wlist):
-            if word == "justice":
+            if word == "Justice":
               self.recusals.append(wlist[idx+1])
 
     except Exception:
