@@ -437,7 +437,7 @@ class DocketStatusInfo(object):
         elif etxt.startswith("Record returned"):
           evtobj.record_returned = True
         elif ((etxt.startswith("Motion of the Solicitor General for leave to participate in oral argument")
-               or etxt.startswith("Motion of the Acting Solicitor General for leave the participate in oral argument"))
+               or etxt.startswith("Motion of the Acting Solicitor General for leave to participate in oral argument"))
               and etxt.count("divided argument")):
           if etxt.count("filed"):
             evtobj.sg_motion_divided_argument = True
