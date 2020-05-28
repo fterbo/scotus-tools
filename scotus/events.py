@@ -48,6 +48,7 @@ class DocketEvent(object):
     self.remanded = False
     self.respondent_blanket_consent = False
     self.response_requested = False
+    self.response_memo = False
     self.set_for_argument = False
     self.set_for_reargument = False
     self.sg_motion_divided_argument = False

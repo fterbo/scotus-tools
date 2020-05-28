@@ -416,6 +416,8 @@ class DocketStatusInfo(object):
           self.cvsg = True
           self.cvsg_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.cvsg = True
+        elif etxt.startswith("Memorandum of respondent") and etxt.count("filed"):
+          evtobj.response_memo = True
         elif etxt.startswith("Motion for leave to proceed in forma pauperis filed by respondent"):
           if etxt.count("GRANTED"):
             evtobj.ifp_granted = True
