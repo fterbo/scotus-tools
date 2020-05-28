@@ -812,6 +812,9 @@ def loadDocket (term, number, root = "."):
   else:
     droot = "%s/OT-%d/dockets/%d" % (root, term, number)
 
+  if not os.path.exists("%s/docket.json" % (droot)):
+    raise exceptions.NoDocketError("%s%s" % (term, str(number)))
+
   jd = json.loads(open("%s/docket.json" % (droot), "rb").read())
   if os.path.exists("%s/patch.json" % (droot)):
     jd.update(json.loads(open("%s/patch.json" % (droot), "rb").read()))

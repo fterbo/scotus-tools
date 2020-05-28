@@ -29,6 +29,7 @@ def parse_args ():
   parser.add_argument("-t", "--term", dest="term", type=int)
   parser.add_argument("-n", "--num", dest="docket_num", type=int)
   parser.add_argument("-A", "--application", dest="application", default=False, action="store_true")
+  parser.add_argument("-O", "--original", dest="orig", default=False, action="store_true")
   parser.add_argument("--stop", dest="stop", type=int)
   parser.add_argument("-s", "--scan", dest="scan", action="store_true")
   parser.add_argument("--ifp", dest="ifp", action="store_true")
@@ -215,16 +216,13 @@ def getCommonHeader (info):
 
 def summarize (opts):
   if opts.application:
-    jpath = "%s/OT-%d/dockets/A/%d/docket.json" % (opts.root, opts.term, opts.docket_num)
+    dnum = "A%d" % (opts.docket_num)
+  elif opts.orig:
+    dnum = "22O%d" % (opts.docket_num)
   else:
-    jpath = "%s/OT-%d/dockets/%d/docket.json" % (opts.root, opts.term, opts.docket_num)
+    dnum = opts.docket_num
 
-  docket_str = scotus.util.buildDocketStr(opts)
-  if not os.path.exists(jpath):
-    raise NoDocketError(docket_str)
-
-  docket_obj = json.loads(open(jpath, "rb").read())
-  info = util.DocketStatusInfo(docket_obj)
+  info = util.loadDocket(opts.term, dnum)
 
   lines = getCommonHeader(info)
   if opts.application:
