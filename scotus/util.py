@@ -456,6 +456,10 @@ class DocketStatusInfo(object):
               evtobj.motion_divided_denied = True
             elif etxt[-8:] == "GRANTED.":
               evtobj.motion_divided_granted = True
+            else:
+              evtobj.motion_divided_argument = True
+              if etxt.count("enlargement of time"):
+                evtobj.motion_time_enlargement = True
         elif (etxt.startswith("Motion") and etxt.count("divided argument")):
           evtobj.motion_divided_argument = True
           if etxt.count("enlargement of time"):
