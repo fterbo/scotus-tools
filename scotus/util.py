@@ -625,7 +625,7 @@ class DocketStatusInfo(object):
           for idx,word in enumerate(wlist):
             if word == "Justice":
               if wlist[idx-1] == "Chief":
-                self.recusals.add(TERMS["%02d" % (self.term)]["chief"])
+                self.recusals.add(justices.TERMS["%02d" % (self.term)]["chief"])
               else:
                 self.recusals.add(wlist[idx+1])
 
