@@ -434,7 +434,7 @@ class DocketStatusInfo(object):
         elif (etxt.startswith("Record received from")
               or etxt.startswith("Record") and etxt.count("is electronic")):
           evtobj.record_received = True
-        elif (etxt.startswith("Record returned")
+        elif etxt.startswith("Record returned"):
           evtobj.record_returned = True
         elif (etxt.startswith("Motion of the Solicitor General for leave to participate in oral argument")
               and etxt.count("divided argument")):
