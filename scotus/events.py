@@ -54,6 +54,7 @@ class DocketEvent(object):
     self.sg_grant_divided_argument = False
     self.time_to_file = False
     self.vacated = False
+    self.waive_response = False
 
 
   def _build (self):
