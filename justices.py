@@ -3,6 +3,9 @@
 # The format of this data will certainly change as the use cases mature, just
 # stubbed in for now to handle some basic conversions
 
+# TODO: Note this doesn't really work for a lot of docket events, as they need to be tied
+# to the date of the event and not the term of the docket
+
 TERMS = {
   "91" : {"chief" : "Rehnquist"}.
   "92" : {"chief" : "Rehnquist"}.
