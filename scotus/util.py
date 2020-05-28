@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2019  Floyd Terbo
+# Copyright (c) 2018-2020  Floyd Terbo
 
 from __future__ import absolute_import
 
@@ -806,10 +806,14 @@ def buildDocketStr (opts, num = None):
 def loadDocket (term, number, root = "."):
   if isinstance(number, (str, unicode)):
     if number[0] == "A":
-      jd = json.loads(open("%s/OT-%d/dockets/A/%s/docket.json" % (root, term, number[1:]), "rb").read())
+      droot = "%s/OT-%d/dockets/A/%s" % (root, term, number[1:])
     elif number[0:3] == "22O":
-      jd = json.loads(open("%s/Orig/dockets/%s/docket.json" % (root, number[3:]), "rb").read())
+      droot = "%s/Orig/dockets/%s" % (root, number[3:])
   else:
-    jd = json.loads(open("%s/OT-%d/dockets/%d/docket.json" % (root, term, number), "rb").read())
+    droot = "%s/OT-%d/dockets/%d" % (root, term, number)
+
+  jd = json.loads(open("%s/docket.json" % (droot), "rb").read())
+  if os.path.exists("%s/patch.json" % (droot)):
+    jd.update(json.loads(open("%s/patch.json" % (droot), "rb").read()))
 
   return DocketStatusInfo(jd)
