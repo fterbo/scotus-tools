@@ -1,11 +1,11 @@
-# Copyright (c) 2018-2019  Floyd Terbo
+# Copyright (c) 2018-2020 Floyd Terbo
 
 from distutils.core import setup
 import setuptools
 
 
 setup(name = "scotus-tools",
-      version = "0.9.51",
+      version = "0.9.52",
       author = "Floyd Terbo",
       author_email = "fterbo@protonmail.com",
       packages = setuptools.find_packages(),
