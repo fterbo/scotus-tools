@@ -185,7 +185,7 @@ class DocketStatusInfo(object):
                  "CERT. GRANTED", "INTERESTED PARTIES", "NO.", "Parties to the Proceedings",
                  "PETITION FOR WRIT", "List of all Parties", "List of Parties", "No. ____",
                  "CONSTITUTIONAL PROVISION", "OPINIONS BELOW", "TOPICAL INDEX", "RELIEF SOUGHT",
-                 "JURISDICTION", "RELATED PROCEEDINGS"]
+                 "JURISDICTION", "RELATED PROCEEDINGS", "RELATED CASES", "RULE 14.1"]
     qp_lines = []
     capture = False
     done = False
