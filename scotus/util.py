@@ -472,6 +472,7 @@ class DocketStatusInfo(object):
           if etxt.count("for leave to file"): continue
           if etxt.count("Motion to substitute"): continue
           if etxt.count("Motion of respondent for leave"): continue
+          if etxt.count("Motion for leave to intervene"): continue
           if etxt.count("Motion to appoint counsel"):
             evtobj.counsel_granted = True
             continue
