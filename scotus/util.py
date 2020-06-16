@@ -180,7 +180,7 @@ class DocketStatusInfo(object):
                          stderr = subprocess.PIPE, shell=True)
     (sout, serr) = p.communicate()
 
-    START_TERMS = ["QUESTION PRESENTED", "QUESTIONS PRESENTED", "STATEMENT OF THE QUESTION"]
+    START_TERMS = ["QUESTION PRESENTED", "QUESTIONS PRESENTED", "STATEMENT OF THE QUESTION", "ISSUE PRESENTED"]
     END_TERMS = ["TABLE", "PARTIES", "CORPORATE DISCLOSURE", "LIST OF", "RULE 29.6",
                  "CERT. GRANTED", "INTERESTED PARTIES", "NO.", "Parties to the Proceedings",
                  "PETITION FOR WRIT", "List of all Parties", "List of Parties", "No. ____",
