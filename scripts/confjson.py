@@ -39,8 +39,7 @@ def main():
 
   tdata = []
   for term,num,cabbr in sumdata:
-    djson = json.loads(open("OT-%d/dockets/%d/docket.json" % (term, num), "rb").read())
-    docket = scotus.util.DocketStatusInfo(djson)
+    docket = scotus.util.loadDocket(term, num)
 
     try:
       lcinfo = []
