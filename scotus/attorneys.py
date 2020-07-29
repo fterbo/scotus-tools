@@ -151,6 +151,8 @@ _attys = [
     .setAG("va.unknown", date(2017, 2, 21), None),
   Attorney("Stephen R. Creason", "Stephen Richard Creason")
     .setAG("in.unknown", date(2006, 12, 13), None),
+  Attorney("Toby Crouse")
+    .setSG("ks", date(2018, 1, 26), None),
   Attorney("Christopher A. Curtis")
     .setFPD("tx.nd", date(2016, 12, 15), None),
   Attorney("Tracy Dreispul", "Tracy M. Dreispul")
@@ -176,6 +178,10 @@ _attys = [
     .setSG("or", date(2016, 1, 1), None),
   Attorney("Fadwa A. Hammoud")
     .setSG("mi", date(2019, 1, 15), None),
+  Attorney("Kyle Douglas Hawkins")
+    .setSG("tx", date(2018, 9, 10), None),
+  Attorney("Wesley Heidt")
+    .setAG("fl.deputy", date(2010, 10, 1), None), # Docket date in 10-6768, definitely worked in FL AG before that date
   Attorney("Toby Jay Heytens")
     .setSG("va", date(2018, 1, 9), None)
     .setSG("us.assistant", date(2007, 1, 1), date(2010, 12, 31)),
@@ -219,6 +225,11 @@ _attys = [
     .setAG("fl", date(2016, 8, 1), None),
   Attorney("Celia A. Terenzio")
     .setAG("fl.assistant", date(2013, 5, 1), None),
+  Attorney("Barbara Dale Underwood")
+    .setSG("ny", date(2007, 1, 1), date(2018, 5, 8)
+    .setAG("ny.acting", date(2018, 5, 8), date(2018, 5, 22))
+    .setAG("ny", date(2018, 5, 22), date(2018, 12, 31))
+    .setSG("ny", date(2019, 1, 1), None),
   Attorney("Jeffrey B. Wall")
     .setSG("us.acting", date(2017, 3, 10), date(2017, 9, 19))
     .setSG("us.deputy", date(2017, 9, 20), None),
