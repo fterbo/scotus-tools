@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2019  Floyd Terbo
+# Copyright (c) 2018-2020  Floyd Terbo
 
 from __future__ import absolute_import
 
@@ -125,6 +125,8 @@ _attys = [
     .setAG("ks.deputy", date(2017, 1, 1), None),
   Attorney("Jerry V. Beard")
     .setFPD("tx.nd", date(2017, 2, 1), None),
+  Attorney("Carla Suzanne Bechard")
+    .setAG("fl.deputy", date(2019, 1, 1), None), # No record found for start date, first case found is 18-836
   Attorney("Julie Marie Blake")
     .setAG("wv.assistant", date(2014, 1, 1), date(2017, 1, 27))  # Can't find a good start date
     .setAG("mo.unknown", date(2017, 1, 28), None),
@@ -160,6 +162,8 @@ _attys = [
     .setAG("in.deputy", date(2001, 2, 1), date(2005, 6, 30)),
   Attorney("Peter Michael Fleury")
     .setFPD("tx", date(2018, 1, 1), None),
+  Attorney("Benjamin Michael Flowers")
+    .setSG("oh", date(2019, 1, 14), None),
   Attorney("Noel J. Francisco", "Noel Francisco")
     .setSG("us.acting", date(2017, 1, 23), date(2017, 3, 10))
     .setSG("us.stub", date(2017, 3, 11), date(2017, 9, 18))  # Stub for bad docket metadata
@@ -195,7 +199,9 @@ _attys = [
   Attorney("Matthew Robert McGuire")
     .setAG("va.unknown", date(2017, 2, 21), None),
   Attorney("Eric E. Murphy")
-    .setSG("oh", date(2013, 9, 9), None),
+    .setSG("oh", date(2013, 9, 9), date(2019, 1, 13)), # May not be proper end date
+  Attorney("Elizabeth Baker Murrill")
+    .setSG("la", date(2016, 1, 1), None), # Unknown actual day/month
   Attorney("Billy H. Nolas")
     .setFPD("fl.chu", date(2017, 6, 1), None),
   Attorney("Kevin Joel Page")
