@@ -226,7 +226,7 @@ _attys = [
   Attorney("Celia A. Terenzio")
     .setAG("fl.assistant", date(2013, 5, 1), None),
   Attorney("Barbara Dale Underwood")
-    .setSG("ny", date(2007, 1, 1), date(2018, 5, 8)
+    .setSG("ny", date(2007, 1, 1), date(2018, 5, 8))
     .setAG("ny.acting", date(2018, 5, 8), date(2018, 5, 22))
     .setAG("ny", date(2018, 5, 22), date(2018, 12, 31))
     .setSG("ny", date(2019, 1, 1), None),
