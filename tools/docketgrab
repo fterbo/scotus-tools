@@ -265,11 +265,12 @@ def downloadFull (path, opts):
       outpath = "%s/%s" % (newpath, fname)
       if os.path.exists(outpath):
         continue
+      time.sleep(0.25)
       logging.info("[%s] Downloading %s" % (docketstr, fname))
       dl = GET(link["DocumentUrl"])
       if dl.status_code == 403:
-        logging.warning("[%s] Waiting 5 seconds" % (docketstr))
-        time.sleep(5)
+        logging.warning("[%s] Waiting 180 seconds" % (docketstr))
+        time.sleep(180)
         dl = GET(link["DocumentUrl"])
       if dl.status_code != 200:
         logging.error("[%s] FAILED: %d" % (docketstr, dl.status_code))

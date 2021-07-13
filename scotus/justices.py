@@ -35,5 +35,7 @@ TERMS = {
   "16" : {"chief" : "Roberts"},
   "17" : {"chief" : "Roberts"},
   "18" : {"chief" : "Roberts"},
-  "19" : {"chief" : "Roberts"}
+  "19" : {"chief" : "Roberts"},
+  "20" : {"chief" : "Roberts"},
+  "21" : {"chief" : "Roberts"}
 }
