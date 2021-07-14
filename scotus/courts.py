@@ -52,6 +52,7 @@ NAMEMAP = {
                            "United States Court of Appeals for the District of Columbia Circuit"),
   "CAFC" : "United States Court of Appeals for the Federal Circuit",
   "CAAF" : "United States Court of Appeals for the Armed Forces",
+  "FISCR" : "United States Foreign Intelligence Surveillance Court of Review",
 
   "caAK" : "Court of Appeals of Alaska",
   "caAL" : CourtMatch("Court of Criminal Appeals of Alabama",
@@ -109,6 +110,7 @@ NAMEMAP = {
   "dcMD" : "United States District Court for the District of Maryland",
   "dcMAL" : "United States District Court for the Middle District of Alabama",
   "dcMNC" : "United States District Court for the Middle District of North Carolina",
+  "dcNCA" : "United States District Court for the Northern District of California",
   "dcNIL" : "United States District Court for the Northern District of Illinois",
   "dcNMS" : "United States District Court for the Northern District of Mississippi",
   "dcNTX" : "United States District Court for the Northern District of Texas",
@@ -116,6 +118,7 @@ NAMEMAP = {
   "dcSCA" : "United States District Court for the Southern District of California",
   "dcSGA" : "United States District Court for the Southern District of Georgia",
   "dcSMS" : "United States District Court for the Southern District of Mississippi",
+  "dcSNY" : "United States District Court for the Southern District of New York",
   "dcSOH" : "United States District Court for the Southern District of Ohio",
   "dcSWV" : "United States District Court for the Southern District of West Virginia",
   "dcWWI" : "United States District Court for the Western District of Wisconsin",
@@ -144,7 +147,8 @@ NAMEMAP = {
   "minNY" : CourtMatch().setStart("County Court of New York")
                           .setStart("Supreme Court of New York")
                           .setPartial("Judicial District of New York")
-                          .setPartial("City of New York"),
+                          .setPartial("City of New York")
+                          .setStart("County of New York"),
   "minOR" : CourtMatch().setStart("Circuit Court of Oregon"),
   "minPA" : CourtMatch().setStart("Court of Common Pleas of Pennsylvania"),
   "minSC" : CourtMatch().setStart("Court of Common Pleas of South Carolina"),
