@@ -452,7 +452,7 @@ class DocketStatusInfo(object):
             evtobj.sg_motion_divided_argument = True
           elif etxt.count("GRANTED"):
             evtobj.sg_grant_divided_argument = True
-        elif etxt.startswith("Motion for divided argument"):
+        elif etxt.startswith("Motion for divided argument") or etxt.count("and for divided argument"):
           if (etxt.count("by the Solicitor General") or
               etxt.count("by the Acting Solicitor General") or
               etxt.lower().count("by federal respondents")):
