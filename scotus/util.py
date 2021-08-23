@@ -441,7 +441,7 @@ class DocketStatusInfo(object):
         elif (etxt.startswith("Record received from")
               or etxt.startswith("Record") and etxt.count("is electronic")):
           evtobj.record_received = True
-        elif (etxt.startswith("The record of") and etxt.count("PACER")):
+        elif ((etxt.startswith("The record of") or (etxt.startswith("The record from")) and etxt.count("PACER")):
           evtobj.record_pacer = True
         elif etxt.startswith("Record returned"):
           evtobj.record_returned = True
