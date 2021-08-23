@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2020  Floyd Terbo
+# Copyright (c) 2018-2021  Floyd Terbo
 
 from __future__ import absolute_import
 
@@ -412,7 +412,8 @@ class DocketStatusInfo(object):
             evtobj.amicus_brief = True
           else:
             evtobj.brief = True
-        elif etxt.startswith("The Solicitor General is invited to file a brief"):
+        elif (etxt.startswith("The Solicitor General is invited to file a brief") or
+              etxt.count("expressing the views of the United States")):
           self.cvsg = True
           self.cvsg_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.cvsg = True
@@ -473,6 +474,8 @@ class DocketStatusInfo(object):
           if etxt.count("Motion to substitute"): continue
           if etxt.count("Motion of respondent for leave"): continue
           if etxt.count("Motion for leave to intervene"): continue
+          if etxt.count("Motion to dismiss"):
+            evtobj.dismissed = True
           if etxt.count("Motion to appoint counsel"):
             evtobj.counsel_granted = True
             continue
