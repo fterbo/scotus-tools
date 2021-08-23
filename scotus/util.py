@@ -388,7 +388,7 @@ class DocketStatusInfo(object):
         elif etxt.startswith("Brief amici curiae of") or etxt.startswith("Brief amicus curiae of"):
           evtobj.amicus_brief = True
           if etxt.count("Court-appointed"):
-            evtobj.court_appointed = True
+            evtobj.amici_court_appointed = True
           if not self.granted:
             self.cert_amici.append(" ".join(estxt.split()[4:-1]))
           else:
@@ -479,13 +479,16 @@ class DocketStatusInfo(object):
           if etxt.count("for leave to file"):
             if etxt.count("as amicus curiae out of time"):
               evtobj.amici_granted_out_of_time = True
+            continue
           if etxt.count("Motion to substitute"): continue
           if etxt.count("Motion of respondent for leave"): continue
           if etxt.count("Motion for leave to intervene"): continue
           if etxt.count("Motion to dispense with printing"):
             evtobj.dispense_printing_granted = True
+            continue
           if etxt.count("Motion to dismiss"):
             evtobj.dismissed = True
+            continue
           if etxt.count("Motion to appoint counsel"):
             evtobj.counsel_granted = True
             continue
