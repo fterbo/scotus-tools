@@ -417,6 +417,8 @@ class DocketStatusInfo(object):
           self.cvsg = True
           self.cvsg_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.cvsg = True
+        elif etxt.count("is invited to brief and argue this case"):
+          evtobj.amici_court_appointed = True
         elif etxt.startswith("Memorandum of respondent") and etxt.count("filed"):
           evtobj.response_memo = True
         elif etxt.startswith("Motion for leave to proceed in forma pauperis filed by respondent"):
@@ -428,6 +430,8 @@ class DocketStatusInfo(object):
           self.granted = True
           self.grant_date = dateutil.parser.parse(einfo["Date"]).date()
           evtobj.granted = True
+          if etxt.count("In addition to the question presented") or etxt.count("directed to brief and argue the following"):
+            evtobj.additional_question = True
         elif etxt == "CIRCULATED":
           evtobj.circulated = True
         elif etxt.startswith("SET FOR ARGUMENT"):
@@ -437,6 +441,8 @@ class DocketStatusInfo(object):
         elif (etxt.startswith("Record received from")
               or etxt.startswith("Record") and etxt.count("is electronic")):
           evtobj.record_received = True
+        elif (etxt.startswith("The record of") and (etxt.count("PACER")):
+          evtobj.record_pacer = True
         elif etxt.startswith("Record returned"):
           evtobj.record_returned = True
         elif ((etxt.startswith("Motion of the Solicitor General for leave to participate in oral argument")
@@ -470,10 +476,14 @@ class DocketStatusInfo(object):
           if etxt.count("enlargement of time"):
             evtobj.motion_time_enlargement = True
         elif etxt.count("GRANTED"):
-          if etxt.count("for leave to file"): continue
+          if etxt.count("for leave to file"):
+            if etxt.count("as amicus curiae out of time"):
+              evtobj.amici_granted_out_of_time = True
           if etxt.count("Motion to substitute"): continue
           if etxt.count("Motion of respondent for leave"): continue
           if etxt.count("Motion for leave to intervene"): continue
+          if etxt.count("Motion to dispense with printing"):
+            evtobj.dispense_printing_granted = True
           if etxt.count("Motion to dismiss"):
             evtobj.dismissed = True
           if etxt.count("Motion to appoint counsel"):
@@ -506,6 +516,8 @@ class DocketStatusInfo(object):
           if etxt.count("right of respondent"):
             if etxt.count("to respond"):
               evtobj.waive_response = True
+          elif etxt.count("Rule 15.5 filed by petitioner"):
+            evtobj.waive_waiting_period = True
         elif (etxt.count("petition for certiorari is granted") or
               etxt.count("petition for a writ of certiorari is granted")):
           self.granted = True

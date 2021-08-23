@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2020  Floyd Terbo
+# Copyright (c) 2018-2021  Floyd Terbo
 
 import dateutil.parser
 
@@ -9,8 +9,10 @@ class DocketEvent(object):
     self._e_dict = edict
     self._build()
 
+    self.additional_question = False
     self.affirmed = False
     self.amici_court_appointed = False
+    self.amici_granted_out_of_time = False
     self.amicus_brief = False
     self.argued = False
     self.brief = False
@@ -20,6 +22,7 @@ class DocketEvent(object):
     self.cvsg_return = False
     self.denied = False
     self.dismissed = False
+    self.dispense_printing_granted = False
     self.distributed = False
     self.granted = False
     self.ifp_denied = False
@@ -39,6 +42,7 @@ class DocketEvent(object):
     self.motion_time_enlargement = False
     self.not_accepted = False
     self.petitioner_blanket_consent = False
+    self.record_pacer = False
     self.record_received = False
     self.record_requested = False
     self.record_returned = False
@@ -56,6 +60,7 @@ class DocketEvent(object):
     self.time_to_file = False
     self.vacated = False
     self.waive_response = False
+    self.waive_waiting_period = False
 
 
   def _build (self):
