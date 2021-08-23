@@ -75,13 +75,17 @@ class EventTextQuery(object):
     if not docket_ref.info:
       return False
 
+    ecount = 0
     for event in docket_ref.info.events:
       etxt = event.text
       if not self.case_sensitive:
         etxt = etxt.lower()
 
       if self.query_type == 0:
-        if etxt.count(self.query_term) >= self.min_count:
-          return (docket_ref, {})
+        if etxt.count(self.query_term):
+          ecount += 1
+
+    if ecount >= self.min_count:
+      return (docket_ref, {})
 
     return False
