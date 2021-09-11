@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2018-2019  Floyd Terbo
+# Copyright (c) 2018-2021  Floyd Terbo
 
 import argparse
 import datetime
@@ -106,6 +106,7 @@ def scanPetitions (path, opts):
       continue
 
     url = "%s%s.json" % (BASE, docketstr)
+    time.sleep(0.75)
     r = GET(url)
     if r.status_code != 200:
       if opts.stop and nextnum < opts.stop:
