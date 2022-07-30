@@ -22,8 +22,8 @@ BOUNDS = {
   17 : (datetime.date(2017, 9, 25), datetime.date(2018, 7, 10)),
   18 : (datetime.date(2018, 9, 24), datetime.date(2019, 7, 10)),
   19 : (datetime.date(2019, 9, 20), datetime.date(2020, 7, 10)),
-  20 : (datetime.date(2020, 9, 20), datetime.date(2021, 7, 10)),
-  21 : (datetime.date(2021, 9, 20), datetime.date(2022, 7, 10))
+  20 : (datetime.date(2020, 9, 20), datetime.date(2021, 8, 1)),
+  21 : (datetime.date(2021, 9, 20), datetime.date(2022, 8, 1))
 }
 
 def main():
