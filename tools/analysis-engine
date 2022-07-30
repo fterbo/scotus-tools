@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2018-2019  Floyd Terbo
+# Copyright (c) 2018-2022  Floyd Terbo
 
 import functools
 import json
@@ -10,6 +10,7 @@ from pathos import multiprocessing
 import sys
 import time
 
+import scotus.exceptions
 import scotus.filters
 import scotus.outputs
 import scotus.queries
@@ -21,6 +22,8 @@ import scotus.sources
 #                   "output" : ["docket-oneline", {}]}'
 
 PROCESSES = 8
+
+scotus.exceptions.CasenameError.IGNORE = True
 
 def apply_filters (filter_list, sinfo):
   for srcf in filter_list:
