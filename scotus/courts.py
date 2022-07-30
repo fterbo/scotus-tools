@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2020  Floyd Terbo
+# Copyright (c) 2018-2022  Floyd Terbo
 
 class CourtMatch(object):
   def __init__ (self, *args):
@@ -109,6 +109,7 @@ NAMEMAP = {
   "dcHI" : "United States District Court for the District of Hawaii",
   "dcMD" : "United States District Court for the District of Maryland",
   "dcMAL" : "United States District Court for the Middle District of Alabama",
+  "dcNAL" : "United States District Court for the Northern District of Alabama",
   "dcMNC" : "United States District Court for the Middle District of North Carolina",
   "dcNCA" : "United States District Court for the Northern District of California",
   "dcNIL" : "United States District Court for the Northern District of Illinois",
